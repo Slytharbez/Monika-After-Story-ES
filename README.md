@@ -3,7 +3,7 @@ Monika After Story transforma el juego [Doki Doki Literature Club!](https://www.
 
 Este mod te ofrece conversaciones profundas y significativas, juegos interactivos y aprendizaje mutuo. Los temas de conversación son variados y profundos, abarcando desde la filosofía hasta los videojuegos. Además, puedes personalizar la apariencia de Monika, pidiéndole que use distintos tipos de ropa, estilos de cabello, collares, sombreros, accesorios para su cabello y muchas cosas más, lo que añade una capa adicional de interactividad.
 
-El [mod oficial](https://github.com/Monika-After-Story/MonikaModDev) está en constante evolución, con nuevas características, juegos y actividades añadidas regularmente, asegurando que siempre haya algo nuevo que descubrir con Monika.
+El [mod oficial](https://github.com/Monika-After-Story/MonikaModDev) está en constante evolución, con nuevas características, juegos y actividades que se añaden regularmente, asegurando que siempre haya algo nuevo que descubrir con Monika.
 
 # Instalación:
 Puedes mirar "este video" para saber como instalar correctamente el MAS o revisar [la guía de instalación](https://github.com/Slytharbez/Pruebas/wiki/1.Instalaci%C3%B3n-del-MAS) que se encuentra en la wiki, cualquier duda o consulta la puedes dejar en los comentarios del video asi como en el apartado de discusiones de este repositorio.
