@@ -6,7 +6,7 @@ Este mod te ofrece conversaciones profundas y significativas, juegos interactivo
 El [mod oficial](https://github.com/Monika-After-Story/MonikaModDev) está en constante evolución, con nuevas características, juegos y actividades que se añaden regularmente, asegurando que siempre haya algo nuevo que descubrir con Monika.
 
 # Instalación:
-Puedes mirar "este video" para saber como instalar correctamente el MAS o revisar [la guía de instalación](https://github.com/Slytharbez/Pruebas/wiki/Instalaci%C3%B3n-del-MAS) que se encuentra en la wiki, cualquier duda o consulta la puedes dejar en los comentarios del video asi como en el apartado de discusiones de este repositorio.
+Puedes mirar "este video" para saber como instalar correctamente el MAS o revisar [la guía de instalación](https://github.com/Slytharbez/Monika-After-Story-ES/wiki/Instalaci%C3%B3n-del-MAS) que se encuentra en la wiki, cualquier duda o consulta la puedes dejar en los comentarios del video asi como en el apartado de discusiones de este repositorio.
 
 # Ayuda y aportes
 Si encuentras algun tipo de error, bug o cualquier otro problema, puedes dejar un comentario en el apartado de discusiones del repositorio para ayudarte a solucionar los inconvenientes. Asimismo te invito a revisar la sección de "preguntas frecuentes" para aclarar cualquiera duda o consulta que puedas tener del mod.
