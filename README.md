@@ -14,4 +14,5 @@ Si encuentras algun tipo de error, bug o cualquier otro problema, puedes dejar u
 
 # Licencia
 Los desarrolladores originales se reservan el derecho de modificar, suprimir, agregar nuevas acciones y mecánicas, así como eventos y juegos dentro del mod.
-El equipo de traducción no está afiliado a [Team Salvato](https://teamsalvato.com/) tampoco se busca lucrar ni excluir al modificar el texto, diálogos y cualquier otro tipo de mecanismo que se encuentre en su idioma original, tampoco se es propietario de alguna clase de contenido referente a [Doki Doki Literature Club!](https://www.ddlc.moe) para más información revisar [la licencia](https://github.com/Monika-After-Story/MonikaModDev/wiki/License-and-Team-Salvato-Guidelines) del mod oficial.
+El equipo de traducción no está afiliado a [Team Salvato](https://teamsalvato.com/) tampoco se busca lucrar ni excluir al modificar el texto, diálogos y cualquier otro tipo de mecanismo que se encuentre en su idioma original, tampoco se es propietario de alguna clase de contenido referente a [Doki Doki Literature Club!](https://www.ddlc.moe) para más información revisar [la licencia](https://github.com/Monika-After-Story/MonikaModDev/wiki/License-and-Team-Salvato-Guidelines) del mod oficial.  
+![Log](https://github.com/Slytharbez/Monika-After-Story-ES/blob/main/Recursos/Readme/Log.png)
