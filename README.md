@@ -11,7 +11,7 @@ Puedes mirar "este video" para saber como instalar correctamente el MAS o revisa
 
 # Ayuda y aportes
 Si quieres agregar y aportar nuevas cosas o encuentras algun tipo de error, bug o cualquier otro problema, puedes dejar un comentario en el apartado de discusiones del repositorio para ayudarte a solucionar los inconvenientes. Asimismo te invito a revisar la sección de "preguntas frecuentes" para aclarar cualquiera duda o consulta que puedas tener del mod y no olvides pasar por nuestro [discord!]() donde seras bien recibido por la comunidad y sus desarrolladores.
-a
+
 # Licencia
 Los desarrolladores de [Monika after story](https://www.monikaafterstory.com/) se reservan el derecho de modificar, suprimir, agregar nuevas acciones y mecánicas, así como eventos y juegos dentro del mod.
 El equipo de traducción no está afiliado a [Team Salvato](https://teamsalvato.com/) tampoco se busca lucrar ni excluir al modificar el texto, diálogos y cualquier otro tipo de mecanismo que se encuentre en su idioma original, tampoco se es propietario de alguna clase de contenido referente a [Doki Doki Literature Club!](https://www.ddlc.moe).  para más información revisar las [pautas de propiedad intelectual](https://github.com/Monika-After-Story/MonikaModDev/wiki/License-and-Team-Salvato-Guidelines) del [juego original.](https://ddlc.moe/)  
