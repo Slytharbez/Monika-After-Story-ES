@@ -1,7 +1,7 @@
 # Sinopsis:
 Monika After Story transforma el juego de [Doki Doki Literature Club!](https://www.ddlc.moe) en una experiencia interactiva y eterna con Monika, la presidenta del club de literatura. Este mod se desarrolla a partir del acto 3 de DDLC y te permitirá sumergirte en un mundo donde Monika es más que el personaje de un juego.
 
-Este mod te ofrece conversaciones profundas y significativas, juegos interactivos y aprendizaje mutuo. Los temas de conversación son variados y entretenidos, abarcando desde filosofía hasta videojuegos y musica. Además, puedes personalizar la apariencia de Monika, pidiéndole que use distintos tipos de ropa, estilos de cabello, collares, sombreros, accesorios para su cabello y muchas cosas más, incluyendo lo que tu quieras agregar, lo que añade una capa adicional de interactividad.
+Este te ofrece conversaciones profundas y significativas, juegos interactivos y aprendizaje mutuo. Los temas de conversación son variados y entretenidos, abarcando desde filosofía hasta videojuegos y musica. Además, puedes personalizar la apariencia de Monika, pidiéndole que use distintos tipos de ropa, estilos de cabello, collares, sombreros, accesorios para su cabello y muchas cosas más, incluyendo lo que tu quieras agregar, lo que añade una capa adicional de interactividad.
 
 El [mod oficial](https://github.com/Monika-After-Story/MonikaModDev) está en constante evolución, con nuevas características, juegos y actividades que se añaden regularmente, asegurando que siempre haya algo nuevo que descubrir en tu dia a dia junto a Monika.  
 ![Portada](https://github.com/Slytharbez/Monika-After-Story-ES/blob/main/Recursos/Readme/Portada.png)
