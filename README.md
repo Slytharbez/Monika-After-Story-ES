@@ -8,7 +8,7 @@ El [mod oficial](https://github.com/Monika-After-Story/MonikaModDev) está en co
 ![Portada](https://github.com/Slytharbez/Monika-After-Story-ES/blob/main/Recursos/Readme/Portada.png)
 
 # Instalación:
-Puedes revisar la [guía de instalación](https://github.com/Slytharbez/Monika-After-Story-ES/wiki/Instalaci%C3%B3n-del-MAS) que se encuentra en la wiki para saber como instalar MAS correctamente, cualquier duda o consulta la puedes dejar en los comentarios del video asi como en el apartado de discusiones de este repositorio.
+Puedes revisar la [guía de instalación](https://github.com/Slytharbez/Monika-After-Story-ES/wiki/Instalaci%C3%B3n-del-MAS) que se encuentra en la wiki para saber como instalar MAS correctamente, cualquier duda o consulta la puedes dejar en el [apartado de discusiones](https://github.com/Slytharbez/Monika-After-Story-ES/discussions) de este repositorio.
 
 # Ayuda y aportes
 Si quieres agregar y aportar nuevas cosas o encuentras algun tipo de error, bug o cualquier otro problema, puedes dejar un comentario en el apartado de [discusiones](https://github.com/Slytharbez/Monika-After-Story-ES/discussions) del repositorio para ayudarte a solucionar los inconvenientes. Asimismo te invito a revisar la sección de [preguntas frecuentes](https://github.com/Slytharbez/Monika-After-Story-ES/wiki/Preguntas-frecuentes) para aclarar cualquier duda o consulta que puedas tener del mod y no olvides pasar por nuestro [discord](https://discord.gg/vjEUK2CXjX) donde serás bien recibido por la comunidad.
