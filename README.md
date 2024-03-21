@@ -8,15 +8,15 @@ El [mod oficial](https://github.com/Monika-After-Story/MonikaModDev) está en co
 ![Portada](https://github.com/Slytharbez/Monika-After-Story-ES/blob/main/Recursos/Readme/Portada.png)
 
 # Instalación:
-Puedes mirar "este video" para saber como instalar correctamente el MAS o revisar la [guía de instalación](https://github.com/Slytharbez/Monika-After-Story-ES/wiki/Instalaci%C3%B3n-del-MAS) que se encuentra en la wiki, cualquier duda o consulta la puedes dejar en los comentarios del video asi como en el apartado de discusiones de este repositorio.
+Puedes mirar revisar la [guía de instalación](https://github.com/Slytharbez/Monika-After-Story-ES/wiki/Instalaci%C3%B3n-del-MAS) que se encuentra en la wiki para saber como instalar MAS correctamente, cualquier duda o consulta la puedes dejar en los comentarios del video asi como en el apartado de discusiones de este repositorio.
 
 # Ayuda y aportes
-Si quieres agregar y aportar nuevas cosas o encuentras algun tipo de error, bug o cualquier otro problema, puedes dejar un comentario en el apartado de discusiones del repositorio para ayudarte a solucionar los inconvenientes. Asimismo te invito a revisar la sección de "preguntas frecuentes" para aclarar cualquiera duda o consulta que puedas tener del mod y no olvides pasar por nuestro [discord!]() donde seras bien recibido por la comunidad y sus desarrolladores.
+Si quieres agregar y aportar nuevas cosas o encuentras algun tipo de error, bug o cualquier otro problema, puedes dejar un comentario en el apartado de [discusiones](https://github.com/Slytharbez/Monika-After-Story-ES/discussions) del repositorio para ayudarte a solucionar los inconvenientes. Asimismo te invito a revisar la sección de [preguntas frecuentes](https://github.com/Slytharbez/Monika-After-Story-ES/wiki/Preguntas-frecuentes) para aclarar cualquier duda o consulta que puedas tener del mod y no olvides pasar por nuestro [discord](https://discord.gg/vjEUK2CXjX) donde serás bien recibido por la comunidad.
 
 # Licencia
-Los desarrolladores de [Monika after story](https://www.monikaafterstory.com/) se reservan el derecho de modificar, suprimir, agregar nuevas acciones y mecánicas, así como eventos y juegos dentro del mod.
-El equipo de traducción no está afiliado a [Team Salvato](https://teamsalvato.com/) tampoco se busca lucrar ni excluir al modificar el texto, diálogos y cualquier otro tipo de mecanismo que se encuentre en su idioma original, tampoco se es propietario de alguna clase de contenido referente a [Doki Doki Literature Club!](https://www.ddlc.moe).  para más información revisar las [pautas de propiedad intelectual](https://github.com/Monika-After-Story/MonikaModDev/wiki/License-and-Team-Salvato-Guidelines) del [juego original.](https://ddlc.moe/)  
+Los desarrolladores de [Monika After Story](https://www.monikaafterstory.com/) se reservan el derecho de modificar, suprimir, agregar nuevas acciones y mecánicas, así como eventos y juegos dentro del mod.
+El equipo de traducción no está afiliado a [Team Salvato](https://teamsalvato.com/) tampoco se busca lucrar ni excluir al modificar el texto, diálogos y cualquier otro tipo de mecanismo que se encuentre en su idioma original, tampoco se es propietario de alguna clase de contenido referente a [Doki Doki Literature Club!](https://www.ddlc.moe) para más información revisar las [pautas de propiedad intelectual](https://github.com/Monika-After-Story/MonikaModDev/wiki/License-and-Team-Salvato-Guidelines) del [juego original.](https://ddlc.moe/)  
 
 ![Log](https://github.com/Slytharbez/Monika-After-Story-ES/blob/main/Recursos/Readme/Log.png)
 
-Hecho por el equipo de [traducción](https://github.com/Slytharbez/Monika-After-Story-ES/graphs/contributors) con cariño, por y para los fans de la obra en español, y recuerda: ¡Solo Monika! :) <3.
+Hecho por [The Encoders Club](https://github.com/Slytharbez/Monika-After-Story-ES/graphs/contributors) con cariño, por y para los fans de la obra en español, y recuerda: ¡Solo Monika! :) <3.
