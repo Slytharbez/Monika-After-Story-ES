@@ -19,4 +19,4 @@ El equipo de traducción no está afiliado a [Team Salvato](https://teamsalvato.
 
 ![Log](https://github.com/Slytharbez/Monika-After-Story-ES/blob/main/Recursos/Readme/Log.png)
 
-Hecho por [The Encoders Club](https://github.com/Slytharbez/Monika-After-Story-ES/graphs/contributors) con cariño, por y para los fans de la obra en español, y recuerda: ¡Solo Monika! :) <3.
+Hecho por [The Encoders Club](https://github.com/Slytharbez/Monika-After-Story-ES/graphs/contributors) con cariño, por y para los fans de la obra en español, y recuerda: ¡Solo Monika! :) <3
