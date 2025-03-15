@@ -41,10 +41,10 @@ Un **"Juego de fans"** es cualquier obra de fans que sea un videojuego. Esto inc
 
 * 💰 **Los juegos de fans deben ser completamente gratuitos y no pueden venderse.** Se permiten enlaces de donación en la página web donde se aloje el juego, pero no dentro del juego mismo ni en mensajes que fomenten las donaciones dentro del juego.  
 
-* 📢 **Los juegos de fans deben mostrar un aviso al iniciarse**, indicando que no están afiliados a *Team Salvato* y que el jugador debe haber completado el juego original antes de jugar. Además, deben proporcionar un enlace de descarga al juego original: [http://ddlc.moe](http://ddlc.moe)  
+* 📢 **Los juegos de fans deben mostrar un aviso al iniciarse**, indicando que no están afiliados a *Team Salvato* y que el jugador debe haber completado el juego original antes de jugar. Además, deben proporcionar un enlace de descarga al juego original: [http://ddlc.moe](http://ddlc.moe).  
 
 ### 📖 Ejemplo de aviso:  
-**Este es un juego de fans de Doki Doki Literature Club que no está afiliado a Team Salvato. Está diseñado para jugarse solo después de haber completado el juego oficial. Puedes descargar Doki Doki Literature Club en: [http://ddlc.moe](http://ddlc.moe).**  
+**Este es un juego de fans de Doki Doki Literature Club que no está afiliado a Team Salvato. Está diseñado para jugarse solo después de haber completado el juego oficial. Puedes descargar Doki Doki Literature Club [aquí](http://ddlc.moe).**  
  
 
 ## 🛠️ Mods  
@@ -74,7 +74,7 @@ En general, el **equipo oficial** son muy abiertos a que los activos y el códig
 
 🔗 **Sigue las [Directrices de Propiedad Intelectual de Team Salvato](http://teamsalvato.com/ip-guidelines/)** para cualquier proyecto que incluya el trabajo del **equipo oficial**.  
 
-💖 **Dale crédito a *Monika After Story*** por cualquier recurso que utilices y enlaza de vuelta al proyecto oficial en [http://www.monikaafterstory.com/](http://www.monikaafterstory.com/). No reclames como propio el trabajo de otras personas y, cuando sea necesario, acredita individualmente a los creadores de los recursos, como los assets de arte utilizados.  
+💖 **Dale crédito a *Monika After Story*** por cualquier recurso que utilices y enlaza de vuelta al [proyecto oficial](http://www.monikaafterstory.com/). No reclames como propio el trabajo de otras personas y, cuando sea necesario, acredita individualmente a los creadores de los recursos, como los assets de arte utilizados.  
 
 📜 A continuación, se detallan más restricciones específicas:  
 
@@ -128,4 +128,4 @@ El equipo de traducción no está afiliado a [Team Salvato](https://teamsalvato.
 
 ![Log](https://github.com/Slytharbez/Monika-After-Story-ES/blob/main/Recursos/Readme/Log.png)
 
-Hecho por [The Encoders Club](https://github.com/Slytharbez/Monika-After-Story-ES/graphs/contributors) con cariño, por y para los fans de la obra en español, y recuerda: ¡Solo Monika! :) <3
+Hecho por [The Encoders Club](https://github.com/Slytharbez/Monika-After-Story-ES/graphs/contributors) con cariño, por y para los fans de la obra en español, y recuerda: ¡Solo Monika! :) 💚
