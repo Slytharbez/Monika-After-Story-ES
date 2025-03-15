@@ -43,8 +43,8 @@ Un **"Juego de fans"** es cualquier obra de fans que sea un videojuego. Esto inc
 
 * 📢 **Los juegos de fans deben mostrar un aviso al iniciarse**, indicando que no están afiliados a *Team Salvato* y que el jugador debe haber completado el juego original antes de jugar. Además, deben proporcionar un enlace de descarga al juego original: [http://ddlc.moe](http://ddlc.moe)  
 
-Ejemplo de aviso:  
-*Este es un juego de fans de Doki Doki Literature Club que no está afiliado a Team Salvato. Está diseñado para jugarse solo después de haber completado el juego oficial. Puedes descargar Doki Doki Literature Club en: [http://ddlc.moe](http://ddlc.moe).*  
+### 📖 Ejemplo de aviso:  
+**Este es un juego de fans de Doki Doki Literature Club que no está afiliado a Team Salvato. Está diseñado para jugarse solo después de haber completado el juego oficial. Puedes descargar Doki Doki Literature Club en: [http://ddlc.moe](http://ddlc.moe).**  
  
 
 ## 🛠️ Mods  
