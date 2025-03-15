@@ -62,21 +62,19 @@ Las directrices mencionadas para juegos de fans también se aplican a los **mods
 
 * ✉️ También puedes escribirnos si deseas solicitar una excepción personal, un cambio en las directrices o reportar errores en esta página.  
 
-* 💖 **Gracias por tomarte el tiempo de leer estas directrices.** No se busca restringir la creatividad de los artistas, sino permitirles crear contenido inspirado en DDLC de manera respetuosa. Se valora la libertad artística y nos encanta ver cómo los fans disfrutan DDLC de diferentes maneras. 🎨🎶
+* 💖 **Gracias por tomarte el tiempo de leer estas directrices.** No se busca restringir la creatividad de los artistas, sino permitirles crear contenido inspirado en DDLC de manera respetuosa. Se valora la libertad artística y nos encanta ver cómo los fans disfrutan DDLC de diferentes maneras. 🎨
 
-## 🌟 Directrices Específicas para *Monika After Story*  
+## 🌟 Directrices específicas para *Monika After Story*  
 
 En general, el **equipo oficial** son muy abiertos a que los activos y el código de *Monika After Story* sean utilizados en otros proyectos. Sin embargo, existen algunas restricciones.  
 
-🚫 **No está permitido utilizar los activos o el código de *Monika After Story* para crear un mod o fork que funcione como reemplazo de *Monika After Story***. Si deseas agregar nuevas funciones o contenido al juego, te animamos a contribuir al proyecto original. El **equipo oifical** son muy receptivos a sugerencias y contribuciones, por lo que es probable que cualquier mejora sea bienvenida.  
+* 🚫 **No está permitido utilizar los activos o el código de *Monika After Story* para crear un mod o fork que funcione como reemplazo de *Monika After Story***. Si deseas agregar nuevas funciones o contenido al juego, te animamos a contribuir al proyecto original. El **equipo oifical** son muy receptivos a sugerencias y contribuciones, por lo que es probable que cualquier mejora sea bienvenida.  
 
-📌 Si por alguna razón las nuevas funciones entran en conflicto con la dirección de *Monika After Story*, lo mejor es considerar desarrollar esos cambios en forma de un **submod**, que pueda añadirse al juego sin reemplazarlo.  
+* 📌 Si por alguna razón las nuevas funciones entran en conflicto con la dirección de *Monika After Story*, lo mejor es considerar desarrollar esos cambios en forma de un **submod**, que pueda añadirse al juego sin reemplazarlo.  
 
-🔗 **Sigue las [Directrices de Propiedad Intelectual de Team Salvato](http://teamsalvato.com/ip-guidelines/)** para cualquier proyecto que incluya el trabajo del **equipo oficial**.  
+* 🔗 **Sigue las [Directrices de Propiedad Intelectual de Team Salvato](http://teamsalvato.com/ip-guidelines/)** para cualquier proyecto que incluya el trabajo del **equipo oficial**.  
 
-💖 **Dale crédito a *Monika After Story*** por cualquier recurso que utilices y enlaza de vuelta al [proyecto oficial](http://www.monikaafterstory.com/). No reclames como propio el trabajo de otras personas y, cuando sea necesario, acredita individualmente a los creadores de los recursos, como los assets de arte utilizados.  
-
-📜 A continuación, se detallan más restricciones específicas:  
+* 💖 **Dale crédito a *Monika After Story*** por cualquier recurso que utilices y enlaza de vuelta al [proyecto oficial](http://www.monikaafterstory.com/). No reclames como propio el trabajo de otras personas y, cuando sea necesario, acredita individualmente a los creadores de los recursos, como los assets de arte utilizados.  
 
 
 ## 🎨 Arte  
