@@ -50,7 +50,7 @@ Un **"Juego de fans"** es cualquier obra de fans que sea un videojuego. Esto inc
 Ejemplo de aviso:  
 🔹 *Este es un juego de fans de Doki Doki Literature Club que no está afiliado a Team Salvato. Está diseñado para jugarse solo después de haber completado el juego oficial. Puedes descargar Doki Doki Literature Club en: [http://ddlc.moe](http://ddlc.moe).*  
 
----  
+--  
 
 ## 🛠️ Mods  
 Las directrices mencionadas para juegos de fans también se aplican a los **mods** del juego oficial de DDLC.  
@@ -61,7 +61,7 @@ Las directrices mencionadas para juegos de fans también se aplican a los **mods
 
 📂 Normalmente, la mayoría de los mods solo requieren la sustitución del archivo `scripts.rpa`. Si el mod incluye nuevos gráficos, puede necesitar `images.rpa`. En estos casos, **debes distribuir únicamente los archivos modificados**, para que el usuario los instale en su copia del juego oficial.  
 
----  
+--  
 
 ## 📝 Todo lo demás  
 📌 Estas directrices no son exhaustivas. Si quieres crear contenido relacionado con DDLC que no esté cubierto aquí o tienes dudas sobre los detalles, **contáctanos para obtener aclaraciones.**  
@@ -84,7 +84,7 @@ En general, somos muy abiertos a que los activos y el código de *Monika After S
 
 📜 A continuación, se detallan más restricciones específicas:  
 
----  
+--  
 
 ## 🎨 Arte  
 ✔️ **Todo el arte de *Monika After Story* utilizado fuera del proyecto debe ser acreditado** a nosotros o al creador del arte en cuestión.  
@@ -97,7 +97,7 @@ En general, somos muy abiertos a que los activos y el código de *Monika After S
 
 🔹 **El arte de DDLC utilizado en *Monika After Story* no está sujeto a estas restricciones, pero sí a las [Directrices de IP de Team Salvato](http://teamsalvato.com/ip-guidelines/).**  
 
----  
+--  
 
 ## 🎵 Música  
 ✔️ **Toda la música de *Monika After Story* utilizada fuera del proyecto debe ser acreditada** a nosotros o al creador de la música en cuestión.  
@@ -108,7 +108,7 @@ En general, somos muy abiertos a que los activos y el código de *Monika After S
 
 🔹 **La música y los sonidos de DDLC usados en *Monika After Story* tampoco están sujetos a estas restricciones, pero sí a las [Directrices de IP de Team Salvato](http://teamsalvato.com/ip-guidelines/).**  
 
----  
+--  
 
 ## 💻 Código  
 ✔️ **Todo el código de *Monika After Story* utilizado fuera del proyecto debe ser acreditado** a nosotros.  
@@ -117,7 +117,7 @@ En general, somos muy abiertos a que los activos y el código de *Monika After S
 
 🔹 **Las bibliotecas y paquetes externos (como algunos de los ubicados en la carpeta `python-packages`) que **no** fueron creados por el equipo de *Monika After Story* no deben considerarse parte del código del proyecto y, por lo tanto, están exentos de estas restricciones.**  
 
----  
+--  
 
 ## 🔎 Resumen TL;DR  
 📌 **No somos dueños de DDLC, pero Team Salvato nos permite modificar su juego siempre y cuando:**  
@@ -127,9 +127,16 @@ En general, somos muy abiertos a que los activos y el código de *Monika After S
 
 ⚠️ **Estas reglas pueden cambiar en cualquier momento, aunque no esperamos que eso ocurra.**  
 
----  
+--  
 
 ## ⚠️ Aviso Legal  
 🛑 **EL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN GARANTÍAS DE NINGÚN TIPO, EXPRESAS O IMPLÍCITAS, INCLUYENDO, ENTRE OTRAS, GARANTÍAS DE COMERCIABILIDAD, ADECUACIÓN PARA UN PROPÓSITO PARTICULAR Y NO INFRACCIÓN.**  
 
 📌 **EN NINGÚN CASO LOS AUTORES SERÁN RESPONSABLES POR CUALQUIER RECLAMACIÓN, DAÑO O OTRA RESPONSABILIDAD, YA SEA EN UNA ACCIÓN CONTRACTUAL, AGRAVIO O DE OTRO TIPO, DERIVADA DE O RELACIONADA CON EL SOFTWARE O SU USO.**
+
+Los desarrolladores de [Monika After Story](https://www.monikaafterstory.com/) se reservan el derecho de modificar, suprimir, agregar nuevas acciones y mecánicas, así como eventos y juegos dentro del mod.
+El equipo de traducción no está afiliado a [Team Salvato](https://teamsalvato.com/) tampoco se busca lucrar ni excluir al modificar el texto, diálogos y cualquier otro tipo de mecanismo que se encuentre en su idioma original, tampoco se es propietario de alguna clase de contenido referente a [Doki Doki Literature Club!](https://www.ddlc.moe) para más información revisar las [pautas de propiedad intelectual](https://github.com/Monika-After-Story/MonikaModDev/wiki/License-and-Team-Salvato-Guidelines) del [juego original](https://ddlc.moe/).  
+
+![Log](https://github.com/Slytharbez/Monika-After-Story-ES/blob/main/Recursos/Readme/Log.png)
+
+Hecho por [The Encoders Club](https://github.com/Slytharbez/Monika-After-Story-ES/graphs/contributors) con cariño, por y para los fans de la obra en español, y recuerda: ¡Solo Monika! :) <3
