@@ -60,7 +60,7 @@ Las directrices mencionadas para juegos de fans también se aplican a los **mods
 ## 📝 Todo lo demás  
 * 📌 Estas directrices no son exhaustivas. Si quieres crear contenido relacionado con DDLC que no esté cubierto aquí o tienes dudas sobre los detalles, **contáctanos para obtener aclaraciones.**  
 
-* ✉️ También puedes escribirnos si deseas solicitar una excepción personal, un cambio en las directrices o reportar errores en esta página.  
+* ✉️ También puedes escribirle al **equipo oficial** si deseas solicitar una excepción personal, un cambio en las directrices o reportar errores en la página oficial.  
 
 * 💖 **Gracias por tomarte el tiempo de leer estas directrices.** No se busca restringir la creatividad de los artistas, sino permitirles crear contenido inspirado en DDLC de manera respetuosa. Se valora la libertad artística y nos encanta ver cómo los fans disfrutan DDLC de diferentes maneras. 🎨
 
