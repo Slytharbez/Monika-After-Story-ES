@@ -17,17 +17,15 @@ Las obras de fans deben estar relacionadas de alguna manera con el universo de D
 Las empresas o compañías interesadas en producir obras de fans de DDLC para la venta por cualquier medio que no sea el descrito anteriormente deben contactarse para obtener una licencia o permiso. 📞
 
 ## 🖼️ Obras de fans que incluyen activos oficiales de DDLC
-Algunos artistas eligen incluir activos creados por Team Salvato en sus obras de fans. Estos activos incluyen, pero no se limitan a, cualquier arte, música, escritura o código que haya sido incluido en el juego DDLC o en material de marketing/promoción relacionado con DDLC. Ejemplos de obras de fans en esta categoría incluyen juegos, sitios web, videos o música que contengan activos de DDLC.  
+Algunos artistas eligen incluir activos creados por Team Salvato en sus obras de fans. Estos activos incluyen, pero no se limitan a, cualquier arte, música, escritura o código que haya sido incluido en el juego DDLC o en material de marketing/promoción relacionado con DDLC. Ejemplos de obras de fans en esta categoría incluyen juegos, sitios web, videos o música que contengan activos de DDLC. 🖌️  
 
 * ⚠️ **Cualquier obra de fans que incluya activos oficiales de DDLC NO puede venderse bajo ninguna circunstancia, ya sea en línea o fuera de línea.** No se puede obtener ningún beneficio de estas obras, excepto en los casos que entren dentro del **Fair Use** (Uso Justo) según la Ley FAIR USE de los Estados Unidos de 2007. Por ejemplo, un video de reseña o comentario sobre el juego generalmente califica como **Fair Use**. Es responsabilidad del artista comprender el concepto de **Fair Use** y diseñar contenido que cumpla con estos criterios.  
 
 * 🚫 **Está prohibido subir o alojar directamente activos de DDLC**, salvo que formen parte de una obra de fans. Tampoco se puede obtener beneficio alguno de estas subidas.  
-
 * 🖥️ **No se pueden usar activos oficiales de DDLC para crear nuevos videojuegos.** La única excepción son los mods, que deben aplicarse al juego oficial de DDLC. Consulta la sección "Mods" para más detalles.  
 
-
 ## 🎮 Juegos de fans  
-Un **"Juego de fans"** es cualquier obra de fans que sea un videojuego. Esto incluye tanto juegos nuevos que **no** contengan activos oficiales de DDLC como modificaciones (mods) del juego original.  
+Un **"juego de fans"** es cualquier obra de fans que sea un videojuego. Esto incluye tanto juegos nuevos que **no** contengan activos oficiales de DDLC como modificaciones (mods) del juego original. 💻  
 
 * 🚫 **No está permitido redistribuir DDLC o juegos de fans en ninguna tienda de aplicaciones**, como Steam, Google Play Store, Apple App Store, Windows Store, GameJolt, itch.io u otras. No puedes portar DDLC ni ningún juego de fans a estas plataformas.  
 
@@ -41,14 +39,14 @@ Un **"Juego de fans"** es cualquier obra de fans que sea un videojuego. Esto inc
 
 * 💰 **Los juegos de fans deben ser completamente gratuitos y no pueden venderse.** Se permiten enlaces de donación en la página web donde se aloje el juego, pero no dentro del juego mismo ni en mensajes que fomenten las donaciones dentro del juego.  
 
-* 📢 **Los juegos de fans deben mostrar un aviso al iniciarse**, indicando que no están afiliados a *Team Salvato* y que el jugador debe haber completado el juego original antes de jugar. Además, deben proporcionar un enlace de descarga al juego original: [http://ddlc.moe](http://ddlc.moe).  
+* 📢 **Los juegos de fans deben mostrar un aviso al iniciarse**, indicando que no están afiliados a *Team Salvato* y que el jugador debe haber completado el juego original antes de jugar. Además, deben proporcionar un enlace de descarga al [juego original](http://ddlc.moe).  
 
 ### 📖 Ejemplo de aviso:  
-**Este es un juego de fans de Doki Doki Literature Club que no está afiliado a Team Salvato. Está diseñado para jugarse solo después de haber completado el juego oficial. Puedes descargar Doki Doki Literature Club [aquí](http://ddlc.moe).**  
+**Este es un juego de fans de Doki Doki Literature Club que no está afiliado a Team Salvato. Está diseñado para jugarse solo después de haber completado el juego oficial. Puedes descargar Doki Doki Literature Club [aquí](http://ddlc.moe).** 📥  
  
 
 ## 🛠️ Mods  
-Las directrices mencionadas para juegos de fans también se aplican a los **mods** del juego oficial de DDLC.  
+Las directrices mencionadas para juegos de fans también se aplican a los **mods** del juego oficial de DDLC. 📝  
 
 * ⚙️ Un **mod** es cualquier juego o proyecto que depende de modificaciones al juego original, como cambios en el código, arte, música, escritura u otros activos.  
 
@@ -66,7 +64,7 @@ Las directrices mencionadas para juegos de fans también se aplican a los **mods
 
 ## 🌟 Directrices específicas para *Monika After Story*  
 
-En general, el **equipo oficial** son muy abiertos a que los activos y el código de *Monika After Story* sean utilizados en otros proyectos. Sin embargo, existen algunas restricciones.  
+En general, el **equipo oficial** son muy abiertos a que los activos y el código de *Monika After Story* sean utilizados en otros proyectos. Sin embargo, existen algunas restricciones. 🤝 
 
 * 🚫 **No está permitido utilizar los activos o el código de *Monika After Story* para crear un mod o fork que funcione como reemplazo de *Monika After Story***. Si deseas agregar nuevas funciones o contenido al juego, te animamos a contribuir al proyecto original. El **equipo oifical** son muy receptivos a sugerencias y contribuciones, por lo que es probable que cualquier mejora sea bienvenida.  
 
@@ -104,8 +102,7 @@ En general, el **equipo oficial** son muy abiertos a que los activos y el códig
 
  * ✔️ **Las bibliotecas y paquetes externos (como algunos de los ubicados en la carpeta `python-packages`) que **no** fueron creados por el equipo de *Monika After Story* no deben considerarse parte del código del proyecto y, por lo tanto, están exentos de estas restricciones.** 
 
-* ❌ **El código de *Monika After Story* no puede ser distribuido o utilizado fuera del proyecto oficial sin el consentimiento expreso del equipo de *Monika After Story*.**  
-  
+* ❌ **El código de *Monika After Story* no puede ser distribuido o utilizado fuera del proyecto oficial sin el consentimiento expreso del equipo de *Monika After Story*.**    
   
 ## 🔎 Resumen TL;DR  
 📌 **El equipo oficial no son los dueños de DDLC, pero Team Salvato les permite modificar su juego siempre y cuando:**  
@@ -117,12 +114,12 @@ En general, el **equipo oficial** son muy abiertos a que los activos y el códig
   
 
 ## ⚠️ Aviso Legal  
-🛑 **EL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN GARANTÍAS DE NINGÚN TIPO, EXPRESAS O IMPLÍCITAS, INCLUYENDO, ENTRE OTRAS, GARANTÍAS DE COMERCIABILIDAD, ADECUACIÓN PARA UN PROPÓSITO PARTICULAR Y NO INFRACCIÓN.**  
+**EL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN GARANTÍAS DE NINGÚN TIPO, EXPRESAS O IMPLÍCITAS, INCLUYENDO, ENTRE OTRAS, GARANTÍAS DE COMERCIABILIDAD, ADECUACIÓN PARA UN PROPÓSITO PARTICULAR Y NO INFRACCIÓN.** 🛑   
 
-📌 **EN NINGÚN CASO LOS AUTORES SERÁN RESPONSABLES POR CUALQUIER RECLAMACIÓN, DAÑO O OTRA RESPONSABILIDAD, YA SEA EN UNA ACCIÓN CONTRACTUAL, AGRAVIO O DE OTRO TIPO, DERIVADA DE O RELACIONADA CON EL SOFTWARE O SU USO.**
+**EN NINGÚN CASO LOS AUTORES SERÁN RESPONSABLES POR CUALQUIER RECLAMACIÓN, DAÑO O OTRA RESPONSABILIDAD, YA SEA EN UNA ACCIÓN CONTRACTUAL, AGRAVIO O DE OTRO TIPO, DERIVADA DE O RELACIONADA CON EL SOFTWARE O SU USO.** 📌 
 
-Los desarrolladores de [Monika After Story](https://www.monikaafterstory.com/) se reservan el derecho de modificar, suprimir, agregar nuevas acciones y mecánicas, así como eventos y juegos dentro del mod.
-El equipo de traducción no está afiliado a [Team Salvato](https://teamsalvato.com/) tampoco se busca lucrar ni excluir al modificar el texto, diálogos y cualquier otro tipo de mecanismo que se encuentre en su idioma original, tampoco se es propietario de alguna clase de contenido referente a [Doki Doki Literature Club!](https://www.ddlc.moe) para más información revisar las [pautas de propiedad intelectual](https://github.com/Monika-After-Story/MonikaModDev/wiki/License-and-Team-Salvato-Guidelines) del [juego original](https://ddlc.moe/).  
+Los desarrolladores de [Monika After Story](https://www.monikaafterstory.com/) se reservan el derecho de modificar, suprimir, agregar nuevas acciones y mecánicas, así como eventos y juegos dentro del mod. 📑  
+El equipo de traducción no está afiliado a [Team Salvato](https://teamsalvato.com/) tampoco se busca lucrar ni excluir al modificar el texto, diálogos y cualquier otro tipo de mecanismo que se encuentre en su idioma original, tampoco se es propietario de alguna clase de contenido referente a [Doki Doki Literature Club!](https://www.ddlc.moe) para más información revisar las [pautas de propiedad intelectual](https://github.com/Monika-After-Story/MonikaModDev/wiki/License-and-Team-Salvato-Guidelines) del [juego original](https://ddlc.moe/). 🧠  
 
 ![Log](https://github.com/Slytharbez/Monika-After-Story-ES/blob/main/Recursos/Readme/Log.png)
 
