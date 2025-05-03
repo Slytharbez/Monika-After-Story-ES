@@ -15,10 +15,10 @@ Monika After Story en Español es un proyecto **no oficial** que adapta completa
 * 👩‍💻 Actualizaciones frecuentes con respecto al proyecto original y soporte activo en español.
 * 📌 La capacidad de tener una comunidad que colabore, sugiera mejoras y cree contenido adicional.
 
-MAS-ES es ideal si quieres vivir la experiencia completa de Monika After Story sin preocuparte por la barrera del idioma y con todos los recursos organizados y accesibles.
+MAS-ES es ideal si quieres vivir la experiencia completa de Monika After Story sin preocuparte por la barrera del idioma y con todos los recursos organizados y accesibles. 🎉
 
 # 📥 Instalación
-Puedes revisar la [guía de instalación](https://github.com/Slytharbez/Monika-After-Story-ES/wiki/%F0%9F%93%A5-Instalaci%C3%B3n-de-MAS) que se encuentra en nuestra wiki para saber como instalar MAS correctamente, cualquier duda o consulta la puedes dejar en el [apartado de discusiones](https://github.com/Slytharbez/Monika-After-Story-ES/discussions) de este repositorio.
+Puedes revisar la [guía de instalación](https://github.com/Slytharbez/Monika-After-Story-ES/wiki/%F0%9F%93%A5-Instalaci%C3%B3n-de-MAS) que se encuentra en nuestra wiki para saber como instalar MAS correctamente, cualquier duda o consulta la puedes dejar en el [apartado de discusiones](https://github.com/Slytharbez/Monika-After-Story-ES/discussions) de este repositorio. 📋
 
 # 🔧 Estado del proyecto
 * ✅ Traducción actualizada hasta la versión más reciente del mod original.
@@ -28,7 +28,7 @@ Puedes revisar la [guía de instalación](https://github.com/Slytharbez/Monika-A
 * 🛠️ Revisiones continuas para corregir errores y mantener la traducción o cualquier otro añadido en óptimas condiciones.
 
 # 🤝 Ayuda y aportes
-Si quieres agregar y aportar nuevas cosas o encuentras algun tipo de error, bug o cualquier otro problema que tenga que ver con la traducción, puedes dejar un comentario en el apartado de [discusiones](https://github.com/Slytharbez/Monika-After-Story-ES/discussions) del repositorio para ayudarte a solucionar los inconvenientes. Asimismo te invito a revisar la sección de [preguntas frecuentes](https://github.com/Slytharbez/Monika-After-Story-ES/wiki/Preguntas-frecuentes) para aclarar cualquier duda o consulta que puedas tener del mod.
+Si quieres agregar y aportar nuevas cosas o encuentras algún tipo de error, bug o cualquier otro problema que tenga que ver con la traducción, puedes dejar un comentario en el apartado de [discusiones](https://github.com/Slytharbez/Monika-After-Story-ES/discussions) del repositorio, de esra manera podremos ayudarte a solucionar los inconvenientes. Asimismo te invito a revisar la sección de [preguntas frecuentes](https://github.com/Slytharbez/Monika-After-Story-ES/wiki/Preguntas-frecuentes) para aclarar cualquier duda o consulta que puedas tener del mod. 📁
 
 # 🌐 Enlaces útiles
 * 📺 [Canal de YouTube oficial](https://www.youtube.com/@TheEncodersClub)
