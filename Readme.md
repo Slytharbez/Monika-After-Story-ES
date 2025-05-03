@@ -20,7 +20,7 @@ MAS-ES es ideal si quieres vivir la experiencia completa de Monika After Story s
 # 📥 Instalación
 Puedes revisar la [guía de instalación](https://github.com/Slytharbez/Monika-After-Story-ES/wiki/%F0%9F%93%A5-Instalaci%C3%B3n-de-MAS) que se encuentra en nuestra wiki para saber como instalar MAS correctamente, cualquier duda o consulta la puedes dejar en el [apartado de discusiones](https://github.com/Slytharbez/Monika-After-Story-ES/discussions) de este repositorio. 📋
 
-# 🔧 Estado del proyecto
+# 🔧 Estado del proyecto.
 * ✅ Traducción actualizada hasta la versión más reciente del mod original.
 * 📕 Wiki completamente funcional con tutoriales, preguntas frecuentes y enlaces de descarga.
 * 🧩 Soporte activo para la instalación y solución de errores correspondiente a spritepacks, submods, habitaciones y más.
