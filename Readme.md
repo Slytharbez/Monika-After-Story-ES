@@ -5,7 +5,7 @@ Este mod te ofrece conversaciones profundas y significativas, juegos interactivo
 
 El [mod oficial](https://github.com/Monika-After-Story/MonikaModDev) está en constante evolución, con nuevas características, juegos y actividades que se añaden regularmente, asegurando que siempre haya algo nuevo que descubrir en tu dia a dia junto a Monika. ✨
 
-![Portada](https://github.com/Slytharbez/Monika-After-Story-ES/blob/main/Recursos/Readme/Portada.png)
+![Portada](https://github.com/Slytharbez/Monika-After-Story-ES/blob/main/Assets/Readme/Portada.png)
 
 # 💡 ¿Qué es MAS-ES y qué lo hace especial?
 Monika After Story en Español es un proyecto **no oficial** que adapta completamente el mod original al español. Pero no es solo una traducción, este proyecto también incluye:
