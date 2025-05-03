@@ -121,6 +121,6 @@ En general, el **equipo oficial** son muy abiertos a que los activos y el códig
 Los desarrolladores de [Monika After Story](https://www.monikaafterstory.com/) se reservan el derecho de modificar, suprimir, agregar nuevas acciones y mecánicas, así como eventos y juegos dentro del mod. 📑  
 El equipo de traducción no está afiliado a [Team Salvato](https://teamsalvato.com/) tampoco se busca lucrar ni excluir al modificar el texto, diálogos y cualquier otro tipo de mecanismo que se encuentre en su idioma original, tampoco se es propietario de alguna clase de contenido referente a [Doki Doki Literature Club!](https://www.ddlc.moe) para más información revisar las [pautas de propiedad intelectual](https://github.com/Monika-After-Story/MonikaModDev/wiki/License-and-Team-Salvato-Guidelines) del [juego original](https://ddlc.moe/). 🧠  
 
-![Log](https://github.com/Slytharbez/Monika-After-Story-ES/blob/main/Recursos/Readme/Log.png)
+![Log](https://github.com/Slytharbez/Monika-After-Story-ES/blob/main/Assets/Readme/Log.png)
 
 Hecho por [The Encoders Club](https://github.com/Slytharbez/Monika-After-Story-ES/graphs/contributors) con cariño, por y para los fans de la obra en español, y recuerda: ¡Solo Monika! :) 💚
