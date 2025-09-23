@@ -211,7 +211,7 @@ init -1 python:
             
             
             self._text_checking = Text(
-                _("Comprobación de actualizaciones..."),
+                _("Comprobando actualizaciones..."),
                 font=gui.default_font,
                 size=gui.text_size,
                 color="#ffe6f4",
