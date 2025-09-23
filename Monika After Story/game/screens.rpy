@@ -2396,7 +2396,7 @@ screen updater:
         has side "t c b":
             spacing gui._scale(10)
 
-        label _("Updater")
+        label _("Actualizador")
 
         fixed:
             vbox:
