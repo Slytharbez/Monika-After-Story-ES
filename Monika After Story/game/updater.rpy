@@ -923,7 +923,7 @@ label update_now:
         python:
             no_update_dialog = (
                 "Error: No se ha podido mover la carpeta 'update/'. Por favor manualmente " +
-                "mover la carpeta de actualización de 'game/' a la base 'ddlc/' " +
+                "mueva la carpeta de actualización de 'game/' a la carpeta base 'ddlc/' " +
                 "e inténtelo de nuevo."
             )
         call screen dialog(message=no_update_dialog, ok_action=Return())
