@@ -14,7 +14,7 @@ python early:
     renpy.config.name = "Monika After Story"
 
 
-    renpy.config.version = "0.12.17"
+    renpy.config.version = "0.12.18"
 
 
     config.window_title = "Monika After Story   "
