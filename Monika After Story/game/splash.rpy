@@ -26,7 +26,7 @@ init python:
     _("¿Este juego no es apto para niños ni para los que se alteran fácilmente?"),
     _("sdfasdklfgsdfgsgoinrfoenlvbd"),
     _("null"),
-    _("He concedido a los niños al infierno."),
+    _("He enviado a los niños al infierno."),
     _("PM murió por esto."),
     _("Fue solo parcialmente tu culpa."),
     _("Este juego no es apto para niños ni para aquellos que se desmembren fácilmente.")
