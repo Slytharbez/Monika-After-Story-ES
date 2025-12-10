@@ -316,7 +316,7 @@ label mas_compliment_awesome_2:
             show monika 6dubsa
             pause 2.0
             show monika 1wubfsdld
-            m 1wubfsdld "Oh, lo siento [player]"
+            m 1wubfsdld "Oh, lo siento [player]."
             m 2lksdla "Estaba tratando de sentir tu abrazo desde aquí."
             m 2hub "Jajaja~"
         "... No me gustan los abrazos":
