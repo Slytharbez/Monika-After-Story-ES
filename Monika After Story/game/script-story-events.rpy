@@ -2131,12 +2131,12 @@ label mas_notification_windowreact:
                 m 1hua "¡Okey, [player]!"
                 m 2dsa "Solo dame un segundo para hacer una notificación.{w=0.5}.{w=0.5}.{w=0.5}{nw}"
                 $ mas_display_notif(m_name, ["¡Te amo, [player]!"], skip_checks=True)
-                m 1hub "There it is!"
+                m 1hub "¡Ahí está!"
             "No gracias":
 
                 m 2eka "De acuerdo, [player]."
 
-        m 3eua "Si quieres que te nortifique, dirígete a la pestaña 'Alertas' en el menú de ajustes y actívalas, junto con lo que te gustaría recibir."
+        m 3eua "Si quieres que te mande una notificación, dirígete a la pestaña 'Alertas' en el menú de ajustes y actívalas, junto con lo que te gustaría que te notificara."
 
         if renpy.windows:
             m 3rksdla "Además, dado que estás usando Windows... ahora sé cómo verificar cuál es tu ventana activa."
