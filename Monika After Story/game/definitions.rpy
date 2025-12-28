@@ -8290,10 +8290,10 @@ init -1 python in mas_randchat:
     SLIDER_MAP_DISP = {
         NEVER: "Nunca",
         RARELY: "Raramente",
-        OCCASIONALLY: "Ocasionalmente",
+        OCCASIONALLY: "Casualmente",
         LESS_OFTEN: "Menos frecuentemente",
         NORMAL: "Normalmente",
-        OFTEN: "Frecuentemente",
+        OFTEN: "Usualmente",
         VERY_OFTEN: "Muy Frecuentemente"
     }
 
