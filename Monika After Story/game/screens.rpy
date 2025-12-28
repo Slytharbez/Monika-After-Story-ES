@@ -1286,6 +1286,7 @@ screen load():
     use file_slots(_("Cargar"))
 
 init python:
+    config.translations["Page {}"] = "Página {}"
     def FileActionMod(name, page=None, **kwargs):
         if renpy.current_screen().screen_name[0] == "save":
             return Show(screen="dialog", message="No tiene sentido seguir guardando.\nNo te preocupes, no iré a ninguna parte.", ok_action=Hide("dialog"))
@@ -1336,7 +1337,7 @@ screen file_slots(title):
 
                         add FileScreenshot(slot) xalign 0.5
 
-                        text FileTime(slot, format=_("{#file_time}%A, %B %d %Y, %H:%M"), empty=_("empty slot")):
+                        text FileTime(slot, format=_("{#file_time}%A, %B %d %Y, %H:%M"), empty=_("Ranura vacía")):
                             style "slot_time_text"
 
                         text FileSaveName(slot):
