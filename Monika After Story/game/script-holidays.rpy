@@ -6042,7 +6042,7 @@ init 20 python:
  Si nos vamos de fiesta o nos quedamos en casa, ¡tú decides!
 
  Lo celebraremos juntos a nuestra manera.
- Te amo, mi [jugador], y feliz cumpleaños.
+ Te amo, mi [player], y feliz cumpleaños.
 
  Siempre tuya,
  Monika
