@@ -1852,11 +1852,12 @@ screen notif_settings():
         hbox:
             style_prefix "generic_fancy_check"
             box_wrap True
-            spacing 25
-
-
-            for item in persistent._mas_windowreacts_notif_filters:
-                if item != "Notificaciones" or persistent._mas_windowreacts_windowreacts_enabled:
+            if item != "Notificaciones" or persistent._mas_windowreacts_windowreacts_enabled:
+                $ button_label = item
+                if item == "Topic Alerts":
+                    $ button_label = "Alertas temáticas"
+                elif item == "Window Reactions":
+                    $ button_label = "Reacciones de Ventana"
                     textbutton _(item):
                         action ToggleDict(persistent._mas_windowreacts_notif_filters, item)
                         selected persistent._mas_windowreacts_notif_filters.get(item)
