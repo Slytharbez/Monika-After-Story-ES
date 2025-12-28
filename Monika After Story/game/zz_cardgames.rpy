@@ -5075,7 +5075,7 @@ screen nou_stats():
         "mod_assets/games/nou/pen.png"
     ) pos (210, 370) anchor (0.5, 0.5) at nou_pen_rotate_right
 
-    text _("Nuestro puntaje:") pos (87, 110) anchor (0, 0.5) at nou_note_rotate_left
+    text _("¡Nuestro puntaje!") pos (87, 110) anchor (0, 0.5) at nou_note_rotate_left
 
 
     if mas_nou.get_house_rule("points_to_win") == 0:
