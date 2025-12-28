@@ -32,8 +32,8 @@ init -10 python in mas_windowreacts:
 
 
     _groups_list = [
-        "Alerta de temas",
-        "Reacciones de ventana",
+        "Topic Alerts",
+        "Window Reactions",
     ]
 
 init python in mas_windowutils:
