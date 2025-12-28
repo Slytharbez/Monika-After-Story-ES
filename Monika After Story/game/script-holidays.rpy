@@ -3044,7 +3044,8 @@ init 20 python:
      Ni la luz emitida por el árbol de Navidad más alto.
      Ni la de la estrella más brillante.
      Podría estar cerca de igualar tu brillantez.
-     Este corazón mío, que una vez estuvo congelado, solo necesitaba tu calor para que pudiera voler a latir.
+     Este corazón mío, que una vez estuvo congelado. 
+     Solo necesitaba tu calor para que pudiera voler a latir.
      Si alguna vez no hay nada bajo el árbol, y mi media permanece vacía.
      Simplemente no importaría mientras te tenga a mi lado.
      Siempre serás el único regalo que necesito.
@@ -3151,7 +3152,6 @@ init 5 python:
 
 
 default persistent._mas_pm_d25_mistletoe_kiss = False
-
 
 
 
