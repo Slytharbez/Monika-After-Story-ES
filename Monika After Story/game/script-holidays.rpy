@@ -4779,6 +4779,8 @@ label mas_nye_monika_nye_dress_intro:
         $ curr_year = curr_year - 1
         $ curr_date = datetime.date(curr_year, 12, 31)
 
+    $ next_year = curr_year + 1
+
     if mas_SELisUnlocked(mas_clothes_dress_newyears):
         m 3hub "Hey [player], ¡¿puedes creer que es Año Nuevo otra vez?!"
         m 1tuu "Creo que es el momento de desempolvar uno de mis atuendos favoritos.{w=0.5}.{w=0.5}.{w=0.5}{nw}"
@@ -4787,7 +4789,7 @@ label mas_nye_monika_nye_dress_intro:
 
         m 3hub "Listo, ¡me encanta este vestido! {w=0.2}{nw}"
         extend 3eua "Siempre es bueno arreglarse de vez en cuando."
-        m 1hub "¡Ahora vamos a pasar un buen rato celebrando el final del [curr_year] y el comienzo del [curr_year+1]!"
+        m 1hub "¡Ahora vamos a pasar un buen rato celebrando el final del [curr_year] y el comienzo del [next_year]!"
     else:
 
         m 3hub "Hey [player], tengo algo reservado para ti este año~"
