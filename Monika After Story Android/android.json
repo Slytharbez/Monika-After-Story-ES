@@ -1,0 +1,26 @@
+{
+    "expansion": false,
+    "google_play_key": null,
+    "google_play_salt": null,
+    "heap_size": "3",
+    "icon_name": "Monika After Story",
+    "include_pil": false,
+    "include_sqlite": false,
+    "layout": null,
+    "name": "Monika After Story",
+    "numeric_version": 1,
+    "orientation": "sensorLandscape",
+    "package": "com.theencodersclub.mas",
+    "permissions": [
+        "VIBRATE",
+        "INTERNET",
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_EXTERNAL_STORAGE"
+    ],
+    "source": false,
+    "store": "none",
+    "update_always": true,
+    "update_icons": true,
+    "update_keystores": true,
+    "version": "0.12.18"
+}
