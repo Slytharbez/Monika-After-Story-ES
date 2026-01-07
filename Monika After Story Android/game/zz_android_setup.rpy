@@ -1,3 +1,24 @@
+python early:
+    import os
+    
+    """
+    [ANDROID] FORCE SAVE PATH - EARLY INIT
+    Executes before ANY init block to override Ren'Py's default save location detection.
+    This ensures config.savedir is set to our custom "Backpack" path immediately.
+    """
+    # Robust Android detection for early init context
+    is_android = renpy.android or "ANDROID_ARGUMENT" in os.environ or "ANDROID_PRIVATE" in os.environ
+    
+    if is_android:
+        # Force the path explicitly
+        config.savedir = "/storage/emulated/0/Monika After Story/game/saves"
+        
+        # Ensure it exists right now (aggressive creation)
+        try:
+            if not os.path.exists(config.savedir):
+                os.makedirs(config.savedir)
+        except:
+            pass
 
 init -999 python:
     import os

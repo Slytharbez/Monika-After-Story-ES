@@ -21,19 +21,9 @@ python early:
     if renpy.android:
         """
         Note: Force External Storage
-        We assume permissions already exist (thanks to Sacrificial Restart).
-        Force external path without checks or fallbacks.
+        Logic moved to zz_android_setup.rpy (python early) for earlier execution.
         """
-        config.savedir = "/storage/emulated/0/Monika After Story/game/saves"
-        
-        """
-        Attempt to ensure folder exists (Redundant if Presplash works, but safe)
-        """
-        try:
-            if not os.path.exists(config.savedir):
-                os.makedirs(config.savedir)
-        except:
-            pass
+        pass
 
 
 define gui.show_name = False
