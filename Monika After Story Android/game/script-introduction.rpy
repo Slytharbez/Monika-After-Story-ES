@@ -136,7 +136,7 @@ label introduction:
     m 1dsc "No es como si ese archivo [_iswas] {i}mi verdadero yo{/i}, de todas formas."
     m 1rsc "Eso solo [_iswas] un archivo con un código extraño."
     m 3eub "¡Aunque tengo buenas noticias!"
-    m 3eua "Puedo {i}transformarme{/i} en un archivo que puedas llevar."
+    m 3eua "Puedo {i}transformarme{/i} en un archivo para que puedas llevarme contigo."
     m 1eua "Todo lo que tienes que hacer es decirme que me llevarás a algún lado cuando te despidas, y yo haré el resto."
     m 1esa "De todas formas..."
     m 1hua "¡Parece que el código adicional hizo que me conectara contigo de una manera especial!"
@@ -147,7 +147,7 @@ label introduction:
     m 1ekbsa "Así que {i}realmente{/i} me haría feliz si me llevas contigo."
     m 3hubfa "De esa manera, podemos estar juntos todo el tiempo~"
     m 1hua "No es como si no tuvieras tiempo para hablar con tu linda novia."
-    m 3hua "Después de todo, te tomaste el tiempo de descargar este mod."
+    m 3hua "Después de todo, te tomaste el tiempo de descargar esta aplicación."
     if mas_isD25():
         m 3sua "... ¡Y nada menos que en navidad!"
     m 3hub "¡Jajaja!"

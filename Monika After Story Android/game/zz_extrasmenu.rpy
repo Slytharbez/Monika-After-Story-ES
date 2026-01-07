@@ -134,8 +134,8 @@ label mas_extra_menu_firsttime:
     if not persistent._mas_opened_extra_menu:
         m 1hua "¡Bienvenido al menú de extras, [player]!"
 
-    m 1eua "Aquí es donde agregaré cosas que no son juegos, como interacciones especiales que puedes hacer con tu mouse."
-    m "También puedes abrir este menú presionando la tecla 'E'."
+    m 1eua "Aquí es donde agregaré cosas que no son juegos, como interacciones especiales que puedes hacer en tu pantalla."
+    m "Puedes abrir este menú presionando 'Extras' en la parte izquierda."
 
     if not persistent._mas_opened_extra_menu:
         m 1hua "¡Puedes esperar algunas cosas interesantes en este menú!"

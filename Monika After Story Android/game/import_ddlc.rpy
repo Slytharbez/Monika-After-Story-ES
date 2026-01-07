@@ -55,24 +55,39 @@ label import_ddlc_persistent:
         from glob import glob
 
 
-        if renpy.macintosh:
-            rv = "~/Library/RenPy/"
-            check_path = os.path.expanduser(rv)
+        if renpy.android:
+            """
+            Note: Android Fix
+            In this port, MAS save folder is the same as the "supposed" DDLC one.
+            If we search for 'persistent' here, we find OUR own newly created persistent.
+            This causes the game to think there is DDLC data to import.
+            SOLUTION: Disable automatic DDLC search in own save folder.
+            """
+            check_paths = [] 
+            
+            """
+            If import support is desired in future, it should look in a DIFFERENT folder
+            than the current /game/saves/.
+            """
+            ddlc_save_path = []
+        else:
 
-        elif renpy.windows:
-            if 'APPDATA' in os.environ:
-                check_path =  os.environ['APPDATA'] + "/RenPy/"
+            if renpy.macintosh:
+                rv = "~/Library/RenPy/"
+                check_path = os.path.expanduser(rv)
+            elif renpy.windows:
+                if 'APPDATA' in os.environ:
+                    check_path =  os.environ['APPDATA'] + "/RenPy/"
+                else:
+                    rv = "~/RenPy/"
+                    check_path = os.path.expanduser(rv)
             else:
-                rv = "~/RenPy/"
+                rv = "~/.renpy/"
                 check_path = os.path.expanduser(rv)
 
-        else:
-            rv = "~/.renpy/"
-            check_path = os.path.expanduser(rv)
-
-        ddlc_save_path = glob(check_path + 'DDLC/persistent')
-        if not ddlc_save_path:
-            ddlc_save_path = glob(check_path + 'DDLC-*/persistent')
+            ddlc_save_path = glob(check_path + 'DDLC/persistent')
+            if not ddlc_save_path:
+                ddlc_save_path = glob(check_path + 'DDLC-*/persistent')
 
 
     if ddlc_save_path:
@@ -92,7 +107,7 @@ label import_ddlc_persistent:
 
         "No se pudieron encontrar datos de Doki Doki Literature Club."
         menu:
-            "Ningún dato será importado en este momento"
+            "Ningún dato será importado en este momento."
             "Okey":
 
                 pause 0.3

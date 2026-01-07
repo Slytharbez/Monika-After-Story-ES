@@ -8,6 +8,34 @@
 
 
 
+
+python early:
+    import os
+    """
+    Note: Android Fix
+    Prevent Ren'Py from creating auto-saves (_reload-...) when app pauses or quits.
+    This keeps the save folder clean.
+    """
+    config.save_on_mobile_background = False
+    
+    if renpy.android:
+        """
+        Note: Force External Storage
+        We assume permissions already exist (thanks to Sacrificial Restart).
+        Force external path without checks or fallbacks.
+        """
+        config.savedir = "/storage/emulated/0/Monika After Story/game/saves"
+        
+        """
+        Attempt to ensure folder exists (Redundant if Presplash works, but safe)
+        """
+        try:
+            if not os.path.exists(config.savedir):
+                os.makedirs(config.savedir)
+        except:
+            pass
+
+
 define gui.show_name = False
 
 
@@ -21,7 +49,7 @@ define gui.about = _("")
 
 
 define build.name = "Monika_After_Story"
-
+define config.window_icon = None
 
 
 
@@ -168,4 +196,16 @@ init python:
     build.documentation('*.md')
 
     build.include_old_themes = False
+
+init python:
+
+    if hasattr(config, "android_permissions"):
+        config.android_permissions = [
+            "android.permission.VIBRATE",
+            "android.permission.WRITE_EXTERNAL_STORAGE",
+            "android.permission.READ_EXTERNAL_STORAGE",
+            "android.permission.MANAGE_EXTERNAL_STORAGE", 
+            "android.permission.POST_NOTIFICATIONS"
+        ]
+
 # Decompiled by unrpyc: https://github.com/CensoredUsername/unrpyc

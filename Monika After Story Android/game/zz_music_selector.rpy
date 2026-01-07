@@ -778,9 +778,13 @@ init 10 python in songs:
 init 10 python:
 
 
-    store.songs.custom_music_dir = (
-        config.basedir + "/" + store.songs.custom_music_dir + "/"
-    ).replace("\\", "/")
+    if renpy.android:
+        store.songs.custom_music_dir = "/storage/emulated/0/Monika After Story/custom_bgm/"
+        store.songs.custom_music_reldir = store.songs.custom_music_dir
+    else:
+        store.songs.custom_music_dir = (
+            config.basedir + "/" + store.songs.custom_music_dir + "/"
+        ).replace("\\", "/")
 
     if store.mas_egg_manager.sayori_enabled():
         

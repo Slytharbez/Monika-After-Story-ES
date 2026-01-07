@@ -163,6 +163,98 @@ image tos2 = "bg/warning2.png"
 
 
 label splashscreen:
+    
+    """
+    ANDROID LOGIC INJECTION START
+
+    Punto de entrada para la lógica de inicialización específica de Android.
+    Reemplaza la pausa estática original por un sistema de detección inteligente.
+    """
+    if renpy.android:
+        python:
+            """
+            Verificación de Permisos
+
+            Comprobamos si existen las funciones de utilidad importadas desde
+            zz_android_setup.rpy.
+            """
+            if "mas_android_has_permission" in globals():
+                
+                """
+                ESTADO: SIN PERMISOS
+                
+                Entramos en el flujo de solicitud y espera.
+                """
+                if not mas_android_has_permission():
+                    
+                    """
+                    1. Solicitar Permisos
+                    
+                    Dispara la solicitud JNI para notificaciones y almacenamiento.
+                    Esto genera el comportamiento visual superpuesto deseado.
+                    """
+                    if "mas_android_check_and_request_permissions" in globals():
+                        mas_android_check_and_request_permissions()
+                    
+                    """
+                    2. Bucle de Espera (Wait Loop)
+                    
+                    Mantiene el juego pausado mientras el usuario interactúa con
+                    los diálogos del sistema o la pantalla de configuración.
+                    """
+                    while not mas_android_has_permission():
+                        renpy.pause(0.1)
+                        
+                    """
+                    3. Crear Carpetas (Backpack)
+                    
+                    Una vez obtenidos los permisos, forzamos la creación inmediata
+                    de la estructura de directorios en el almacenamiento externo.
+                    """
+                    if "mas_android_setup_backpack" in globals():
+                        mas_android_setup_backpack()
+                    
+                    """
+                    4. REINICIO SACRIFICIAL
+                    
+                    Cierre controlado de la aplicación para obligar a Ren'Py a
+                    reiniciar y detectar el nuevo almacenamiento externo en la
+                    siguiente ejecución.
+                    """
+                    renpy.quit()
+                
+                else:
+                    """
+                    ESTADO: CON PERMISOS
+                    
+                    Verificación rutinaria de permisos secundarios (Notificaciones)
+                    de manera silenciosa.
+                    """
+                    if "mas_android_check_and_request_permissions" in globals():
+                        mas_android_check_and_request_permissions()
+    """
+    ANDROID LOGIC INJECTION END
+    """
+
+    python:
+        if renpy.android:
+            try:
+                if "mas_android_setup_backpack" in globals():
+                    mas_android_setup_backpack()
+                if "mas_android_rescue_saves" in globals():
+                    mas_android_rescue_saves()
+                
+                """
+                [ANDROID] Override Final para Docking Station
+                
+                Asegura que la ruta de la "estación" apunte correctamente
+                al almacenamiento externo antes de iniciar la lógica del juego.
+                """
+                if hasattr(store, "mas_docking_station"):
+                    store.mas_docking_station.station = "/storage/emulated/0/Monika After Story/characters/"
+            except:
+                pass
+
     python:
         _mas_AffStartup()
 
@@ -214,9 +306,113 @@ label splashscreen:
     python:
         basedir = config.basedir.replace("\\", "/")
 
+        if renpy.android:
+            try:
+                """
+                AGRESSIVE FOLDER CREATION - RUNTIME
+                
+                Relleno de seguridad de directorios. Garantiza que la estructura
+                exista incluso si el usuario acaba de otorgar permisos manualmente.
+                """
+                mas_root = "/storage/emulated/0/Monika After Story/"
+                dirs_to_force = [
+                    mas_root,
+                    mas_root + "characters/",
+                    mas_root + "chess_games/",
+                    mas_root + "log/",
+                    mas_root + "game/saves/",
+                    mas_root + "custom_bgm/",
+                    mas_root + "game/mod_assets/monika/",
+                    mas_root + "game/mod_assets/monika/a/",
+                    mas_root + "game/mod_assets/monika/c/",
+                    mas_root + "game/mod_assets/monika/f/",
+                    mas_root + "game/mod_assets/monika/h/",
+                    mas_root + "game/mod_assets/monika/j/",
+                    mas_root + "game/mod_assets/monika/t/",
+                    mas_root + "game/mod_assets/location/",
+                    mas_root + "game/mod_assets/thumbs/",
+                    mas_root + "game/submods/"
+                ]
 
-        with open(basedir + "/game/masrun", "w") as versfile:
-            versfile.write(config.name + "|" + config.version + "\n")
+                import os
+                saves_created = False
+                
+                for d in dirs_to_force:
+                    if not os.path.exists(d):
+                        try:
+                            """
+                            Compatibilidad Python 2.7
+                            
+                            os.makedirs no tiene el argumento 'exist_ok' en esta versión,
+                            así que atrapamos la excepción si el directorio ya existe.
+                            """
+                            os.makedirs(d)
+                            """
+                            Detección de Primer Inicio con Permisos
+                            
+                            Si creamos 'game/saves', marcamos la bandera para
+                            reiniciar y usar esta nueva ubicación.
+                            """
+                            if d.endswith("game/saves/"):
+                                saves_created = True
+                        except:
+                            pass
+                
+                """
+                Generación del archivo de versión (masrun)
+                """
+                with open(mas_root + "masrun", "w") as versfile:
+                    versfile.write(config.name + "|" + config.version + "\n")
+                
+                """
+                [ANDROID] FORCE PERSისტENT CREATION
+                
+                Escritura manual de bajo nivel del archivo 'persistent'.
+                
+                MOTIVO:
+                    Ren'Py cachea la ruta de guardado al inicio. Si cambiamos
+                    config.savedir en tiempo de ejecución, el guardado automático
+                    podría fallar o usar la ruta incorrecta.
+                    
+                ACCION:
+                    Serializamos (pickle) y comprimimos (zlib) manualmente los
+                    datos persistentes y los escribimos directo al disco.
+                """
+                try:
+                    import pickle
+                    import zlib
+                    ext_saves = mas_root + "game/saves/"
+                    ext_persistent_file = ext_saves + "persistent"
+                    
+                    print("[ANDROID] MasRun creado. Iniciando escritura DIRECTA (y COMPRIMIDA) de Persistent...")
+                    
+                    """
+                    Verificamos si ya existe para no borrar backups
+                    """
+                    if not os.path.exists(ext_persistent_file):
+                        with open(ext_persistent_file, "wb") as f:
+                            """
+                            [CRITICAL] Ren'Py espera un pickle COMPRIMIDO con zlib.
+                            Si escribimos raw pickle, crashea al cargar (Error -3).
+                            Protocolo 2 es el estándar compatible.
+                            """
+                            raw_data = pickle.dumps(persistent, protocol=2)
+                            compressed_data = zlib.compress(raw_data)
+                            f.write(compressed_data)
+                            
+                        print("[ANDROID] EXITOSO: Persistent Comprimido 'materializado' en: " + ext_persistent_file)
+                    else:
+                        print("[ANDROID] Persistent ya existe en externa. No se toca.")
+
+                except Exception as ep:
+                    print("[ANDROID] Error en escritura manual de persistent: " + str(ep))
+                    
+            except Exception as e:
+                print("[ANDROID] Error creando carpetas runtime: " + str(e))
+                pass
+        else:
+            with open(basedir + "/game/masrun", "w") as versfile:
+                versfile.write(config.name + "|" + config.version + "\n")
 
 
 
@@ -332,11 +528,21 @@ label quit:
     python:
         store.mas_calendar.saveCalendarDatabase(CustomEncoder)
         persistent.sessions['last_session_end']=datetime.datetime.now()
-        today_time = (
-            persistent.sessions["last_session_end"]
-            - persistent.sessions["current_session_start"]
-        )
-        new_time = today_time + persistent.sessions["total_playtime"]
+        
+        """
+        [ANDROID FIX]
+        Si cerramos el juego demasiado pronto (ej. Sacrificial Restart), 
+        current_session_start puede ser None. Verificamos antes de calcular.
+        """
+        new_time = persistent.sessions["total_playtime"]
+        
+        if persistent.sessions.get("current_session_start"):
+            today_time = (
+                persistent.sessions["last_session_end"]
+                - persistent.sessions["current_session_start"]
+            )
+            new_time = today_time + persistent.sessions["total_playtime"]
+            persistent.sessions["total_playtime"] = new_time
 
 
         if datetime.timedelta(0) < new_time <= mas_maxPlaytime():
