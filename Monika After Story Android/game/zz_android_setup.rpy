@@ -184,25 +184,45 @@ init python:
     def mas_android_install_stockfish():
         if not renpy.android:
             return
+
         try:
             arch = platform.machine()
             binary_name = "stockfish-android-armv7"
             if "aarch64" in arch or "armv8" in arch:
                 binary_name = "stockfish-android-arm64-v8a"
             
-            source_path = os.path.join(renpy.config.gamedir, "mod_assets/games/chess", binary_name)
+            """
+            Detección de prefijo 'x-'
+            Ren'Py renombra archivos desconocidos en assets comenzando con 'x-'.
+            Debemos buscar ambas versiones.
+            """
+            x_binary_name = "x-" + binary_name
+            
+            source_dir = os.path.join(renpy.config.gamedir, "mod_assets/games/chess")
+            source_path = os.path.join(source_dir, binary_name)
+            x_source_path = os.path.join(source_dir, x_binary_name)
+            
+            final_source_path = None
+            if os.path.exists(source_path):
+                final_source_path = source_path
+            elif os.path.exists(x_source_path):
+                final_source_path = x_source_path
+                
+            if not final_source_path:
+                print("[ANDROID_CHESS] ERROR: No se encontró binario (ni normal ni x-) en " + source_dir)
+                return
+
             private_dir = os.environ.get('ANDROID_PRIVATE', '')
             dest_dir = os.path.join(private_dir, "files")
             if not os.path.exists(dest_dir):
                 os.makedirs(dest_dir)
+            
             dest_path = os.path.join(dest_dir, "stockfish_android")
 
-            if os.path.exists(source_path):
-                shutil.copyfile(source_path, dest_path)
-                os.chmod(dest_path, 0o755)
-                print("[ANDROID_CHESS] Stockfish instalado en: " + dest_path)
-            else:
-                print("[ANDROID_CHESS] ERROR: No se encontró el binario en " + source_path)
+            shutil.copyfile(final_source_path, dest_path)
+            os.chmod(dest_path, 0o755)
+            print("[ANDROID_CHESS] Stockfish instalado desde " + final_source_path + " a " + dest_path)
+
         except Exception as e:
             print("[ANDROID_CHESS] Excepción instalando Stockfish: " + str(e))
 
@@ -251,7 +271,14 @@ init 50 python:
 
             if hasattr(store, 'mas_chess'):
                 store.mas_chess.CHESS_SAVE_PATH = ANDROID_CHESS_PATH
-                print("[ANDROID_OVERRIDES] Chess Save Path redirected")
+                
+                """
+                Redirigir binario de Stockfish a almacenamiento interno ejecutable
+                """
+                private_dir = os.environ.get('ANDROID_PRIVATE', '')
+                store.mas_chess.STOCKFISH_PATH = os.path.join(private_dir, "files", "stockfish_android")
+                
+                print("[ANDROID_OVERRIDES] Chess Save Path & Binary redirected")
             
             if hasattr(store, 'mas_docking_station'):
                 store.mas_docking_station.station = ANDROID_CHARACTERS_PATH
