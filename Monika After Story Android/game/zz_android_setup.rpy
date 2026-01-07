@@ -285,7 +285,6 @@ init 50 python:
             except Exception as e:
                 print("[ANDROID_OVERRIDES] Logging Redirect Error: " + str(e))
         
-        else:
             print("[ANDROID_OVERRIDES] Permisos no detectados. Usando rutas internas para evitar crash.")
 
     def mas_android_rescue_saves():
@@ -317,5 +316,180 @@ init 50 python:
                                 pass
         except Exception as e:
             pass
+
+    def mas_android_generateMonika(dockstat, logpath):
+        """
+        [ANDROID] generateMonika
+        
+        Una versión parcheada de generateMonika que usa renpy.file()
+        para leer el archivo 'mbase' desde el APK en lugar de open().
+        """
+        import codecs
+        import store.mas_docking_station as mas_dockstat_module
+        from cStringIO import StringIO as fastIO
+        
+        cr_log = store.mas_logging.init_log(logpath, append=False)
+        cr_log.info("[ANDROID] Creating Monika in: {0}".format(dockstat.station))
+        
+        if "temp" in dockstat.station.lower():
+            cr_log.error("temp directory found, aborting.")
+            return False
+            
+        moni_buffer = fastIO()
+        moni_buffer = codecs.getwriter("utf8")(moni_buffer)
+        
+        NUM_DELIM = "|num|"
+        
+        if not mas_dockstat_module._buildMetaDataPer(moni_buffer, cr_log):
+            mas_dockstat_module._buildMetaDataList(moni_buffer)
+             
+        moni_chr = None
+        try:
+            """
+            [ANDROID FIX]
+            Usamos renpy.file() para leer desde el asset (APK o RPA).
+            """
+            moni_chr = renpy.file("mod_assets/monika/mbase")
+            moni_buffer.write(moni_chr.read())
+            
+        except Exception as e:
+            cr_log.error("[ANDROID] mbase copy failed | {0}".format(repr(e)))
+            moni_buffer.close()
+            return False
+            
+        finally:
+            if moni_chr is not None:
+                moni_chr.close()
+                
+        # El resto de la función es idéntica a la original, 
+        # pero necesitamos llamar a los métodos internos de MASDockingStation
+        # usando la instancia 'dockstat' o la clase 'store.MASDockingStation'.
+        
+        moni_path = dockstat._trackPackage("monika")
+        moni_fbuffer = None
+        moni_tbuffer = None
+        moni_sum = None
+        blocksize = 4 * (1024**2) # Hardcoded from zz_dockingstation default
+        
+        try:
+            # Usando la clase store.MASDockingStation para métodos estáticos
+            moni_buffer_iter = store.MASDockingStation._blockiter(moni_buffer, blocksize)
+            lines = 0
+            last_line_size = 0
+            for _line in moni_buffer_iter:
+                lines += 1
+                last_line_size = len(_line)
+                
+            line_str_size = len(str(lines) + NUM_DELIM)
+            if (last_line_size + line_str_size) > blocksize:
+                lines += 1
+                
+            moni_buffer_iter = store.MASDockingStation._blockiter(moni_buffer, blocksize)
+            moni_tbuffer = fastIO()
+            moni_tbuffer = codecs.getwriter("utf8")(moni_tbuffer)
+            moni_tbuffer.write(str(lines) + NUM_DELIM)
+            for _line in moni_buffer_iter:
+                moni_tbuffer.write(_line)
+            moni_buffer.close()
+            
+            # Escritura en disco (La ruta ya es externa gracias a nuestros overrides)
+            moni_fbuffer = codecs.open(moni_path, "wb", "utf-8")
+            
+            checklist = dockstat.hashlib.sha256()
+            def safe_encoder(data):
+                return dockstat.base64.b64encode(dockstat.safeRandom(data))
+            encoder = dockstat.base64.b64encode
+            
+            moni_tbuffer.seek(0)
+            _line = moni_tbuffer.read(blocksize)
+            total_buffer_size = 0
+            while len(_line) == blocksize:
+                total_buffer_size += blocksize
+                data = encoder(_line)
+                checklist.update(data)
+                moni_fbuffer.write(data)
+                _line = moni_tbuffer.read(blocksize)
+            moni_tbuffer.close()
+            
+            last_buffer_size = len(_line)
+            total_buffer_size += last_buffer_size
+            
+            moni_size_left = store.persistent._mas_dockstat_moni_size - total_buffer_size
+            
+            if moni_size_left > 0:
+                if (moni_size_left + last_buffer_size) <= blocksize:
+                    extra_padding = moni_size_left
+                    moni_size_left = 0
+                else:
+                    extra_padding = blocksize - last_buffer_size
+                    moni_size_left -= extra_padding
+                    
+                data = encoder(_line + dockstat.safeRandom(extra_padding))
+                checklist.update(data)
+                moni_fbuffer.write(data)
+                
+                moni_size_limit = moni_size_left - blocksize
+                curr_size = 0
+                while curr_size < moni_size_limit:
+                    data = safe_encoder(blocksize)
+                    checklist.update(data)
+                    moni_fbuffer.write(data)
+                    curr_size += blocksize
+                    
+                leftovers = moni_size_left - curr_size
+                if leftovers > 0:
+                    data = safe_encoder(leftovers)
+                    checklist.update(data)
+                    moni_fbuffer.write(data)
+            else:
+                data = encoder(_line)
+                checklist.update(data)
+                moni_fbuffer.write(data)
+                
+            moni_sum = checklist.hexdigest()
+            
+        except Exception as e:
+            cr_log.error("monibuffer write failed | {0}".format(repr(e)))
+            try:
+                if moni_fbuffer is not None: moni_fbuffer.close()
+                moni_fbuffer = None
+                os.remove(moni_path)
+            except: pass
+            return False
+            
+        finally:
+            if moni_fbuffer is not None: moni_fbuffer.close()
+            if moni_tbuffer is not None: moni_tbuffer.close()
+            moni_buffer.close()
+             
+        # Validación final
+        moni_pkg = dockstat.getPackage("monika")
+        if moni_pkg is None:
+            cr_log.error("monika not found.")
+            store.mas_utils.trydel(moni_path)
+            return False
+            
+        moni_slip = dockstat.createPackageSlip(moni_pkg, blocksize)
+        if moni_slip is None:
+            cr_log.error("monika could not be validated.")
+            store.mas_utils.trydel(moni_path)
+            return False
+            
+        if moni_slip != moni_sum:
+            cr_log.critical("monisums didn't match, did we have write failure?")
+            store.mas_utils.trydel(moni_path)
+            return -1
+            
+        cr_log.info("chk: {0}".format(moni_sum))
+        return moni_sum
+
+    if renpy.android:
+        """
+        [ANDROID] INJECTION
+        Reemplazamos la función original con nuestra versión compatible.
+        """
+        store.mas_dockstat.generateMonika = mas_android_generateMonika
+        print("[ANDROID_OVERRIDES] generateMonika monkey-patched.")
+
 
 # Decompiled by unrpyc: https://github.com/CensoredUsername/unrpyc
