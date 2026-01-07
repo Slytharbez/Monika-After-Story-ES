@@ -192,39 +192,57 @@ init python:
                 binary_name = "stockfish-android-arm64-v8a"
             
             """
-            Detección de prefijo 'x-'
-            Ren'Py renombra archivos desconocidos en assets comenzando con 'x-'.
-            Debemos buscar ambas versiones.
+            Rutas y Nombres
             """
             x_binary_name = "x-" + binary_name
+            asset_path_base = "mod_assets/games/chess/"
             
-            source_dir = os.path.join(renpy.config.gamedir, "mod_assets/games/chess")
-            source_path = os.path.join(source_dir, binary_name)
-            x_source_path = os.path.join(source_dir, x_binary_name)
+            # Rutas de origen (Assets de Ren'Py)
+            source_file_normal = asset_path_base + binary_name
+            source_file_x = asset_path_base + x_binary_name
             
-            final_source_path = None
-            if os.path.exists(source_path):
-                final_source_path = source_path
-            elif os.path.exists(x_source_path):
-                final_source_path = x_source_path
-                
-            if not final_source_path:
-                print("[ANDROID_CHESS] ERROR: No se encontró binario (ni normal ni x-) en " + source_dir)
-                return
-
+            # Ruta de destino (Almacenamiento Privado Ejecutable)
             private_dir = os.environ.get('ANDROID_PRIVATE', '')
             dest_dir = os.path.join(private_dir, "files")
             if not os.path.exists(dest_dir):
                 os.makedirs(dest_dir)
-            
             dest_path = os.path.join(dest_dir, "stockfish_android")
 
-            shutil.copyfile(final_source_path, dest_path)
-            os.chmod(dest_path, 0o755)
-            print("[ANDROID_CHESS] Stockfish instalado desde " + final_source_path + " a " + dest_path)
+            """
+            Extracción Inteligente (Stream)
+            Intentamos leer desde el sistema de archivos virtual de Ren'Py (APK/RPA)
+            y escribir directamente al almacenamiento físico.
+            """
+            file_handle = None
+            found_name = ""
+
+            try:
+                file_handle = renpy.file(source_file_normal)
+                found_name = source_file_normal
+            except:
+                try:
+                    file_handle = renpy.file(source_file_x)
+                    found_name = source_file_x
+                except:
+                    pass
+            
+            if file_handle:
+                print("[ANDROID_CHESS] Encontrado binario en assets: " + found_name)
+                try:
+                    with open(dest_path, "wb") as out_file:
+                        out_file.write(file_handle.read())
+                    
+                    os.chmod(dest_path, 0o755)
+                    print("[ANDROID_CHESS] Stockfish extraído y configurado en: " + dest_path)
+                except Exception as e:
+                    print("[ANDROID_CHESS] Error escribiendo archivo: " + str(e))
+                finally:
+                    file_handle.close()
+            else:
+                print("[ANDROID_CHESS] ERROR CRÍTICO: No se encontró " + binary_name + " ni " + x_binary_name + " en assets.")
 
         except Exception as e:
-            print("[ANDROID_CHESS] Excepción instalando Stockfish: " + str(e))
+            print("[ANDROID_CHESS] Excepción general instalando Stockfish: " + str(e))
 
     mas_android_install_stockfish()
 
