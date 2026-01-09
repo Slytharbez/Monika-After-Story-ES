@@ -6,16 +6,18 @@
         "w w o u t r e",
         "i i u t y t"
     ],
-    "name": "Happy Birthday",
+    "name": "Feliz cumpleaños",
     "win_label": "mas_piano_hb_win",
     "fc_label": "mas_piano_hb_fc",
     "fail_label": "mas_piano_hb_fail",
     "prac_label": "mas_piano_hb_prac",
     "end_wait": 5,
-    "verse_list": [0],
+    "verse_list": [
+        0
+    ],
     "pnm_list": [
         {
-            "text": "Happy Birthday to you",
+            "text": "Feliz cumpleaños para ti",
             "style": "monika_credits_text",
             "notes": [
                 "G4",
@@ -29,7 +31,7 @@
             "postexpress": "1eua"
         },
         {
-            "text": "Happy Birthday to you",
+            "text": "Feliz cumpleaños para ti",
             "style": "monika_credits_text",
             "notes": [
                 "G4",
@@ -43,7 +45,7 @@
             "postexpress": "1eua"
         },
         {
-            "text": "Happy Birthday, Happy Birthday",
+            "text": "Feliz cumpleaños, Feliz cumpleaños",
             "style": "monika_credits_text",
             "notes": [
                 "G4",
@@ -58,7 +60,7 @@
             "postexpress": "1hua"
         },
         {
-            "text": "Happy Birthday to you!",
+            "text": "¡Feliz cumpleaños para ti!",
             "style": "monika_credits_text",
             "notes": [
                 "F5",
