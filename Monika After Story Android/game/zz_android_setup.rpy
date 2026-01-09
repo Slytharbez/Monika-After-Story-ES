@@ -316,10 +316,82 @@ init 50 python:
                 hdlr.setFormatter(formatter)
                 root_logger.addHandler(hdlr)
                 print("[ANDROID_OVERRIDES] Logging redirected")
+
+                # --- EXTRA MODULE LOGS REDIRECTION ---
+                # List of specific MAS loggers to redirect to the external log folder
+                extra_loggers = ["aff_log", "pnm", "submod_log", "spj", "mfgen"]
+                
+                for log_name in extra_loggers:
+                    try:
+                        # Get the specific logger
+                        tgt_log = logging.getLogger(log_name)
+                        
+                        # Remove existing handlers to avoid duplication/internal writing
+                        for h in tgt_log.handlers[:]:
+                            tgt_log.removeHandler(h)
+                            h.close()
+                        
+                        # create new handler pointing to backpack
+                        # We use .txt for mobile readability
+                        l_file = os.path.join(ANDROID_LOG_PATH, log_name + ".txt")
+                        
+                        l_hdlr = logging.handlers.RotatingFileHandler(
+                            l_file,
+                            maxBytes=getattr(store.mas_logging, "MAX_LOG_SIZE", 5242880),
+                            backupCount=getattr(store.mas_logging, "BACKUP_COUNT", 5)
+                        )
+                        
+                        # Use same formatter
+                        l_hdlr.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
+                        
+                        tgt_log.addHandler(l_hdlr)
+                        print("[ANDROID_OVERRIDES] Redirected extra logger: " + log_name)
+                        
+                    except Exception as e:
+                        print("[ANDROID_OVERRIDES] Failed to redirect " + log_name + ": " + str(e))
+
             except Exception as e:
                 print("[ANDROID_OVERRIDES] Logging Redirect Error: " + str(e))
         
             print("[ANDROID_OVERRIDES] Permisos no detectados. Usando rutas internas para evitar crash.")
+
+    def mas_android_rescue_logs():
+        """
+        LOG RESCUE
+        Checks for crash logs (traceback.txt) or system logs (log.txt) in the internal
+        private directory and copies them to the external backpack for user visibility.
+        """
+        if not renpy.android:
+            return
+
+        try:
+            private_dir = os.environ.get('ANDROID_PRIVATE', '')
+            # Ren'Py usually dumps traceback.txt in the base files dir or game dir
+            internal_files_dir = os.path.join(private_dir, "files")
+            
+            logs_to_rescue = ["traceback.txt", "log.txt"]
+            
+            for log_file in logs_to_rescue:
+                src_path = os.path.join(internal_files_dir, log_file)
+                
+                # Destination: Root of Backpack for traceback, or Log folder? 
+                # User requested: "traceback.txt (informe de fallos) y log.txt (registro de Ren'Py) aparezcan en la raíz de la carpeta externa"
+                dst_path = os.path.join(ANDROID_BACKPACK_PATH, log_file)
+                
+                if os.path.exists(src_path):
+                    try:
+                        shutil.copy2(src_path, dst_path)
+                        print("[ANDROID_RESCUE] Rescued log: " + log_file)
+                        
+                        # Optional: Verify copy size?
+                    except Exception as e:
+                        print("[ANDROID_RESCUE] Failed to copy " + log_file + ": " + str(e))
+                        
+        except Exception as e:
+            print("[ANDROID_RESCUE] Error processing log rescue: " + str(e))
+
+    # Call log rescue immediately after definition
+    mas_android_rescue_logs()
 
     def mas_android_rescue_saves():
         """
