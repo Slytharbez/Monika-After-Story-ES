@@ -362,34 +362,71 @@ init 50 python:
     def mas_android_rescue_logs():
         """
         LOG RESCUE
-        Checks for crash logs (traceback.txt) or system logs (log.txt) in the internal
-        private directory and copies them to the external backpack for user visibility.
+        Checks for crash logs (traceback.txt) or system logs (log.txt) in multiple
+        internal locations and copies them to the external backpack.
         """
         if not renpy.android:
             return
 
         try:
+            # Candidate directories where Ren'Py might dump logs
+            candidates = []
+            
+            # 1. Private Files Dir
             private_dir = os.environ.get('ANDROID_PRIVATE', '')
-            internal_files_dir = os.path.join(private_dir, "files")
+            if private_dir:
+                candidates.append(private_dir)
+                candidates.append(os.path.join(private_dir, "files"))
+            
+            # 2. Ren'Py Base Dir
+            if renpy.config.basedir:
+                candidates.append(renpy.config.basedir)
+                
+            # 3. Current Working Dir
+            candidates.append(os.getcwd())
+            
+            # Deduplicate candidates
+            candidates = list(set(candidates))
             
             logs_to_rescue = ["traceback.txt", "log.txt"]
             
+            # Debug info to help user identify where we are looking
+            debug_info = []
+            debug_info.append("Searching for logs in:")
+            for c in candidates:
+                debug_info.append(" - " + str(c))
+                
+            found_any = False
+            
             for log_file in logs_to_rescue:
-                src_path = os.path.join(internal_files_dir, log_file)
-                
-                """
-                Move logs to Backpack root for user access.
-                """
-                dst_path = os.path.join(ANDROID_BACKPACK_PATH, log_file)
-                
-                if os.path.exists(src_path):
-                    try:
-                        shutil.copy2(src_path, dst_path)
-                        print("[ANDROID_RESCUE] Rescued log: " + log_file)
-                        
-                    except Exception as e:
-                        print("[ANDROID_RESCUE] Failed to copy " + log_file + ": " + str(e))
-                        
+                for src_dir in candidates:
+                    src_path = os.path.join(src_dir, log_file)
+                    
+                    if os.path.exists(src_path):
+                        """
+                        Move logs to Backpack root for user access.
+                        """
+                        dst_path = os.path.join(ANDROID_BACKPACK_PATH, log_file)
+                        try:
+                            shutil.copy2(src_path, dst_path)
+                            debug_info.append("SUCCESS: Found and copied " + log_file + " from " + src_dir)
+                            found_any = True
+                            # Stop searching for this specific file once found
+                            break 
+                        except Exception as e:
+                            debug_info.append("ERROR: Found " + log_file + " but failed to copy: " + str(e))
+            
+            if not found_any:
+                debug_info.append("FAILURE: Could not find log.txt or traceback.txt in any candidate.")
+
+            # Write debug info to a visible file so user can report back
+            try:
+                debug_path = os.path.join(ANDROID_BACKPACK_PATH, "log_rescue_debug.txt")
+                with open(debug_path, "w") as f:
+                    f.write("\n".join(debug_info))
+            except:
+                pass
+
         except Exception as e:
             print("[ANDROID_RESCUE] Error processing log rescue: " + str(e))
 
