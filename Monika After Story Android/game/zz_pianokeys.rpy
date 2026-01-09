@@ -1827,7 +1827,7 @@ init 800 python in mas_piano_keys:
 
 
     _pnm_dpco_v4l1 = PianoNoteMatch(
-         renpy.text.text.Text(
+        renpy.text.text.Text(
             "Des-",
             style="monika_credits_text"
         ),
@@ -1840,7 +1840,7 @@ init 800 python in mas_piano_keys:
         posttext=True
     )
     _pnm_dpco_v4l2 = PianoNoteMatch(
-         renpy.text.text.Text(
+        renpy.text.text.Text(
             "-pa-",
             style="monika_credits_text"
         ),
@@ -1853,7 +1853,7 @@ init 800 python in mas_piano_keys:
         verse=12
     )
     _pnm_dpco_v4l3 = PianoNoteMatch(
-         renpy.text.text.Text(
+        renpy.text.text.Text(
             "-cito",
             style="monika_credits_text"
         ),
@@ -1868,7 +1868,7 @@ init 800 python in mas_piano_keys:
         verse=12
     )
     _pnm_dpco_v4l4 = PianoNoteMatch(
-         renpy.text.text.Text(
+        renpy.text.text.Text(
             "Quiero respirar tu cuello despacito",
             style="monika_credits_text"
         ),
@@ -2334,6 +2334,40 @@ init 810 python:
         
         KMP_TXT_OVL_FONT = "gui/font/Halogen.ttf"
         
+        
+        """
+        NOTE: ordered list of white keys for hit testing
+        """
+        ORDERED_WHITE_KEYS = [
+            mas_piano_keys.F4,
+            mas_piano_keys.G4,
+            mas_piano_keys.A4,
+            mas_piano_keys.B4,
+            mas_piano_keys.C5,
+            mas_piano_keys.D5,
+            mas_piano_keys.E5,
+            mas_piano_keys.F5,
+            mas_piano_keys.G5,
+            mas_piano_keys.A5,
+            mas_piano_keys.B5,
+            mas_piano_keys.C6
+        ]
+
+        """
+        NOTE: ordered list of black keys for hit testing (key, relative_x)
+        Copied from previous blacks definition.
+        """
+        BLACK_KEYS_POS = [
+            (mas_piano_keys.F4SH, 73),
+            (mas_piano_keys.G4SH, 110),
+            (mas_piano_keys.A4SH, 147),
+            (mas_piano_keys.C5SH, 221),
+            (mas_piano_keys.D5SH, 258),
+            (mas_piano_keys.F5SH, 332),
+            (mas_piano_keys.G5SH, 369),
+            (mas_piano_keys.A5SH, 406)
+        ]
+
         def __init__(self, mode, pnml=None):
             """
             Creates the piano displablable
@@ -2344,6 +2378,11 @@ init 810 python:
                     (Default: None)
             """
             super(renpy.Displayable,self).__init__()
+            
+            """
+            Key currently being touched (for drag/slide support)
+            """
+            self.active_touch_key = None
             
             
             self.mode = mode
@@ -2787,6 +2826,107 @@ init 810 python:
         
         
         
+        
+        
+        
+        
+        def _get_key_at_pos(self, x, y):
+            """
+            Determines which piano key is at the given screen coordinates.
+            Prioritizes black keys over white keys.
+            
+            IN:
+                x - screen x coordinate
+                y - screen y coordinate
+                
+            RETURNS:
+                The key constant (int) if a key is found, None otherwise.
+            """
+            """
+            Calculate coordinates relative to the piano keys area
+            """
+            rel_x = x - (self.ZZPK_IMG_BACK_X + self.ZZPK_IMG_KEYS_X)
+            rel_y = y - (self.ZZPK_IMG_BACK_Y + self.ZZPK_IMG_KEYS_Y)
+            
+            """
+            Check Black Keys First
+            """
+            for k, bx in self.BLACK_KEYS_POS:
+                if (bx <= rel_x < bx + self.ZZPK_IMG_EKEY_WIDTH and
+                    0 <= rel_y < self.ZZPK_IMG_EKEY_HEIGHT):
+                    return k
+            
+            """
+            Check White Keys
+            White keys are spaced by width + 1 pixel gap
+            """
+            for i, k in enumerate(self.ORDERED_WHITE_KEYS):
+                wx = i * (self.ZZPK_IMG_IKEY_WIDTH + 1)
+                
+                """
+                Check bounds. Note: White keys are TALLER than black keys.
+                If we are in the top part (where black keys are), we are only hitting
+                the white key if we didn't hit a black key (already checked).
+                So we just check the full rectangle of the white key.
+                """
+                if (wx <= rel_x < wx + self.ZZPK_IMG_IKEY_WIDTH and
+                    0 <= rel_y < self.ZZPK_IMG_IKEY_HEIGHT):
+                    return k
+                    
+            return None
+
+        def _handle_input_key(self, key, st, ev=None):
+            """
+            Handles a key press input (from keyboard or touch).
+            
+            IN:
+                key - the mapped piano key
+                st - time
+                ev - original event (optional, for stateListen)
+            """
+            if key is None:
+                return
+
+            if self.state not in self.CONFIG_STATES:
+                if len(self.played) > self.KEY_LIMIT:
+                    self.played = list()
+                
+                elif st - self.prev_time >= self.ev_timeout:
+                    self._timeoutFlow()
+                
+                self.prev_time = st
+            
+            if not self.pressed.get(key, True):
+                self.pressed[key] = True
+                
+                if self.state not in self.CONFIG_STATES:
+                    self.note_hit = True
+                    self.played.append(key)
+                    
+                    if self.state == self.STATE_LISTEN:
+                        """
+                        stateListen normally accesses 'ev', potentially for timing.
+                        However, when triggered via touch, we might pass None.
+
+                        Verification:
+                        - _singleFlow passes 'ev' to stateMatch.
+                        - stateMatch does not appear to actively use 'ev'.
+                        
+                        Conclusion: It should be safe to pass None or a mouse event here.
+                        """
+                        self.stateListen(ev, key)
+                    
+                    elif self.state in self.POST_STATES:
+                        self.statePost(ev, key)
+                    
+                    elif self.state in self.TRANS_POST_STATES:
+                        self.stateWaitPost(ev, key)
+                    
+                    elif self.state in self.MATCH_STATES:
+                        self.stateMatch(ev, key)
+                
+                renpy.play(self.pkeys[key], channel="audio")
+                renpy.redraw(self, 0)
         
         def _buildKeyTextOverlay(self, key):
             """
@@ -3872,7 +4012,46 @@ init 810 python:
                         self.resetVerse()
                         self.setsongmode(False)
                         self.played = list()
-                
+                    
+                    """
+                    TOUCH CONTROLS
+                    """
+                    elif clicked_config is None and clicked_quit is None:
+                        piano_key = self._get_key_at_pos(x, y)
+                        
+                        if ev.type == pygame.MOUSEBUTTONDOWN and piano_key is not None:
+                            self.active_touch_key = piano_key
+                            self._handle_input_key(piano_key, st, ev)
+                        
+                        elif ev.type == pygame.MOUSEMOTION and self.active_touch_key is not None:
+                            """
+                            Handle sliding
+                            """
+                            if piano_key != self.active_touch_key:
+                                """
+                                Release old key
+                                """
+                                self.pressed[self.active_touch_key] = False
+                                renpy.redraw(self, 0)
+                                
+                                """
+                                Press new key (if we slid onto one)
+                                """
+                                if piano_key is not None:
+                                    self.active_touch_key = piano_key
+                                    self._handle_input_key(piano_key, st, ev)
+                                else:
+                                    """
+                                    Slid off keys entirely
+                                    """
+                                    self.active_touch_key = None
+
+                        elif ev.type == pygame.MOUSEBUTTONUP:
+                            if self.active_touch_key is not None:
+                                self.pressed[self.active_touch_key] = False
+                                self.active_touch_key = None
+                                renpy.redraw(self, 0)
+
                 renpy.redraw(self, 0)
             
             
@@ -3925,57 +4104,8 @@ init 810 python:
                 else:
                     
                     key = self.live_keymap.get(ev.key, None)
-                    
-                    if self.state not in self.CONFIG_STATES:
-                        
-                        
-                        if len(self.played) > self.KEY_LIMIT:
-                            self.played = list()
-                        
-                        
-                        elif st-self.prev_time >= self.ev_timeout:
-                            self._timeoutFlow()
-                        
-                        
-                        self.prev_time = st
-                    
-                    
-                    if not self.pressed.get(key, True):
-                        
-                        
-                        self.pressed[key] = True
-                        
-                        
-                        if self.state not in self.CONFIG_STATES:
-                            
-                            
-                            self.note_hit = True
-                            
-                            
-                            self.played.append(key)
-                            
-                            
-                            if self.state == self.STATE_LISTEN:
-                                self.stateListen(ev, key)
-                            
-                            
-                            elif self.state in self.POST_STATES:
-                                self.statePost(ev, key)
-                            
-                            
-                            elif self.state in self.TRANS_POST_STATES:
-                                self.stateWaitPost(ev, key)
-                            
-                            
-                            elif self.state in self.MATCH_STATES:
-                                self.stateMatch(ev, key)
-                        
-                        
-                        renpy.play(self.pkeys[key], channel="audio")
-                        
-                        
-                        
-                        renpy.redraw(self, 0)
+
+                    self._handle_input_key(key, st, ev)
             
             
             elif ev.type == pygame.KEYUP:
