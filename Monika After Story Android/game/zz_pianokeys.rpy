@@ -2914,6 +2914,7 @@ init 810 python:
                         
                         Conclusion: It should be safe to pass None or a mouse event here.
                         """
+                        
                         self.stateListen(ev, key)
                     
                     elif self.state in self.POST_STATES:
@@ -4013,10 +4014,10 @@ init 810 python:
                         self.setsongmode(False)
                         self.played = list()
                     
-                    """
-                    TOUCH CONTROLS
-                    """
                     elif clicked_config is None and clicked_quit is None:
+                        """
+                        TOUCH CONTROLS
+                        """
                         piano_key = self._get_key_at_pos(x, y)
                         
                         if ev.type == pygame.MOUSEBUTTONDOWN and piano_key is not None:
