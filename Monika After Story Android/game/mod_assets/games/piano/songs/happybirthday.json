@@ -12,9 +12,7 @@
     "fail_label": "mas_piano_hb_fail",
     "prac_label": "mas_piano_hb_prac",
     "end_wait": 5,
-    "verse_list": [
-        0
-    ],
+    "verse_list": [0],
     "pnm_list": [
         {
             "text": "Feliz cumpleaños para ti",
