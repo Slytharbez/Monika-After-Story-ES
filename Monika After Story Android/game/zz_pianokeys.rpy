@@ -2355,17 +2355,18 @@ init 810 python:
 
         """
         NOTE: ordered list of black keys for hit testing (key, relative_x)
-        Copied from previous blacks definition.
+        Copied from previous blacks definition but shifted by -51 pixels to match the piano keys image offset.
+        Originals: 73, 110, 147, 221, 258, 332, 369, 406
         """
         BLACK_KEYS_POS = [
-            (mas_piano_keys.F4SH, 73),
-            (mas_piano_keys.G4SH, 110),
-            (mas_piano_keys.A4SH, 147),
-            (mas_piano_keys.C5SH, 221),
-            (mas_piano_keys.D5SH, 258),
-            (mas_piano_keys.F5SH, 332),
-            (mas_piano_keys.G5SH, 369),
-            (mas_piano_keys.A5SH, 406)
+            (mas_piano_keys.F4SH, 22),
+            (mas_piano_keys.G4SH, 59),
+            (mas_piano_keys.A4SH, 96),
+            (mas_piano_keys.C5SH, 170),
+            (mas_piano_keys.D5SH, 207),
+            (mas_piano_keys.F5SH, 281),
+            (mas_piano_keys.G5SH, 318),
+            (mas_piano_keys.A5SH, 355)
         ]
 
         def __init__(self, mode, pnml=None):
