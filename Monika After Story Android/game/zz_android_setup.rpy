@@ -219,7 +219,7 @@ init python:
             dest_path = os.path.join(dest_dir, "stockfish_android")
 
             try:
-                # Lectura directa del asset encontrado
+
                 file_handle = renpy.file(found_path)
                 with open(dest_path, "wb") as out_file:
                     out_file.write(file_handle.read())
@@ -317,22 +317,27 @@ init 50 python:
                 root_logger.addHandler(hdlr)
                 print("[ANDROID_OVERRIDES] Logging redirected")
 
-                # --- EXTRA MODULE LOGS REDIRECTION ---
-                # List of specific MAS loggers to redirect to the external log folder
+                """
+                EXTRA MODULE LOGS
+                Redirect specific MAS loggers to the external folder.
+                """
                 extra_loggers = ["aff_log", "pnm", "submod_log", "spj", "mfgen"]
                 
                 for log_name in extra_loggers:
                     try:
-                        # Get the specific logger
                         tgt_log = logging.getLogger(log_name)
                         
-                        # Remove existing handlers to avoid duplication/internal writing
+                        """
+                        Disconnect existing handlers to prevent internal writing.
+                        """
                         for h in tgt_log.handlers[:]:
                             tgt_log.removeHandler(h)
                             h.close()
                         
-                        # create new handler pointing to backpack
-                        # We use .txt for mobile readability
+                        """
+                        Attach external rotating handler.
+                        Using .txt extension for mobile accessibility.
+                        """
                         l_file = os.path.join(ANDROID_LOG_PATH, log_name + ".txt")
                         
                         l_hdlr = logging.handlers.RotatingFileHandler(
@@ -341,7 +346,6 @@ init 50 python:
                             backupCount=getattr(store.mas_logging, "BACKUP_COUNT", 5)
                         )
                         
-                        # Use same formatter
                         l_hdlr.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
                         
                         tgt_log.addHandler(l_hdlr)
@@ -366,7 +370,6 @@ init 50 python:
 
         try:
             private_dir = os.environ.get('ANDROID_PRIVATE', '')
-            # Ren'Py usually dumps traceback.txt in the base files dir or game dir
             internal_files_dir = os.path.join(private_dir, "files")
             
             logs_to_rescue = ["traceback.txt", "log.txt"]
@@ -374,8 +377,9 @@ init 50 python:
             for log_file in logs_to_rescue:
                 src_path = os.path.join(internal_files_dir, log_file)
                 
-                # Destination: Root of Backpack for traceback, or Log folder? 
-                # User requested: "traceback.txt (informe de fallos) y log.txt (registro de Ren'Py) aparezcan en la raíz de la carpeta externa"
+                """
+                Move logs to Backpack root for user access.
+                """
                 dst_path = os.path.join(ANDROID_BACKPACK_PATH, log_file)
                 
                 if os.path.exists(src_path):
@@ -383,14 +387,13 @@ init 50 python:
                         shutil.copy2(src_path, dst_path)
                         print("[ANDROID_RESCUE] Rescued log: " + log_file)
                         
-                        # Optional: Verify copy size?
                     except Exception as e:
                         print("[ANDROID_RESCUE] Failed to copy " + log_file + ": " + str(e))
                         
         except Exception as e:
             print("[ANDROID_RESCUE] Error processing log rescue: " + str(e))
 
-    # Call log rescue immediately after definition
+
     mas_android_rescue_logs()
 
     def mas_android_rescue_saves():
