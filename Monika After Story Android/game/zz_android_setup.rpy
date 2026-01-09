@@ -35,6 +35,23 @@ python early:
         except:
             pass
 
+        """
+        [CRITICAL FIX] LOGGING DIRECTORY
+        Force (renpy) system logs (log.txt) to be written to the Backpack.
+        This avoids the need for a 'rescue' operation for the main log.
+        """
+        try:
+            # Standard "Monika After Story" root for log.txt to match user request
+            _log_path = "/storage/emulated/0/Monika After Story/" 
+            if not os.path.exists(_log_path):
+                os.makedirs(_log_path)
+            
+            config.log_directory = _log_path
+            # Ensure logging is enabled even if it was somehow disabled
+            config.log_enable = True 
+        except:
+            pass
+
 init -999 python:
     import os
     import shutil
