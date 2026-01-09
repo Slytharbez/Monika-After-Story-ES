@@ -410,9 +410,7 @@ init -3 python in mas_piano_keys:
     pnml_basedir = os.path.normcase(
         renpy.config.basedir + "/piano_songs/"
     )
-    stock_pnml_basedir = os.path.normcase(
-        renpy.config.basedir + "/game/mod_assets/games/piano/songs/"
-    )
+    stock_pnml_basedir = "mod_assets/games/piano/songs/"
     no_pnml_basedir = False
     try:
         if not os.access(pnml_basedir, os.F_OK):
