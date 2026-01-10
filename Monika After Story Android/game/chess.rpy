@@ -3388,7 +3388,7 @@ init python:
             Additional stockfish setup to get the game going using it as Monika's engine
             """
             
-            self.stockfish = None  # Init to None for safety
+            self.stockfish = None 
 
             def open_stockfish(path, startupinfo=None):
                 """
