@@ -780,7 +780,7 @@ init 10 python:
 
     if renpy.android:
         store.songs.custom_music_dir = "/storage/emulated/0/Monika After Story/custom_bgm/"
-        store.songs.custom_music_reldir = store.songs.custom_music_dir
+        store.songs.custom_music_reldir = "file://" + store.songs.custom_music_dir
     else:
         store.songs.custom_music_dir = (
             config.basedir + "/" + store.songs.custom_music_dir + "/"
