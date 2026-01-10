@@ -1085,15 +1085,19 @@ init python:
         
         else:
             
-            # [ANDROID] CACHING SYSTEM (GAME-RELATIVE)
-            # Strategy: Cache to 'game/music_cache' so we can play via relative path "music_cache/current_bgm.mp3"
-            # This tricks Ren'Py into treating it as a standard asset.
+            """
+            CACHING SYSTEM
+            Strategy: Cache to 'game/music_cache' so we can play via relative path "music_cache/current_bgm.mp3"
+            This tricks Ren'Py into treating it as a standard asset.
+            """
             play_song = song
             
             if renpy.android and isinstance(song, basestring) and song.startswith("/"):
                 try:
-                    # 1. Define Cache Dir relative to game root
-                    # renpy.config.gamedir gives the absolute path to 'game/'
+                    """
+                    Define Cache Dir relative to game root
+                    renpy.config.gamedir gives the absolute path to 'game/'
+                    """
                     base_game_dir = renpy.config.gamedir
                     rel_cache_dir = "music_cache"
                     abs_cache_dir = os.path.join(base_game_dir, rel_cache_dir)
@@ -1101,19 +1105,17 @@ init python:
                     if not os.path.exists(abs_cache_dir):
                         os.makedirs(abs_cache_dir)
                     
-                    # 2. Define Cache File
                     _, ext = os.path.splitext(song)
                     rel_cache_file = os.path.join(rel_cache_dir, "current_bgm" + ext).replace("\\", "/") # Ren'Py likes forward slashes
                     abs_cache_file = os.path.join(abs_cache_dir, "current_bgm" + ext)
                     
-                    # 3. Delete old if exists
                     if os.path.exists(abs_cache_file):
                         os.remove(abs_cache_file)
                         
-                    # 4. Copy new file
+
                     shutil.copy2(song, abs_cache_file)
                     
-                    # 5. Play using RELATIVE path
+
                     play_song = rel_cache_file
                     
                     print("[MAS_MUSIC] Cached to: " + abs_cache_file)
