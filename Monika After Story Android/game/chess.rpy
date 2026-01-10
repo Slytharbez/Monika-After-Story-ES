@@ -3429,7 +3429,7 @@ init python:
                         store.mas_ptod.wx_cmd("import os", local_ctx)
 
                         if renpy.android:
-                            cmd_str = "subprocess.call(['chmod','755', store.mas_chess.STOCKFISH_PATH])"
+                            cmd_str = "subprocess.call(['chmod','755', '{0}'])".format(store.mas_chess.STOCKFISH_PATH)
                         else:
                             cmd_str = "subprocess.call(['chmod','+x', os.path.normcase(basedir + '/game/mod_assets/games/chess/stockfish_8_{0}_x64')])".format(
                                 "linux" if renpy.linux else "macosx"
@@ -3490,6 +3490,11 @@ init python:
                 stockfish_path = None
                 
                 if native_lib_dir:
+                    try:
+                        print("[MAS_CHESS] Liisting Native Lib Dir: " + str(os.listdir(native_lib_dir)))
+                    except:
+                        print("[MAS_CHESS] Could not list native lib dir.")
+
                     candidate = os.path.join(native_lib_dir, "libstockfish.so")
                     if os.path.exists(candidate):
                         stockfish_path = candidate
