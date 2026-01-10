@@ -321,8 +321,15 @@ init -1 python in songs:
                     """
                     [ANDROID] Encode path for playback
                     spaces must be %20, etc.
+                    We must encode unicode strings (u'\xd8') to utf-8 before quoting
                     """
-                    play_path = "file://" + urllib.quote(filepath, safe="/")
+                    try:
+                        safe_path = filepath.encode("utf-8")
+                        quoted_path = urllib.quote(safe_path, safe="/")
+                        play_path = "file://" + quoted_path
+                    except:
+                        # Fallback for very weird filenames
+                        play_path = "file://" + filepath
                 else:
                     play_path = custom_music_reldir + ogg_file
 
