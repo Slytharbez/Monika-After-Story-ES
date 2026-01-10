@@ -318,16 +318,7 @@ init -1 python in songs:
                 
                 
                 if renpy.android:
-                    # [ANDROID] Encode path for playback using file:// URI
-                    # We MUST encode unicode filenames to utf-8 before quoting to avoid KeyError
-                    try:
-                        safe_path = filepath.encode("utf-8")
-                        # quote allows / safely
-                        quoted_path = urllib.quote(safe_path, safe="/")
-                        play_path = "file://" + quoted_path
-                    except:
-                        # Fallback for extreme edge cases, though file:// is likely required
-                        play_path = "file://" + filepath
+                    play_path = custom_music_dir + ogg_file
                 else:
                     play_path = custom_music_reldir + ogg_file
 
@@ -1067,6 +1058,8 @@ init python:
             songs.setUserVolume(songs.music_volume, "music")
 
 
+    import shutil
+
     def mas_play_song(song, fadein=0.0, loop=True, set_per=False, fadeout=0.0, if_changed=False):
         """
         literally just plays a song onto the music channel
@@ -1091,14 +1084,51 @@ init python:
             renpy.music.stop(channel="music", fadeout=fadeout)
         
         else:
+            
+            # [ANDROID] CACHING SYSTEM
+            # If we are on Android and the song is an absolute path (external storage),
+            # we copy it to the private internal storage to ensure the audio engine can read it.
+            play_song = song
+            
+            if renpy.android and isinstance(song, basestring) and song.startswith("/"):
+                try:
+                    # 1. Define Cache Dir
+                    private_dir = os.environ.get('ANDROID_PRIVATE', '')
+                    cache_dir = os.path.join(private_dir, "files/music_cache")
+                    
+                    if not os.path.exists(cache_dir):
+                        os.makedirs(cache_dir)
+                    
+                    # 2. Define Cache File (using generic name to avoid encoding issues)
+                    # We use extension from original file
+                    _, ext = os.path.splitext(song)
+                    cache_file = os.path.join(cache_dir, "current_bgm" + ext)
+                    
+                    # 3. Delete old if exists
+                    if os.path.exists(cache_file):
+                        os.remove(cache_file)
+                        
+                    # 4. Copy new file
+                    shutil.copy2(song, cache_file)
+                    
+                    # 5. Update play target
+                    play_song = cache_file
+                    
+                    print("[MAS_MUSIC] Cached to: " + play_song)
+                    
+                except Exception as e:
+                    print("[MAS_MUSIC] Cache Error: " + str(e))
+                    # Fallback to original
+                    play_song = song
+
             # [DEBUG] Log playback attempt
             try:
-                print("[MAS_MUSIC] Playing: " + str(song))
+                print("[MAS_MUSIC] Playing: " + str(play_song))
             except:
                 pass
 
             renpy.music.play(
-                song,
+                play_song,
                 channel="music",
                 loop=loop,
                 synchro_start=True,
