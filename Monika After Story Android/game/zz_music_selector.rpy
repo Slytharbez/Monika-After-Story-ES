@@ -271,6 +271,8 @@ init -1 python in songs:
         return (music_list[:PAGE_LIMIT], music_list[PAGE_LIMIT:])
 
 
+    import urllib
+
     def _m1_zz_music_selector__scanCustomBGM(music_list):
         """
         Scans the custom music directory for custom musics and adds them to
@@ -315,9 +317,18 @@ init -1 python in songs:
                 loop_prefix = _getLoopData(_audio_file, _ext)
                 
                 
+                if renpy.android:
+                    """
+                    [ANDROID] Encode path for playback
+                    spaces must be %20, etc.
+                    """
+                    play_path = "file://" + urllib.quote(filepath, safe="/")
+                else:
+                    play_path = custom_music_reldir + ogg_file
+
                 music_list.append((
                     cleanGUIText(disp_name),
-                    loop_prefix + custom_music_reldir + ogg_file
+                    loop_prefix + play_path
                 ))
                 
                 
@@ -780,7 +791,7 @@ init 10 python:
 
     if renpy.android:
         store.songs.custom_music_dir = "/storage/emulated/0/Monika After Story/custom_bgm/"
-        store.songs.custom_music_reldir = "file://" + store.songs.custom_music_dir
+        store.songs.custom_music_reldir = store.songs.custom_music_dir
     else:
         store.songs.custom_music_dir = (
             config.basedir + "/" + store.songs.custom_music_dir + "/"
@@ -1075,6 +1086,12 @@ init python:
             renpy.music.stop(channel="music", fadeout=fadeout)
         
         else:
+            # [DEBUG] Log playback attempt
+            try:
+                print("[MAS_MUSIC] Playing: " + str(song))
+            except:
+                pass
+
             renpy.music.play(
                 song,
                 channel="music",
