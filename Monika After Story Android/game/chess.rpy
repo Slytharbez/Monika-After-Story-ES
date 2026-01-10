@@ -3351,8 +3351,12 @@ init python:
                 ]
         
         def __del__(self):
-            self.stockfish.stdin.close()
-            self.stockfish.wait()
+            if self.stockfish:
+                try:
+                    self.stockfish.stdin.close()
+                    self.stockfish.wait()
+                except:
+                    pass
         
         def poll_monika_move(self):
             """
@@ -3384,6 +3388,8 @@ init python:
             Additional stockfish setup to get the game going using it as Monika's engine
             """
             
+            self.stockfish = None  # Init to None for safety
+
             def open_stockfish(path, startupinfo=None):
                 """
                 Runs stockfish
@@ -3402,6 +3408,7 @@ init python:
                 
                 
                 except OSError as os_err:
+                    print("[MAS_CHESS] OSError starting stockfish: " + str(os_err))
                     if not renpy.windows:
                         renpy.show("monika 1etsdlc", at_list=[t11])
                         renpy.say(m, "Hmm, es extraño. Parece que algunos permisos fueron cambiados y no puedo hacer funcionar el ajedrez en tu sistema.")
@@ -3444,6 +3451,7 @@ init python:
                         
                         
                         except Exception as ex:
+                            print("[MAS_CHESS] Retry Popen failed: " + str(ex))
                             os_err = ex
                     
                     mas_utils.mas_log.exception(os_err)
@@ -3451,6 +3459,7 @@ init python:
                 
                 
                 except Exception as ex:
+                    print("[MAS_CHESS] General Exception starting stockfish: " + str(ex))
                     mas_utils.mas_log.exception(ex)
                     renpy.jump("mas_chess_cannot_work_embarrassing")
             
