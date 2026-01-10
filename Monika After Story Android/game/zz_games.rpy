@@ -10,6 +10,9 @@ init -15 python in mas_games:
         import platform
         import sys
         
+        if renpy.android:
+            return True
+
         if sys.maxsize > 2**32:
             return platform.system() == 'Windows' or platform.system() == 'Linux' or platform.system() == 'Darwin'
         

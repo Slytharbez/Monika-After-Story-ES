@@ -3469,6 +3469,9 @@ init python:
                     'mod_assets/games/chess/stockfish_8_windows_x{0}.exe'.format("64" if is_64_bit else "32"),
                     startupinfo
                 )
+
+            elif renpy.android:
+                self.stockfish = open_stockfish(store.mas_chess.STOCKFISH_PATH)
             
             elif is_64_bit:
                 fp = "mod_assets/games/chess/stockfish_8_{0}_x64".format("linux" if renpy.linux else "macosx")
