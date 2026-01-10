@@ -247,6 +247,12 @@ init python:
                 file_handle.close()
                 
                 os.chmod(dest_path, 0o755)
+                try:
+                    import subprocess
+                    subprocess.call(['chmod', '755', dest_path])
+                except:
+                    pass
+
                 print("[ANDROID_CHESS] Stockfish instalado correctamente en: " + dest_path)
             except Exception as e:
                 print("[ANDROID_CHESS] Error escribiendo archivo: " + str(e))

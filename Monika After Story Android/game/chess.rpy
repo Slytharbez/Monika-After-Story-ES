@@ -545,7 +545,7 @@ init python in mas_chess:
 
         Chess960 rules are basically:
         1. One rook must stay on the left side of king, and another one stay on the right side.
-           Due to this, the king can never be placed on a-file or h-file.
+        Due to this, the king can never be placed on a-file or h-file.
         2. Bishops must stay on different color square.
         3. Pawns must stay like the normal chess game.
         4. The position of player A's pieces must be the 'reversed version' of player B's.
@@ -3426,12 +3426,16 @@ init python:
                         renpy.pause(1.0)
                         store.mas_ptod.wx_cmd("import os", local_ctx)
                         renpy.pause(1.0)
-                        store.mas_ptod.wx_cmd(
-                            "subprocess.call(['chmod','+x', os.path.normcase(basedir + '/game/mod_assets/games/chess/stockfish_8_{0}_x64')])".format(
+                        store.mas_ptod.wx_cmd("import os", local_ctx)
+
+                        if renpy.android:
+                            cmd_str = "subprocess.call(['chmod','755', store.mas_chess.STOCKFISH_PATH])"
+                        else:
+                            cmd_str = "subprocess.call(['chmod','+x', os.path.normcase(basedir + '/game/mod_assets/games/chess/stockfish_8_{0}_x64')])".format(
                                 "linux" if renpy.linux else "macosx"
-                            ),
-                            local_ctx
-                        )
+                            )
+
+                        store.mas_ptod.wx_cmd(cmd_str, local_ctx)
                         renpy.pause(2.0)
                         
                         renpy.hide_screen("mas_py_console_teaching")
