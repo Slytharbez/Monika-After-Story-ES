@@ -3486,7 +3486,7 @@ init python:
 
             elif renpy.android:
                 # Native Library Logic for Android 10+
-                native_lib_dir = store.mas_android_setup.mas_get_native_lib_dir()
+                native_lib_dir = store.mas_get_native_lib_dir()
                 stockfish_path = None
                 
                 if native_lib_dir:
