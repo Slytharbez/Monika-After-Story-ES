@@ -97,14 +97,14 @@ init -999 python:
             os.path.join(ANDROID_BACKPACK_PATH, "game/submods/")
         ]
 
-        print("[ANDROID_SETUP] Iniciando creación agresiva de directorios...")
+        print("Iniciando creación agresiva de directorios...")
         for d in dirs_to_create:
             if not os.path.exists(d):
                 try:
                     os.makedirs(d)
-                    print("[ANDROID_SETUP] Creado: " + d)
+                    print("Creado: " + d)
                 except Exception as e:
-                    print("[ANDROID_SETUP] Error creando " + d + ": " + str(e))
+                    print("Error creando " + d + ": " + str(e))
             else:
                 pass
     
@@ -206,7 +206,7 @@ init python:
             arch = platform.machine()
             binary_name = "stockfish-android-armv7"
             if "aarch64" in arch or "armv8" in arch:
-                binary_name = "stockfish-android-arm64-v8a"
+                binary_name = "stockfish-android-armv8"
             
             """
             Estrategia de Escaneo
@@ -214,6 +214,10 @@ init python:
             found_path = None
             all_files = renpy.list_files()
             
+            # Debug: List candidates to help trace issues
+            candidates = [f for f in all_files if "stockfish" in f.lower()]
+            print("[ANDROID_CHESS] Candidates found in assets: " + str(candidates))
+
             for f in all_files:
                 if f.endswith(binary_name):
                     found_path = f
