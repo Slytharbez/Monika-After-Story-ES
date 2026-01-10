@@ -1119,16 +1119,10 @@ init python:
                     print("[MAS_MUSIC] Cached to: " + abs_cache_file)
                     print("[MAS_MUSIC] Relative Play Path: " + play_song)
                     
-                except Exception as e:
-                    print("[MAS_MUSIC] Relative Cache Error: " + str(e))
-                    # Fallback to absolute dump if game dir not writable?
+                except Exception:
+
                     pass
 
-            # [DEBUG] Log playback attempt
-            try:
-                print("[MAS_MUSIC] Playing: " + str(play_song))
-            except:
-                pass
 
             renpy.music.play(
                 play_song,
