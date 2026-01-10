@@ -3485,26 +3485,29 @@ init python:
                 )
 
             elif renpy.android:
-                # Native Library Logic for Android 10+
+                """
+                Native Library Logic for Android 10+
+                Utilizes the system's native library path to locate and execute libstockfish.so.
+                This bypasses W^X execution restrictions on modern Android versions.
+                """
                 native_lib_dir = store.mas_get_native_lib_dir()
                 stockfish_path = None
                 
                 if native_lib_dir:
-                    try:
-                        print("[MAS_CHESS] Liisting Native Lib Dir: " + str(os.listdir(native_lib_dir)))
-                    except:
-                        print("[MAS_CHESS] Could not list native lib dir.")
-
                     candidate = os.path.join(native_lib_dir, "libstockfish.so")
                     if os.path.exists(candidate):
                         stockfish_path = candidate
                 
                 if stockfish_path:
-                    print("[MAS_CHESS] Opening Stockfish from Native Lib: " + stockfish_path)
+                    
                     self.stockfish = open_stockfish(stockfish_path)
                 else:
+                    """
+                    Fallback to legacy path
+                    Useful for older Android versions < 10 where execution in private storage is allowed,
+                    or if the native library extraction failed.
+                    """
                     print("[MAS_CHESS] Native lib not found, fallback to legacy path.")
-                    # Fallback to old path just in case, though it will likely fail on Android 10+
                     self.stockfish = open_stockfish(store.mas_chess.STOCKFISH_PATH)
             
             elif is_64_bit:

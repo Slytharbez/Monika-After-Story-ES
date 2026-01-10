@@ -41,13 +41,18 @@ python early:
         This avoids the need for a 'rescue' operation for the main log.
         """
         try:
-            # Standard "Monika After Story" root for log.txt to match user request
+            """
+            Standard "Monika After Story" root for log.txt to match user request
+            """
             _log_path = "/storage/emulated/0/Monika After Story/" 
             if not os.path.exists(_log_path):
                 os.makedirs(_log_path)
             
             config.log_directory = _log_path
-            # Ensure logging is enabled even if it was somehow disabled
+            
+            """
+            Ensure logging is enabled even if it was somehow disabled
+            """
             config.log_enable = True 
         except:
             pass
@@ -203,20 +208,27 @@ init python:
             return None
             
         try:
-            # Contexto de la aplicación
+            """
+            Contexto de la aplicación
+            Obtenemos la actividad actual para acceder al contexto y rutas nativas.
+            """
             CurrentActivity = mas_get_current_activity()
             if not CurrentActivity:
                 return None
                 
             context = CurrentActivity.getApplicationContext()
             
-            # Obtener ApplicationInfo
+            """
+            Obtener ApplicationInfo
+            Accedemos a nativeLibraryDir donde Android descomprime los .so
+            """
             app_info = context.getApplicationInfo()
             
-            # Ruta de librerías nativas
+            """
+            Ruta de librerías nativas
+            """
             lib_path = app_info.nativeLibraryDir
             
-            print("[ANDROID_CHESS] Native Lib Path detected: " + str(lib_path))
             return lib_path
 
         except Exception as e:
@@ -349,36 +361,58 @@ init 50 python:
 
     def mas_android_rescue_logs():
         """
-        LOG RESCUE
-        Checks for crash logs (traceback.txt) or system logs (log.txt) in multiple
-        internal locations and copies them to the external backpack.
+        ANDROID LOG RESCUE SYSTEM
+
+        Scans potential internal directories for Ren'Py system logs (traceback.txt, log.txt)
+        and copies them to the user-accessible external storage (Backpack).
+
+        This is necessary because Android restricted storage prevents users from seeing
+        tracebacks when the game crashes.
+
+        OUT:
+            Writes copied logs to ANDROID_BACKPACK_PATH if found.
+            Generates 'log_rescue_debug.txt' with search results.
         """
         if not renpy.android:
             return
 
         try:
-            # Candidate directories where Ren'Py might dump logs
+            """
+            CANDIDATE LIST GENERATION
+            We build a list of potential internal paths where Ren'Py might have
+            dumped the crash logs.
+            """
             candidates = []
             
+            """
             # 1. Private Files Dir
+            """
             private_dir = os.environ.get('ANDROID_PRIVATE', '')
             if private_dir:
                 candidates.append(private_dir)
                 candidates.append(os.path.join(private_dir, "files"))
             
+            """
             # 2. Ren'Py Base Dir
+            """
             if renpy.config.basedir:
                 candidates.append(renpy.config.basedir)
                 
+            """
             # 3. Current Working Dir
+            """
             candidates.append(os.getcwd())
             
+            """
             # Deduplicate candidates
+            """
             candidates = list(set(candidates))
             
             logs_to_rescue = ["traceback.txt", "log.txt"]
             
+            """
             # Debug info to help user identify where we are looking
+            """
             debug_info = []
             debug_info.append("Searching for logs in:")
             for c in candidates:
@@ -399,7 +433,9 @@ init 50 python:
                             shutil.copy2(src_path, dst_path)
                             debug_info.append("SUCCESS: Found and copied " + log_file + " from " + src_dir)
                             found_any = True
-                            # Stop searching for this specific file once found
+                            """
+                            Stop searching for this specific file once found
+                            """
                             break 
                         except Exception as e:
                             debug_info.append("ERROR: Found " + log_file + " but failed to copy: " + str(e))
@@ -407,7 +443,9 @@ init 50 python:
             if not found_any:
                 debug_info.append("FAILURE: Could not find log.txt or traceback.txt in any candidate.")
 
+            """
             # Write debug info to a visible file so user can report back
+            """
             try:
                 debug_path = os.path.join(ANDROID_BACKPACK_PATH, "log_rescue_debug.txt")
                 with open(debug_path, "w") as f:
