@@ -196,71 +196,32 @@ init python:
 
 
     """
-    AJEDREZ UNIVERSAL
+    AJEDREZ UNIVERSAL (NATIVE LIB)
     """
-    def mas_android_install_stockfish():
+    def mas_get_native_lib_dir():
         if not renpy.android:
-            return
-
+            return None
+            
         try:
-            arch = platform.machine()
-            binary_name = "stockfish-android-armv7"
-            if "aarch64" in arch or "armv8" in arch:
-                binary_name = "stockfish-android-armv8"
-            
-            """
-            Estrategia de Escaneo
-            """
-            found_path = None
-            all_files = renpy.list_files()
-            
-            # Debug: List candidates to help trace issues
-            candidates = [f for f in all_files if "stockfish" in f.lower()]
-            print("[ANDROID_CHESS] Candidates found in assets: " + str(candidates))
-
-            for f in all_files:
-                if f.endswith(binary_name):
-                    found_path = f
-                    break
-            
-            if not found_path:
-                print("[ANDROID_CHESS] ERROR CRÍTICO: No se encontró " + binary_name + " en ningún lugar de los assets.")
-                return
-
-            print("[ANDROID_CHESS] Binario encontrado en: " + found_path)
-
-            """
-            Instalación
-            """
-            private_dir = os.environ.get('ANDROID_PRIVATE', '')
-            dest_dir = os.path.join(private_dir, "files")
-            if not os.path.exists(dest_dir):
-                os.makedirs(dest_dir)
-            
-            dest_path = os.path.join(dest_dir, "stockfish_android")
-
-            try:
-
-                file_handle = renpy.file(found_path)
-                with open(dest_path, "wb") as out_file:
-                    out_file.write(file_handle.read())
-                file_handle.close()
+            # Contexto de la aplicación
+            CurrentActivity = mas_get_current_activity()
+            if not CurrentActivity:
+                return None
                 
-                os.chmod(dest_path, 0o755)
-                try:
-                    import subprocess
-                    subprocess.call(['chmod', '755', dest_path])
-                except:
-                    pass
-
-                print("[ANDROID_CHESS] Stockfish instalado correctamente en: " + dest_path)
-            except Exception as e:
-                print("[ANDROID_CHESS] Error escribiendo archivo: " + str(e))
+            context = CurrentActivity.getApplicationContext()
+            
+            # Obtener ApplicationInfo
+            app_info = context.getApplicationInfo()
+            
+            # Ruta de librerías nativas
+            lib_path = app_info.nativeLibraryDir
+            
+            print("[ANDROID_CHESS] Native Lib Path detected: " + str(lib_path))
+            return lib_path
 
         except Exception as e:
-            print("[ANDROID_CHESS] Excepción general instalando Stockfish: " + str(e))
-
-    mas_android_install_stockfish()
+            print("[ANDROID_CHESS] Error obteniendo nativeLibraryDir: " + str(e))
+            return None
 
     def mas_android_has_permission():
         """

@@ -3472,6 +3472,7 @@ init python:
                 
                 renpy.jump("mas_chess_cannot_work_embarrassing")
             
+            
             is_64_bit = sys.maxsize > 2**32
             
             if renpy.windows:
@@ -3484,12 +3485,26 @@ init python:
                 )
 
             elif renpy.android:
-                self.stockfish = open_stockfish(store.mas_chess.STOCKFISH_PATH)
+                # Native Library Logic for Android 10+
+                native_lib_dir = store.mas_android_setup.mas_get_native_lib_dir()
+                stockfish_path = None
+                
+                if native_lib_dir:
+                    candidate = os.path.join(native_lib_dir, "libstockfish.so")
+                    if os.path.exists(candidate):
+                        stockfish_path = candidate
+                
+                if stockfish_path:
+                    print("[MAS_CHESS] Opening Stockfish from Native Lib: " + stockfish_path)
+                    self.stockfish = open_stockfish(stockfish_path)
+                else:
+                    print("[MAS_CHESS] Native lib not found, fallback to legacy path.")
+                    # Fallback to old path just in case, though it will likely fail on Android 10+
+                    self.stockfish = open_stockfish(store.mas_chess.STOCKFISH_PATH)
             
             elif is_64_bit:
                 fp = "mod_assets/games/chess/stockfish_8_{0}_x64".format("linux" if renpy.linux else "macosx")
                 
-                os.chmod(config.basedir + "/game/".format(fp), 0755)
                 self.stockfish = open_stockfish(fp)
             
             
