@@ -318,18 +318,18 @@ init -1 python in songs:
                 
                 
                 if renpy.android:
-                    """
-                    [ANDROID] Encode path for playback
-                    spaces must be %20, etc.
-                    We must encode unicode strings (u'\xd8') to utf-8 before quoting
-                    """
+                    play_path = custom_music_dir + ogg_file
+                    
+                    # [DEBUG] Verify file access
                     try:
-                        safe_path = filepath.encode("utf-8")
-                        quoted_path = urllib.quote(safe_path, safe="/")
-                        play_path = "file://" + quoted_path
-                    except:
-                        # Fallback for very weird filenames
-                        play_path = "file://" + filepath
+                        if os.path.exists(play_path):
+                            f_size = os.path.getsize(play_path)
+                            print("[MAS_MUSIC] File Found: " + play_path + " | Size: " + str(f_size))
+                        else:
+                            print("[MAS_MUSIC] File NOT Found: " + play_path)
+                    except Exception as e:
+                        print("[MAS_MUSIC] Access Error: " + str(e))
+                        
                 else:
                     play_path = custom_music_reldir + ogg_file
 
