@@ -147,7 +147,7 @@ init -990 python:
             except Exception as e:
                 print("[ANDROID_SUBMODS] Error listing root: " + str(e))
         else:
-             print("[ANDROID_SUBMODS] FATAL: Root MAS directory not found via os.path.exists!")
+            print("[ANDROID_SUBMODS] FATAL: Root MAS directory not found via os.path.exists!")
 
         if os.path.exists(ext_submods_dir):
             print("[ANDROID_SUBMODS] Directory FOUND.")
