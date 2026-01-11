@@ -147,7 +147,7 @@ init -999 python:
     
     mas_android_setup_backpack()
 
-init -980 python:
+init 10 python:
     """
     [ANDROID] MANUAL SUBMOD LOADER
     Since Ren'Py's auto-scanning might not pick up external scripts immediately,
