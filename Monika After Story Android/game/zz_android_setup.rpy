@@ -174,10 +174,22 @@ init 10 python:
         if ext_loader_dir:
             print("[ANDROID_LOADER] Scanning for .rpy files in: " + ext_loader_dir)
             
+            # Get list of files Ren'Py already knows about to avoid double-loading
+            known_files = set(renpy.list_files())
+            
             for root, dirs, files in os.walk(ext_loader_dir):
                 for f in files:
                     if f.endswith(".rpy"):
                         full_path = os.path.join(root, f)
+                        
+                        # Calculate relative path to check against known_files
+                        # Ren'Py usually stores paths relative to the searchpath root with forward slashes
+                        rel_path = os.path.relpath(full_path, ext_loader_dir).replace("\\", "/")
+                        
+                        if rel_path in known_files:
+                            print("[ANDROID_LOADER] Skipping known file: " + rel_path)
+                            continue
+                            
                         try:
                             # Open as binary to avoid encoding issues on read, then decode
                             with open(full_path, "rb") as f_obj:
@@ -195,6 +207,7 @@ init 10 python:
                             traceback.print_exc()
         else:
             print("[ANDROID_LOADER] No submod directory found (this should not happen if early init worked).")
+
 
 
 init python:
