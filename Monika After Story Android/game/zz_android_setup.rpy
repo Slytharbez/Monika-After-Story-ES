@@ -172,24 +172,11 @@ init -999 python:
     
     mas_android_setup_backpack()
 
-init 10 python:
+init 50 python:
     """
-    [ANDROID] PATCHES
-    Pre-inject globals into submod stores that might miss them due to scoping issues.
-    """
-    try:
-        if store.mas_compliments:
-            store.mas_compliments.mas_get_player_nickname = mas_get_player_nickname
-            print("[ANDROID_PATCH] Injected mas_get_player_nickname into mas_compliments")
-    except:
-        pass
-
-
-init 10 python:
-    """
-    [ANDROID] MANUAL SUBMOD LOADER
-    Since Ren'Py's auto-scanning might not pick up external scripts immediately,
-    we manually find and load .rpy files using renpy.load_string.
+    [ANDROID] MANUAL SUBMOD LOADER & PATCHES
+    We load submods LATE (init 50) to ensure all core MAS components (like mas_seasons at init 10)
+    are fully initialized before submods try to use them.
     """
     if renpy.android:
         import os
@@ -243,8 +230,18 @@ init 10 python:
                             print("[ANDROID_LOADER] ERROR loading " + f + ": " + str(e))
                             import traceback
                             traceback.print_exc()
+                            
+            # [ANDROID] APPLY PATCHES AFTER LOADING
+            try:
+                if store.mas_compliments:
+                    store.mas_compliments.mas_get_player_nickname = mas_get_player_nickname
+                    print("[ANDROID_PATCH] Injected mas_get_player_nickname into mas_compliments")
+            except:
+                pass
+                
         else:
             print("[ANDROID_LOADER] No submod directory found (this should not happen if early init worked).")
+
 
 
 
