@@ -94,9 +94,19 @@ python early:
                 if ext_game_dir not in config.searchpath:
                     config.searchpath.append(ext_game_dir)
                     print("[ANDROID_Submods_Early] Added game dir to config.searchpath: " + ext_game_dir)
+            
+            # [CRITICAL FIX] Add external 'python-packages' to sys.path
+            # This allows location submods (which use python-packages) to work
+            import sys
+            ext_packages_dir = mas_root + "/game/python-packages"
+            if os.path.exists(ext_packages_dir):
+                if ext_packages_dir not in sys.path:
+                    sys.path.append(ext_packages_dir)
+                    print("[ANDROID_Submods_Early] Added python-packages to sys.path: " + ext_packages_dir)
 
         except Exception as e:
             print("[ANDROID_Submods_Early] Error: " + str(e))
+
 
 init -999 python:
     import os
@@ -136,6 +146,8 @@ init -999 python:
             ANDROID_LOG_PATH,
             ANDROID_SAVES_PATH,
             ANDROID_CUSTOM_BGM_PATH,
+            os.path.join(ANDROID_BACKPACK_PATH, "game/python-packages/"),
+            os.path.join(ANDROID_BACKPACK_PATH, "game/submods/"),
             os.path.join(ANDROID_BACKPACK_PATH, "game/mod_assets/location/"),
             os.path.join(ANDROID_BACKPACK_PATH, "game/mod_assets/thumbs/"),
             os.path.join(ANDROID_BACKPACK_PATH, "game/mod_assets/monika/"),
@@ -144,8 +156,7 @@ init -999 python:
             os.path.join(ANDROID_BACKPACK_PATH, "game/mod_assets/monika/f/"),
             os.path.join(ANDROID_BACKPACK_PATH, "game/mod_assets/monika/h/"),
             os.path.join(ANDROID_BACKPACK_PATH, "game/mod_assets/monika/j/"),
-            os.path.join(ANDROID_BACKPACK_PATH, "game/mod_assets/monika/t/"),
-            os.path.join(ANDROID_BACKPACK_PATH, "game/submods/")
+            os.path.join(ANDROID_BACKPACK_PATH, "game/mod_assets/monika/t/")
         ]
 
         print("Iniciando creación agresiva de directorios...")
