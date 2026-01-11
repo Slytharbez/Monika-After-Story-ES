@@ -129,7 +129,10 @@ init -990 python:
         """
         ext_submods_dir = "/storage/emulated/0/Monika After Story/Submods"
         
+        print("[ANDROID_SUBMODS] Checking external directory: " + ext_submods_dir)
+        
         if os.path.exists(ext_submods_dir):
+            print("[ANDROID_SUBMODS] Directory FOUND.")
             """
             Add the external directory to Ren'Py's search path so it can find assets if needed.
             We check if it's already there to avoid duplicates, although sets would handle it,
@@ -141,27 +144,49 @@ init -990 python:
             """
             Walk through the external directory to find .rpy and .rpyc files.
             """
+            found_files = 0
             for root, dirs, files in os.walk(ext_submods_dir):
                 for file_name in files:
                     if file_name.endswith((".rpy", ".rpyc")):
+                        found_files += 1
                         """
                         Construct the full path and the relative path for loading.
                         """
                         full_path = os.path.join(root, file_name)
                         rel_path = os.path.relpath(full_path, ext_submods_dir)
 
+                        print("[ANDROID_SUBMODS] Found submod file: " + file_name)
+
                         """
                         We try to load the script.
                         """
                         try:
                             renpy.load_script(rel_path)
-                            store.mas_submod_utils.submod_log.info(
-                                "Loaded external submod: {0}".format(full_path)
-                            )
+                            print("[ANDROID_SUBMODS] SUCCESS: Loaded " + full_path)
+                            
+
+                            try:
+                                store.mas_submod_utils.submod_log.info(
+                                    "Loaded external submod: {0}".format(full_path)
+                                )
+                            except:
+                                pass
+                                
                         except Exception as e:
-                            store.mas_submod_utils.submod_log.error(
-                                "Failed to load external submod: {0} - {1}".format(full_path, e)
-                            )
+                            print("[ANDROID_SUBMODS] ERROR: Failed to load " + full_path + " : " + str(e))
+                            try:
+                                store.mas_submod_utils.submod_log.error(
+                                    "Failed to load external submod: {0} - {1}".format(full_path, e)
+                                )
+                            except:
+                                pass
+            
+            if found_files == 0:
+                print("[ANDROID_SUBMODS] Directory exists but NO .rpy/.rpyc files found.")
+                
+        else:
+            print("[ANDROID_SUBMODS] Directory NOT FOUND. Check permissions.")
+
 
 init python:
     """
