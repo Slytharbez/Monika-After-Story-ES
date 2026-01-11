@@ -99,6 +99,11 @@ init -999 python:
     """
     ANDROID_BACKPACK_PATH = "/storage/emulated/0/Monika After Story/"
     
+    # [ANDROID] Override basedir so submods find their assets in external storage
+    if renpy.android:
+        renpy.config.basedir = ANDROID_BACKPACK_PATH
+
+    
     """
     Subdirectorios críticos
     """
