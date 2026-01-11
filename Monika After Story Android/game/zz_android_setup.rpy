@@ -163,6 +163,19 @@ init -999 python:
 
 init 10 python:
     """
+    [ANDROID] PATCHES
+    Pre-inject globals into submod stores that might miss them due to scoping issues.
+    """
+    try:
+        if store.mas_compliments:
+            store.mas_compliments.mas_get_player_nickname = mas_get_player_nickname
+            print("[ANDROID_PATCH] Injected mas_get_player_nickname into mas_compliments")
+    except:
+        pass
+
+
+init 10 python:
+    """
     [ANDROID] MANUAL SUBMOD LOADER
     Since Ren'Py's auto-scanning might not pick up external scripts immediately,
     we manually find and load .rpy files using renpy.load_string.
