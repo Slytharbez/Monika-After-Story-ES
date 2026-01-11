@@ -124,33 +124,26 @@ init -990 python:
     if renpy.android:
         """
         Define the external path for submods on Android.
-        This path is located in the user's external storage:
-        /storage/emulated/0/Monika After Story/Submods
+        We check multiple candidates because case sensitivity and placement might vary.
         """
         mas_root = "/storage/emulated/0/Monika After Story"
-        ext_submods_dir = mas_root + "/Submods"
         
-        print("[ANDROID_SUBMODS] Checking external directory: " + ext_submods_dir)
+        candidates = [
+            mas_root + "/game/submods",
+            mas_root + "/game/Submods",
+            mas_root + "/submods",
+            mas_root + "/Submods"
+        ]
         
-        """
-        DEBUG: List contents of the root folder to see what IS there.
-        """
-        if os.path.exists(mas_root):
-            try:
-                root_contents = os.listdir(mas_root)
-                print("[ANDROID_SUBMODS] ROOT CONTENTS: " + str(root_contents))
-                
-                # Check for case sensitivity issues
-                for item in root_contents:
-                    if item.lower() == "submods":
-                        print("[ANDROID_SUBMODS] Found candidate: " + item)
-            except Exception as e:
-                print("[ANDROID_SUBMODS] Error listing root: " + str(e))
-        else:
-            print("[ANDROID_SUBMODS] FATAL: Root MAS directory not found via os.path.exists!")
-
-        if os.path.exists(ext_submods_dir):
-            print("[ANDROID_SUBMODS] Directory FOUND.")
+        ext_submods_dir = None
+        
+        for cand in candidates:
+            if os.path.exists(cand):
+                ext_submods_dir = cand
+                print("[ANDROID_SUBMODS] Found valid submod directory: " + cand)
+                break
+        
+        if ext_submods_dir:
             """
             Add the external directory to Ren'Py's search path so it can find assets if needed.
             We check if it's already there to avoid duplicates, although sets would handle it,
@@ -182,13 +175,13 @@ init -990 python:
                             renpy.load_script(rel_path)
                             print("[ANDROID_SUBMODS] SUCCESS: Loaded " + full_path)
                             
-
+                            # Log to MAS log if available check
                             try:
                                 store.mas_submod_utils.submod_log.info(
                                     "Loaded external submod: {0}".format(full_path)
                                 )
                             except:
-                                pass
+                                pass # MAS logging might not be ready
                                 
                         except Exception as e:
                             print("[ANDROID_SUBMODS] ERROR: Failed to load " + full_path + " : " + str(e))
@@ -203,7 +196,7 @@ init -990 python:
                 print("[ANDROID_SUBMODS] Directory exists but NO .rpy/.rpyc files found.")
                 
         else:
-            print("[ANDROID_SUBMODS] Directory NOT FOUND. Check permissions.")
+            print("[ANDROID_SUBMODS] No submod directory found in candidates.")
 
 
 init python:
