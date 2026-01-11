@@ -147,6 +147,56 @@ init -999 python:
     
     mas_android_setup_backpack()
 
+init -980 python:
+    """
+    [ANDROID] MANUAL SUBMOD LOADER
+    Since Ren'Py's auto-scanning might not pick up external scripts immediately,
+    we manually find and load .rpy files using renpy.load_string.
+    """
+    if renpy.android:
+        import os
+        
+        # Redefine candidates to ensure we find the right path again
+        mas_loader_root = "/storage/emulated/0/Monika After Story"
+        loader_candidates = [
+            mas_loader_root + "/game/submods",
+            mas_loader_root + "/game/Submods",
+            mas_loader_root + "/submods",
+            mas_loader_root + "/Submods"
+        ]
+        
+        ext_loader_dir = None
+        for cand in loader_candidates:
+            if os.path.exists(cand):
+                ext_loader_dir = cand
+                break
+        
+        if ext_loader_dir:
+            print("[ANDROID_LOADER] Scanning for .rpy files in: " + ext_loader_dir)
+            
+            for root, dirs, files in os.walk(ext_loader_dir):
+                for f in files:
+                    if f.endswith(".rpy"):
+                        full_path = os.path.join(root, f)
+                        try:
+                            # Open as binary to avoid encoding issues on read, then decode
+                            with open(full_path, "rb") as f_obj:
+                                content_bytes = f_obj.read()
+                                # Decode to unicode assuming UTF-8 (standard for Ren'Py)
+                                content_unicode = content_bytes.decode("utf-8")
+                                
+                                # Manually load the script content
+                                renpy.load_string(content_unicode, filename=full_path)
+                                print("[ANDROID_LOADER] Loaded: " + f)
+                                
+                        except Exception as e:
+                            print("[ANDROID_LOADER] ERROR loading " + f + ": " + str(e))
+                            import traceback
+                            traceback.print_exc()
+        else:
+            print("[ANDROID_LOADER] No submod directory found (this should not happen if early init worked).")
+
+
 init python:
     """
     OPTIMIZACIÓN JNI
