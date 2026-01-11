@@ -85,7 +85,16 @@ python early:
             if ext_submods_dir:
                 if ext_submods_dir not in config.searchpath:
                     config.searchpath.append(ext_submods_dir)
-                    print("[ANDROID_Submods_Early] Added to config.searchpath")
+                    print("[ANDROID_Submods_Early] Added submods dir to config.searchpath")
+
+            # [CRITICAL FIX] Add external 'game' folder to searchpath
+            # This allows submods to access assets via 'submods/MySubmod/image.png'
+            ext_game_dir = mas_root + "/game"
+            if os.path.exists(ext_game_dir):
+                if ext_game_dir not in config.searchpath:
+                    config.searchpath.append(ext_game_dir)
+                    print("[ANDROID_Submods_Early] Added game dir to config.searchpath: " + ext_game_dir)
+
         except Exception as e:
             print("[ANDROID_Submods_Early] Error: " + str(e))
 
