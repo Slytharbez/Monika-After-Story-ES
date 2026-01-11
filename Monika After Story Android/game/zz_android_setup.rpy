@@ -310,23 +310,34 @@ init python:
 
     def mas_android_has_permission():
         """
-        CHECKER OPTIMIZADO
-
-        Verifica si la aplicación tiene los permisos necesarios de almacenamiento
-        según la versión de Android.
-
-        RETURNS:
-            True si tiene permisos, False si no.
+        CHECKER OPTIMIZADO - DEBUG EXTREMO
+        
+        Verifica permisos con logs detallados para diagnosticar fallos.
         """
         if not renpy.android: return True
         try:
+            print("[ANDROID_PERM_DEBUG] Starting permission check...")
+            
             CurrentActivity = mas_get_current_activity()
-            if _VERSION.SDK_INT >= 30:
-                return _Environment.isExternalStorageManager()
+            if not CurrentActivity:
+                print("[ANDROID_PERM_DEBUG] ERROR: CurrentActivity is None")
+                
+            sdk = _VERSION.SDK_INT
+            print("[ANDROID_PERM_DEBUG] SDK_INT: " + str(sdk))
+            
+            if sdk >= 30:
+                is_manager = _Environment.isExternalStorageManager()
+                print("[ANDROID_PERM_DEBUG] isExternalStorageManager(): " + str(is_manager))
+                return is_manager
             else:
                 res = CurrentActivity.checkSelfPermission("android.permission.WRITE_EXTERNAL_STORAGE")
-                return res == _PackageManager.PERMISSION_GRANTED
-        except:
+                is_granted = (res == _PackageManager.PERMISSION_GRANTED)
+                print("[ANDROID_PERM_DEBUG] Legacy Permission Granted: " + str(is_granted))
+                return is_granted
+        except Exception as e:
+            print("[ANDROID_PERM_DEBUG] EXCEPTION in permission check: " + str(e))
+            import traceback
+            traceback.print_exc()
             return False
 
 
