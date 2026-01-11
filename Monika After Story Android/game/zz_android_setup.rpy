@@ -127,10 +127,28 @@ init -990 python:
         This path is located in the user's external storage:
         /storage/emulated/0/Monika After Story/Submods
         """
-        ext_submods_dir = "/storage/emulated/0/Monika After Story/Submods"
+        mas_root = "/storage/emulated/0/Monika After Story"
+        ext_submods_dir = mas_root + "/Submods"
         
         print("[ANDROID_SUBMODS] Checking external directory: " + ext_submods_dir)
         
+        """
+        DEBUG: List contents of the root folder to see what IS there.
+        """
+        if os.path.exists(mas_root):
+            try:
+                root_contents = os.listdir(mas_root)
+                print("[ANDROID_SUBMODS] ROOT CONTENTS: " + str(root_contents))
+                
+                # Check for case sensitivity issues
+                for item in root_contents:
+                    if item.lower() == "submods":
+                        print("[ANDROID_SUBMODS] Found candidate: " + item)
+            except Exception as e:
+                print("[ANDROID_SUBMODS] Error listing root: " + str(e))
+        else:
+             print("[ANDROID_SUBMODS] FATAL: Root MAS directory not found via os.path.exists!")
+
         if os.path.exists(ext_submods_dir):
             print("[ANDROID_SUBMODS] Directory FOUND.")
             """
