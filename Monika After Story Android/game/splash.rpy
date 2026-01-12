@@ -391,7 +391,7 @@ label splashscreen:
                             
                         print("Persistent Comprimido 'materializado' en: " + ext_persistent_file)
                     else:
-                        print("Persistent ya existe en externa. No se aplicarán cambios.")
+                        print("El persistent ya existe en la ruta externa. No hay cambios para aplicar.")
 
                 except Exception as ep:
                     print("Error en escritura manual de persistent: " + str(ep))
