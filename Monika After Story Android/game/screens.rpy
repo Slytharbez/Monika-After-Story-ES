@@ -1515,7 +1515,7 @@ screen preferences():
 
 
 
-                    if store.mas_windowreacts.can_do_windowreacts:
+                    if store.mas_windowreacts.can_do_windowreacts or renpy.android:
                         textbutton _("Notificaciones"):
                             action ToggleField(persistent, "_mas_windowreacts_windowreacts_enabled", True, False)
                             hovered tooltip.Action(layout.MAS_TT_ACTV_WND)
@@ -1857,7 +1857,8 @@ screen notif_settings():
             spacing 25
 
 
-            for item in persistent._mas_windowreacts_notif_filters:
+            $ _android_valid_filters = ["Topic Alerts", "Window Reactions"]
+            for item in _android_valid_filters:
                 if item != "Notificaciones" or persistent._mas_windowreacts_windowreacts_enabled:
                     $ button_label = item
                     if item == "Topic Alerts":
