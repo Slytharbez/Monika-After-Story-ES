@@ -164,12 +164,6 @@ image tos2 = "bg/warning2.png"
 
 label splashscreen:
     
-    """
-    ANDROID LOGIC INJECTION START
-
-    Punto de entrada para la lógica de inicialización específica de Android.
-    Reemplaza la pausa estática original por un sistema de detección inteligente.
-    """
     if renpy.android:
         python:
             """
@@ -232,9 +226,6 @@ label splashscreen:
                     """
                     if "mas_android_check_and_request_permissions" in globals():
                         mas_android_check_and_request_permissions()
-    """
-    ANDROID LOGIC INJECTION END
-    """
 
     python:
         if renpy.android:
