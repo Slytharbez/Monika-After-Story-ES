@@ -374,7 +374,7 @@ screen mas_extramenu_area():
                 xalign 0.5
 
 
-            textbutton _("Normal"):
+            textbutton _("Base"):
                 style "mas_adjustable_button"
                 selected False
                 xsize 72
