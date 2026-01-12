@@ -1106,7 +1106,7 @@ init python:
                         os.makedirs(abs_cache_dir)
                     
                     _, ext = os.path.splitext(song)
-                    rel_cache_file = os.path.join(rel_cache_dir, "current_bgm" + ext).replace("\\", "/") # Ren'Py likes forward slashes
+                    rel_cache_file = os.path.join(rel_cache_dir, "current_bgm" + ext).replace("\\", "/")
                     abs_cache_file = os.path.join(abs_cache_dir, "current_bgm" + ext)
                     
                     if os.path.exists(abs_cache_file):
@@ -1117,9 +1117,6 @@ init python:
                     
 
                     play_song = rel_cache_file
-                    
-                    print("[MAS_MUSIC] Cached to: " + abs_cache_file)
-                    print("[MAS_MUSIC] Relative Play Path: " + play_song)
                     
                 except Exception:
 

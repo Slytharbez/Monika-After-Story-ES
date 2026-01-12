@@ -384,8 +384,6 @@ label splashscreen:
                     ext_saves = mas_root + "game/saves/"
                     ext_persistent_file = ext_saves + "persistent"
                     
-                    print("[ANDROID] MasRun creado. Iniciando escritura DIRECTA (y COMPRIMIDA) de Persistent...")
-                    
                     """
                     Verificamos si ya existe para no borrar backups
                     """
@@ -400,15 +398,15 @@ label splashscreen:
                             compressed_data = zlib.compress(raw_data)
                             f.write(compressed_data)
                             
-                        print("[ANDROID] EXITOSO: Persistent Comprimido 'materializado' en: " + ext_persistent_file)
+                        print("Persistent Comprimido 'materializado' en: " + ext_persistent_file)
                     else:
-                        print("[ANDROID] Persistent ya existe en externa. No se toca.")
+                        print("Persistent ya existe en externa. No se aplicarán cambios.")
 
                 except Exception as ep:
-                    print("[ANDROID] Error en escritura manual de persistent: " + str(ep))
+                    print("Error en escritura manual de persistent: " + str(ep))
                     
             except Exception as e:
-                print("[ANDROID] Error creando carpetas runtime: " + str(e))
+                print("Error creando carpetas runtime: " + str(e))
                 pass
         else:
             with open(basedir + "/game/masrun", "w") as versfile:

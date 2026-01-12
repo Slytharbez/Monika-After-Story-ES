@@ -74,18 +74,18 @@ python early:
             
             ext_submods_dir = None
             
-            print("[ANDROID_Submods_Early] Checking candidates...")
+            # print("[ANDROID_Submods_Early] Checking candidates...")
             
             for cand in candidates:
                 if os.path.exists(cand):
                     ext_submods_dir = cand
-                    print("[ANDROID_Submods_Early] Found: " + cand)
+                    # print("[ANDROID_Submods_Early] Found: " + cand)
                     break
             
             if ext_submods_dir:
                 if ext_submods_dir not in config.searchpath:
                     config.searchpath.append(ext_submods_dir)
-                    print("[ANDROID_Submods_Early] Added submods dir to config.searchpath")
+                    # print("[ANDROID_Submods_Early] Added submods dir to config.searchpath")
 
             # [CRITICAL FIX] Add external 'game' folder to searchpath
             # This allows submods to access assets via 'submods/MySubmod/image.png'
@@ -93,7 +93,7 @@ python early:
             if os.path.exists(ext_game_dir):
                 if ext_game_dir not in config.searchpath:
                     config.searchpath.append(ext_game_dir)
-                    print("[ANDROID_Submods_Early] Added game dir to config.searchpath: " + ext_game_dir)
+                    # print("[ANDROID_Submods_Early] Added game dir to config.searchpath: " + ext_game_dir)
             
             # [CRITICAL FIX] Add external 'python-packages' to sys.path
             # This allows location submods (which use python-packages) to work
@@ -102,10 +102,10 @@ python early:
             if os.path.exists(ext_packages_dir):
                 if ext_packages_dir not in sys.path:
                     sys.path.append(ext_packages_dir)
-                    print("[ANDROID_Submods_Early] Added python-packages to sys.path: " + ext_packages_dir)
+                    # print("[ANDROID_Submods_Early] Added python-packages to sys.path: " + ext_packages_dir)
 
         except Exception as e:
-            print("[ANDROID_Submods_Early] Error: " + str(e))
+            print("Android Submods Early Error: " + str(e))
 
 
 init -999 python:
@@ -159,12 +159,12 @@ init -999 python:
             os.path.join(ANDROID_BACKPACK_PATH, "game/mod_assets/monika/t/")
         ]
 
-        print("Iniciando creación agresiva de directorios...")
+        # print("Iniciando creación agresiva de directorios...")
         for d in dirs_to_create:
             if not os.path.exists(d):
                 try:
                     os.makedirs(d)
-                    print("Creado: " + d)
+                    # print("Creado: " + d)
                 except Exception as e:
                     print("Error creando " + d + ": " + str(e))
             else:
@@ -197,7 +197,7 @@ init 50 python:
                 break
         
         if ext_loader_dir:
-            print("[ANDROID_LOADER] Scanning for .rpy files in: " + ext_loader_dir)
+            # print("[ANDROID_LOADER] Scanning for .rpy files in: " + ext_loader_dir)
             
             # Get list of files Ren'Py already knows about to avoid double-loading
             known_files = set(renpy.list_files())
@@ -212,7 +212,7 @@ init 50 python:
                         rel_path = os.path.relpath(full_path, ext_loader_dir).replace("\\", "/")
                         
                         if rel_path in known_files:
-                            print("[ANDROID_LOADER] Skipping known file: " + rel_path)
+                            print("Skipping known file: " + rel_path)
                             continue
                             
                         try:
@@ -224,10 +224,10 @@ init 50 python:
                                 
                                 # Manually load the script content
                                 renpy.load_string(content_unicode, filename=full_path)
-                                print("[ANDROID_LOADER] Loaded: " + f)
+                                # print("[ANDROID_LOADER] Loaded: " + f)
                                 
                         except Exception as e:
-                            print("[ANDROID_LOADER] ERROR loading " + f + ": " + str(e))
+                            print("ERROR loading " + f + ": " + str(e))
                             import traceback
                             traceback.print_exc()
                             
@@ -235,12 +235,12 @@ init 50 python:
             try:
                 if store.mas_compliments:
                     store.mas_compliments.mas_get_player_nickname = mas_get_player_nickname
-                    print("[ANDROID_PATCH] Injected mas_get_player_nickname into mas_compliments")
+                    # print("[ANDROID_PATCH] Injected mas_get_player_nickname into mas_compliments")
             except:
                 pass
                 
         else:
-            print("[ANDROID_LOADER] No submod directory found (this should not happen if early init worked).")
+            print("No submod directory found, this should not happen if early init worked.")
 
 
 
@@ -362,7 +362,7 @@ init python:
             return lib_path
 
         except Exception as e:
-            print("[ANDROID_CHESS] Error obteniendo nativeLibraryDir: " + str(e))
+            print("Chess Error obteniendo nativeLibraryDir: " + str(e))
             return None
 
     def mas_android_has_permission():
@@ -373,26 +373,26 @@ init python:
         """
         if not renpy.android: return True
         try:
-            print("[ANDROID_PERM_DEBUG] Starting permission check...")
+            # print("[ANDROID_PERM_DEBUG] Starting permission check...")
             
             CurrentActivity = mas_get_current_activity()
             if not CurrentActivity:
-                print("[ANDROID_PERM_DEBUG] ERROR: CurrentActivity is None")
+                print("Permission Error: CurrentActivity is None")
                 
             sdk = _VERSION.SDK_INT
-            print("[ANDROID_PERM_DEBUG] SDK_INT: " + str(sdk))
+            # print("[ANDROID_PERM_DEBUG] SDK_INT: " + str(sdk))
             
             if sdk >= 30:
                 is_manager = _Environment.isExternalStorageManager()
-                print("[ANDROID_PERM_DEBUG] isExternalStorageManager(): " + str(is_manager))
+                # print("[ANDROID_PERM_DEBUG] isExternalStorageManager(): " + str(is_manager))
                 return is_manager
             else:
                 res = CurrentActivity.checkSelfPermission("android.permission.WRITE_EXTERNAL_STORAGE")
                 is_granted = (res == _PackageManager.PERMISSION_GRANTED)
-                print("[ANDROID_PERM_DEBUG] Legacy Permission Granted: " + str(is_granted))
+                print("Legacy Permission Granted: " + str(is_granted))
                 return is_granted
         except Exception as e:
-            print("[ANDROID_PERM_DEBUG] EXCEPTION in permission check: " + str(e))
+            print("Exception in permission check: " + str(e))
             import traceback
             traceback.print_exc()
             return False
@@ -426,7 +426,7 @@ init 50 python:
                 private_dir = os.environ.get('ANDROID_PRIVATE', '')
                 store.mas_chess.STOCKFISH_PATH = os.path.join(private_dir, "files", "stockfish_android")
                 
-                print("[ANDROID_OVERRIDES] Chess Save Path & Binary redirected")
+                # print("[ANDROID_OVERRIDES] Chess Save Path & Binary redirected")
             
             if hasattr(store, 'mas_docking_station'):
                 store.mas_docking_station.station = ANDROID_CHARACTERS_PATH
@@ -435,7 +435,7 @@ init 50 python:
                         os.makedirs(ANDROID_CHARACTERS_PATH)
                     except:
                         pass
-                print("[ANDROID_OVERRIDES] Docking Station redirected")
+                # print("[ANDROID_OVERRIDES] Docking Station redirected")
 
             """
             Logging Override
@@ -456,7 +456,7 @@ init 50 python:
                 formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
                 hdlr.setFormatter(formatter)
                 root_logger.addHandler(hdlr)
-                print("[ANDROID_OVERRIDES] Logging redirected")
+                # print("[ANDROID_OVERRIDES] Logging redirected")
 
                 """
                 EXTRA MODULE LOGS
@@ -490,16 +490,16 @@ init 50 python:
                         l_hdlr.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
                         
                         tgt_log.addHandler(l_hdlr)
-                        print("[ANDROID_OVERRIDES] Redirected extra logger: " + log_name)
+                        # print("[ANDROID_OVERRIDES] Redirected extra logger: " + log_name)
                         
                     except Exception as e:
-                        print("[ANDROID_OVERRIDES] Failed to redirect " + log_name + ": " + str(e))
+                        print("Failed to redirect " + log_name + ": " + str(e))
 
             except Exception as e:
-                print("[ANDROID_OVERRIDES] Logging Redirect Error: " + str(e))
+                print("Logging Redirect Error: " + str(e))
         
         else:
-            print("[ANDROID_OVERRIDES] Permisos no detectados. Usando rutas internas para evitar crash.")
+            print("Permisos no detectados. Usando rutas internas para evitar crash.")
 
     def mas_android_rescue_logs():
         """
@@ -596,7 +596,7 @@ init 50 python:
                 pass
 
         except Exception as e:
-            print("[ANDROID_RESCUE] Error processing log rescue: " + str(e))
+            print("Error processing log rescue: " + str(e))
 
 
     mas_android_rescue_logs()
