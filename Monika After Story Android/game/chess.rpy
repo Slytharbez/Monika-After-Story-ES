@@ -1160,7 +1160,7 @@ label mas_chess_start_chess:
                 m 1eua "[undo_count] movimientos desechos, no está nada mal. Si practicamos juntos, estoy segura de que podemos reducir eso~"
             else:
 
-                m 1eka "Deshiciste [undo_count] movimientos.{w=0.3} {nw}"
+                m 1eka "Deshiciste [undo_count] movimientos. {w=0.3}{nw}"
                 extend 3eua "Pero estoy segura de que si seguimos practicando, podremos bajar esa cifra."
 
             m 3hua "[renpy.substitute(random.choice(player_win_quips))]"
@@ -1606,7 +1606,7 @@ label mas_chess_dlg_quickfile_lost_maybe:
 
         m 2ekd "¡[player]! Eso..."
         m 2dkc "..."
-        m 1esa "... no es un problema en lo absoluto."
+        m 1esa "... No es un problema en lo absoluto."
         m "Sabía que ibas a hacer esto de nuevo..."
         m 1hub "... ¡Por lo que guardé una copia de seguridad de nuestra partida!"
         m 1kua "No puedes engañarme de nuevo, [player]."
@@ -1690,8 +1690,8 @@ label mas_chess_dlg_quickfile_lost_accident:
         return store.mas_chess.CHESS_GAME_BACKUP
     else:
 
-        m 1ekc "[player]...{w=0.3} {nw}"
-        extend 1eka "está bien.{w=0.3} Los accidentes pasan."
+        m 1ekc "[player]... {w=0.3}{nw}"
+        extend 1eka "está bien. {w=0.3}Los accidentes pasan."
         m 1eua "En su lugar, jugaremos a una nueva partida."
     return None
 
