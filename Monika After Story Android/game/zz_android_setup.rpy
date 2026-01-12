@@ -1,5 +1,79 @@
 python early:
     import os
+    import sys
+    import re
+
+    """
+    [ANDROID] TRADUCTOR DE REGISTROS DEL SISTEMA (MASTranslator)
+    Intercepta stdout/stderr para traducir logs del sistema de Ren'Py al español al vuelo.
+    """
+    class MASTranslator(object):
+        def __init__(self, stream):
+            self.stream = stream
+            self.patterns = [
+                (re.compile(r"Early init took ([0-9.]+)s"), r"La inicialización temprana tomó \1s"),
+                (re.compile(r"Loading script took ([0-9.]+)s"), r"La carga del script tomó \1s"),
+                (re.compile(r"Loading save slot metadata took ([0-9.]+)s"), r"La carga de metadatos de guardado tomó \1s"),
+                (re.compile(r"Loading persistent took ([0-9.]+)s"), r"La carga del persistente tomó \1s"),
+                (re.compile(r"Interface start took ([0-9.]+)s"), r"El inicio de la interfaz tomó \1s"),
+                (re.compile(r"Mobile search paths: (.*)"), r"Rutas de búsqueda móvil: \1"),
+                (re.compile(r"Screen diagonal is ([0-9.]+) inches."), r"La diagonal de la pantalla es \1 pulgadas."),
+                (re.compile(r"Version: (.*)"), r"Versión: \1"),
+                (re.compile(r"Manufacturer (.*) model (.*)"), r"Fabricante \1 modelo \2"),
+                (re.compile(r"Initializing gles2 renderer"), r"Inicializando renderizador gles2"),
+                (re.compile(r"Running init code took ([0-9.]+)s"), r"Ejecutar código de inicio tomó \1s"),
+                (re.compile(r"Loading analysis data took ([0-9.]+)s"), r"Cargar datos de análisis tomó \1s"),
+                (re.compile(r"Analyze and compile ATL took ([0-9.]+)s"), r"Analizar y compilar ATL tomó \1s"),
+                (re.compile(r"Reloading save slot metadata took ([0-9.]+)s"), r"Recargar metadatos de guardado tomó \1s"),
+                (re.compile(r"Index archives took ([0-9.]+)s"), r"Indexar archivos tomó \1s"),
+                (re.compile(r"Dump and make backups took ([0-9.]+)s"), r"Volcar y hacer copias de seguridad tomó \1s"),
+                (re.compile(r"Cleaning cache took ([0-9.]+)s"), r"Limpiar caché tomó \1s"),
+                (re.compile(r"Making clean stores took ([0-9.]+)s"), r"Crear almacenes limpios tomó \1s"),
+                (re.compile(r"Initial gc took ([0-9.]+)s"), r"Recolección de basura inicial tomó \1s"),
+                (re.compile(r"Creating interface object took ([0-9.]+)s"), r"Crear objeto de interfaz tomó \1s"),
+                (re.compile(r"Cleaning stores took ([0-9.]+)s"), r"Limpiar almacenes tomó \1s"),
+                (re.compile(r"Init translation took ([0-9.]+)s"), r"Iniciar traducción tomó \1s"),
+                (re.compile(r"Build styles took ([0-9.]+)s"), r"Construir estilos tomó \1s"),
+                (re.compile(r"Load screen analysis took ([0-9.]+)s"), r"Cargar análisis de pantalla tomó \1s"),
+                (re.compile(r"Analyze screens took ([0-9.]+)s"), r"Analizar pantallas tomó \1s"),
+                (re.compile(r"Save screen analysis took ([0-9.]+)s"), r"Guardar análisis de pantalla tomó \1s"),
+                (re.compile(r"Prepare screens took ([0-9.]+)s"), r"Preparar pantallas tomó \1s"),
+                (re.compile(r"Save pyanalysis\. took ([0-9.]+)s"), r"Guardar pyanalysis tomó \1s"),
+                (re.compile(r"Save bytecode\. took ([0-9.]+)s"), r"Guardar bytecode tomó \1s"),
+                (re.compile(r"Running _start took ([0-9.]+)s"), r"Ejecutar _start tomó \1s"),
+                (re.compile(r"Total time until interface ready: ([0-9.]+)s"), r"Tiempo total hasta que la interfaz estuvo lista: \1s"),
+                (re.compile(r"Set script version to: (.*)"), r"Establecer versión del script a: \1"),
+                (re.compile(r"Unknown platform."), r"Plataforma desconocida."),
+                (re.compile(r"Could not open '(.*)':"), r"No se pudo abrir '\1':"),
+                (re.compile(r"Maximum texture size: (.*)"), r"Tamaño máximo de textura: \1"),
+                (re.compile(r"Hid presplash."), r"Ocultar presplash."),
+            ]
+
+        def write(self, message):
+            # [CRITICAL] SAFETY CHECK: Do NOT touch tracebacks
+            # Protege estrictamente los detalles técnicos del error como solicitó el usuario.
+            if "File \"" in message and ", line " in message:
+                self.stream.write(message)
+                return
+
+            translated = message
+            for pattern, replacement in self.patterns:
+                if pattern.search(translated):
+                    translated = pattern.sub(replacement, translated)
+                    # Break after one match usually prevents weird formatting if multiple patterns somehow matched
+                    break
+            
+            self.stream.write(translated)
+
+        def flush(self):
+            self.stream.flush()
+
+    # INSTALAR TRADUCTOR (Hooking stdout/stderr)
+    if not isinstance(sys.stdout, MASTranslator):
+        sys.stdout = MASTranslator(sys.stdout)
+    
+    if not isinstance(sys.stderr, MASTranslator):
+        sys.stderr = MASTranslator(sys.stderr)
     
     """
     [ANDROID] FORCE SAVE PATH - EARLY INIT
@@ -599,7 +673,20 @@ init 50 python:
             print("Error procesando rescate de logs: " + str(e))
 
 
+
     mas_android_rescue_logs()
+
+
+init python:
+    """
+    [ANDROID] TRADUCCIÓN DE ENCABEZADOS DE CRASH
+    Traduce los títulos de la pantalla de error sin afectar el traceback técnico.
+    """
+    config.translations["I'm sorry, but an uncaught exception occurred."] = "Lo siento, pero ha ocurrido un error inesperado."
+    config.translations["While running game code:"] = "Mientras se ejecutaba el código del juego:"
+    config.translations["Full traceback:"] = "Rastro completo del error (Traceback):"
+    config.translations["-- Full Traceback ------------------------------------------------------------"] = "-- Rastro Completo (Full Traceback) ------------------------------------------"
+
 
     def mas_android_rescue_saves():
         """
