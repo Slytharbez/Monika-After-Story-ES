@@ -498,6 +498,7 @@ init 50 python:
             except Exception as e:
                 print("[ANDROID_OVERRIDES] Logging Redirect Error: " + str(e))
         
+        else:
             print("[ANDROID_OVERRIDES] Permisos no detectados. Usando rutas internas para evitar crash.")
 
     def mas_android_rescue_logs():
