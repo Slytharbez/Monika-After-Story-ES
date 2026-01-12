@@ -74,18 +74,18 @@ python early:
             
             ext_submods_dir = None
             
-            # print("[ANDROID_Submods_Early] Checking candidates...")
+            # print("[ANDROID_Submods_Early] Comprobando candidatos...")
             
             for cand in candidates:
                 if os.path.exists(cand):
                     ext_submods_dir = cand
-                    # print("[ANDROID_Submods_Early] Found: " + cand)
+                    # print("[ANDROID_Submods_Early] Encontrado: " + cand)
                     break
             
             if ext_submods_dir:
                 if ext_submods_dir not in config.searchpath:
                     config.searchpath.append(ext_submods_dir)
-                    # print("[ANDROID_Submods_Early] Added submods dir to config.searchpath")
+                    # print("[ANDROID_Submods_Early] Directorio de submods agregado a config.searchpath")
 
             # [CRITICAL FIX] Add external 'game' folder to searchpath
             # This allows submods to access assets via 'submods/MySubmod/image.png'
@@ -93,7 +93,7 @@ python early:
             if os.path.exists(ext_game_dir):
                 if ext_game_dir not in config.searchpath:
                     config.searchpath.append(ext_game_dir)
-                    # print("[ANDROID_Submods_Early] Added game dir to config.searchpath: " + ext_game_dir)
+                    # print("[ANDROID_Submods_Early] Directorio de juego agregado a config.searchpath: " + ext_game_dir)
             
             # [CRITICAL FIX] Add external 'python-packages' to sys.path
             # This allows location submods (which use python-packages) to work
@@ -102,10 +102,10 @@ python early:
             if os.path.exists(ext_packages_dir):
                 if ext_packages_dir not in sys.path:
                     sys.path.append(ext_packages_dir)
-                    # print("[ANDROID_Submods_Early] Added python-packages to sys.path: " + ext_packages_dir)
+                    # print("[ANDROID_Submods_Early] Paquetes de python agregados a sys.path: " + ext_packages_dir)
 
         except Exception as e:
-            print("Android Submods Early Error: " + str(e))
+            print("Error en submods de Android: " + str(e))
 
 
 init -999 python:
@@ -197,7 +197,7 @@ init 50 python:
                 break
         
         if ext_loader_dir:
-            # print("[ANDROID_LOADER] Scanning for .rpy files in: " + ext_loader_dir)
+            # print("[ANDROID_LOADER] Escaneando archivos .rpy en: " + ext_loader_dir)
             
             # Get list of files Ren'Py already knows about to avoid double-loading
             known_files = set(renpy.list_files())
@@ -212,7 +212,7 @@ init 50 python:
                         rel_path = os.path.relpath(full_path, ext_loader_dir).replace("\\", "/")
                         
                         if rel_path in known_files:
-                            print("Skipping known file: " + rel_path)
+                            print("Omitiendo archivo conocido: " + rel_path)
                             continue
                             
                         try:
@@ -224,10 +224,10 @@ init 50 python:
                                 
                                 # Manually load the script content
                                 renpy.load_string(content_unicode, filename=full_path)
-                                # print("[ANDROID_LOADER] Loaded: " + f)
+                                # print("[ANDROID_LOADER] Cargado: " + f)
                                 
                         except Exception as e:
-                            print("ERROR loading " + f + ": " + str(e))
+                            print("ERROR cargando " + f + ": " + str(e))
                             import traceback
                             traceback.print_exc()
                             
@@ -235,12 +235,12 @@ init 50 python:
             try:
                 if store.mas_compliments:
                     store.mas_compliments.mas_get_player_nickname = mas_get_player_nickname
-                    # print("[ANDROID_PATCH] Injected mas_get_player_nickname into mas_compliments")
+                    # print("[ANDROID_PATCH] Inyectado mas_get_player_nickname en mas_compliments")
             except:
                 pass
                 
         else:
-            print("No submod directory found, this should not happen if early init worked.")
+            print("No se encontró el directorio de submods, esto no debería suceder si la inicialización temprana funcionó.")
 
 
 
@@ -362,7 +362,7 @@ init python:
             return lib_path
 
         except Exception as e:
-            print("Chess Error obteniendo nativeLibraryDir: " + str(e))
+            print("Error de Ajedrez obteniendo nativeLibraryDir: " + str(e))
             return None
 
     def mas_android_has_permission():
@@ -377,7 +377,7 @@ init python:
             
             CurrentActivity = mas_get_current_activity()
             if not CurrentActivity:
-                print("Permission Error: CurrentActivity is None")
+                print("Error de Permisos: CurrentActivity es None")
                 
             sdk = _VERSION.SDK_INT
             # print("[ANDROID_PERM_DEBUG] SDK_INT: " + str(sdk))
@@ -389,10 +389,10 @@ init python:
             else:
                 res = CurrentActivity.checkSelfPermission("android.permission.WRITE_EXTERNAL_STORAGE")
                 is_granted = (res == _PackageManager.PERMISSION_GRANTED)
-                print("Legacy Permission Granted: " + str(is_granted))
+                print("Permiso Legacy concedido: " + str(is_granted))
                 return is_granted
         except Exception as e:
-            print("Exception in permission check: " + str(e))
+            print("Excepción en comprobación de permisos: " + str(e))
             import traceback
             traceback.print_exc()
             return False
@@ -493,10 +493,10 @@ init 50 python:
                         # print("[ANDROID_OVERRIDES] Redirected extra logger: " + log_name)
                         
                     except Exception as e:
-                        print("Failed to redirect " + log_name + ": " + str(e))
+                        print("Fallo al redirigir " + log_name + ": " + str(e))
 
             except Exception as e:
-                print("Logging Redirect Error: " + str(e))
+                print("Error en redirección de logs: " + str(e))
         
         else:
             print("Permisos no detectados. Usando rutas internas para evitar crash.")
@@ -596,7 +596,7 @@ init 50 python:
                 pass
 
         except Exception as e:
-            print("Error processing log rescue: " + str(e))
+            print("Error procesando rescate de logs: " + str(e))
 
 
     mas_android_rescue_logs()

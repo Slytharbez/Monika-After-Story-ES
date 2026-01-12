@@ -438,7 +438,7 @@ init -980 python in mas_submod_utils:
         
         
         if not callable(_function):
-            store.mas_utils.mas_log.error("{0} is not callable".format(_function.__name__))
+            store.mas_utils.mas_log.error("{0} no es invocable".format(_function.__name__))
             return False
         
         
@@ -447,9 +447,9 @@ init -980 python in mas_submod_utils:
         
         else:
             mas_utils.report_deprecation(
-                "parameter 'args' in 'registerFunction'",
+                "el parámetro 'args' en 'registerFunction'",
                 use_instead="functools.partial",
-                use_instead_msg_fmt="Wrap your callable in '{use_instead}' to provide it args/kwargs."
+                use_instead_msg_fmt="Envuelva su invocable en '{use_instead}' para proporcionarle args/kwargs."
             )
             
             if len(args) > len(inspect.getargspec(_function).args):
