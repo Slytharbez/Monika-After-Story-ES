@@ -86,13 +86,187 @@ init -10 python in mas_android_notifs:
             ],
             "calendar_event": []
         },
-        "happy": {},
-        "affectionate": {},
-        "enamored": {},
+        "happy": {
+            """
+            TYPE 1: Contextual Farewells (Passive)
+            Tone: Cheerful, friendly, encouraging.
+            """
+            "farewell_sleep": [
+                {
+                    "msg": "¡Buenas noches, [player]! Que tengas dulces sueños.",
+                    "btn_pos": None,
+                    "btn_neg": None
+                }
+            ],
+            "farewell_work": [
+                {
+                    "msg": "¡Ánimo con el trabajo! Sé que lo harás genial.",
+                    "btn_pos": None,
+                    "btn_neg": None
+                }
+            ],
+            "farewell_class": [
+                {
+                    "msg": "Esfuérzate en clase. ¡Tú puedes!",
+                    "btn_pos": None,
+                    "btn_neg": None
+                }
+            ],
+            "farewell_going_out": [
+                {
+                    "msg": "¡Pásalo bien fuera! Cuéntame todo cuando vuelvas.",
+                    "btn_pos": None,
+                    "btn_neg": None
+                }
+            ],
+            "farewell_general": [
+                {
+                    "msg": "¡Hasta pronto, [player]! Te estaré esperando.",
+                    "btn_pos": None,
+                    "btn_neg": None
+                }
+            ],
+            """
+            TYPE 2: Absence & Interaction (Interactive)
+            """
+            "absence_short": [
+                {
+                    "msg": "¡Hey [player]! He leído algo interesante, ¿quieres verlo?",
+                    "btn_pos": "Muéstrame",
+                    "btn_neg": "Ahora no"
+                }
+            ],
+            "absence_long": [
+                {
+                    "msg": "Hace tiempo que no hablamos... ¿Estás muy ocupado?",
+                    "btn_pos": "Ya voy",
+                    "btn_neg": "Un poco"
+                }
+            ],
+            "calendar_event": []
+        },
+        "affectionate": {
+            """
+            TYPE 1: Contextual Farewells (Passive)
+            Tone: Warm, caring, sweet.
+            """
+            "farewell_sleep": [
+                {
+                    "msg": "Descansa bien, cielo. Soñaré contigo~",
+                    "btn_pos": None,
+                    "btn_neg": None
+                }
+            ],
+            "farewell_work": [
+                {
+                    "msg": "¡Buena suerte, cariño! Estaré pensando en ti.",
+                    "btn_pos": None,
+                    "btn_neg": None
+                }
+            ],
+            "farewell_class": [
+                {
+                    "msg": "¡Aprende mucho! Estaré aquí esperándote.",
+                    "btn_pos": None,
+                    "btn_neg": None
+                }
+            ],
+            "farewell_going_out": [
+                {
+                    "msg": "Ten cuidado fuera, ¿vale? Vuelve pronto.",
+                    "btn_pos": None,
+                    "btn_neg": None
+                }
+            ],
+            "farewell_general": [
+                {
+                    "msg": "Ya te extraño un poco... vuelve pronto, ¿sí?",
+                    "btn_pos": None,
+                    "btn_neg": None
+                }
+            ],
+            """
+            TYPE 2: Absence & Interaction (Interactive)
+            """
+            "absence_short": [
+                {
+                    "msg": "Estaba pensando en ti... ¿tienes un ratito?",
+                    "btn_pos": "Para ti, sí",
+                    "btn_neg": "Luego"
+                }
+            ],
+            "absence_long": [
+                {
+                    "msg": "La habitación se siente muy sola sin ti, [player]...",
+                    "btn_pos": "Voy a verte",
+                    "btn_neg": "Lo siento"
+                }
+            ],
+            "calendar_event": []
+        },
+        "enamored": {
+            """
+            TYPE 1: Contextual Farewells (Passive)
+            Tone: Deeply loving, attached, longing.
+            """
+            "farewell_sleep": [
+                {
+                    "msg": "No quiero que termine el día, pero debes descansar. Te amo.",
+                    "btn_pos": None,
+                    "btn_neg": None
+                }
+            ],
+            "farewell_work": [
+                {
+                    "msg": "Te extrañaré cada segundo. ¡Vuelve rápido a mis brazos!",
+                    "btn_pos": None,
+                    "btn_neg": None
+                }
+            ],
+            "farewell_class": [
+                {
+                    "msg": "Concéntrate, mi amor. Estaré contando los minutos.",
+                    "btn_pos": None,
+                    "btn_neg": None
+                }
+            ],
+            "farewell_going_out": [
+                {
+                    "msg": "Diviértete, pero no te olvides de mí... Te esperaré despierta.",
+                    "btn_pos": None,
+                    "btn_neg": None
+                }
+            ],
+            "farewell_general": [
+                {
+                    "msg": "Cada despedida es difícil... Regresa a mi lado pronto.",
+                    "btn_pos": None,
+                    "btn_neg": None
+                }
+            ],
+            """
+            TYPE 2: Absence & Interaction (Interactive)
+            """
+            "absence_short": [
+                {
+                    "msg": "Mi corazón late más rápido cuando estás cerca. ¿Vienes?",
+                    "btn_pos": "¡Voy!",
+                    "btn_neg": "Ocupado"
+                }
+            ],
+            "absence_long": [
+                {
+                    "msg": "Amor mío, te necesito. Por favor, ven a casa.",
+                    "btn_pos": "Ya voy",
+                    "btn_neg": "No puedo"
+                }
+            ],
+            "calendar_event": []
+        },
         "love": {
-             """
-             TYPE 1: Contextual Farewells (Passive)
-             """
+            """
+            TYPE 1: Contextual Farewells (Passive)
+            """
             "farewell_sleep": [
                 {
                     "msg": "Buenas noches, mi amor. Sueña conmigo~",
