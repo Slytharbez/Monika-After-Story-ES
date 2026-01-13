@@ -6,20 +6,19 @@ init -1 python:
     to integrate the Android Notification Submod controls.
     
     WE PERFORM "GHOST REPLACEMENT": Hiding original elements and showing ours in their place.
-    WE PERFORM "GHOST REPLACEMENT": Hiding original elements and showing ours in their place.
-    
-    NEW TOOLTIPS DEFINITIONS:
     """
-    define mas_submods.MAS_TT_ANDROID_NOTIF = _(
+
+init python:
+    store.MAS_TT_ANDROID_NOTIF = _(
         "Habilita el sistema de notificaciones de Android. Monika podrá enviarte mensajes cuando no estés en el juego."
     )
-    define mas_submods.MAS_TT_ANDROID_SOUND = _(
+    store.MAS_TT_ANDROID_SOUND = _(
         "Activa el sonido y vibración para las notificaciones de Monika."
     )
-    define mas_submods.MAS_TT_ANDROID_CALENDAR = _(
+    store.MAS_TT_ANDROID_CALENDAR = _(
         "Permite notificaciones para fechas especiales como cumpleaños y festividades."
     )
-    define mas_submods.MAS_TT_ANDROID_WND_REACT = _(
+    store.MAS_TT_ANDROID_WND_REACT = _(
         "Activa botones interactivos en las notificaciones para responderle a Monika."
     )
 
@@ -54,11 +53,9 @@ screen navigation():
         if store.mas_submod_utils.submod_map:
             textbutton _("Submods") action [ShowMenu("submods"), SensitiveIf(renpy.get_screen("submods") == None)]
 
-        """
-        REPLACEMENT: Alertas Button
-        Original condition: if store.mas_windowreacts.can_show_notifs and not main_menu:
-        New condition: Show if not main menu (allows access to our submod settings)
-        """
+        # REPLACEMENT: Alertas Button
+        # Original condition: if store.mas_windowreacts.can_show_notifs and not main_menu:
+        # New condition: Show if not main menu (allows access to our submod settings)
         if not main_menu:
             textbutton _("Alertas") action [ShowMenu("notif_settings"), SensitiveIf(renpy.get_screen("notif_settings") == None)]
 
@@ -164,13 +161,12 @@ screen preferences():
                         style_prefix "generic_fancy_check"
                         label _(" ")
 
-                        """
-                        REPLACEMENT: Notifications Button
-                        Original: Linked to _mas_windowreacts_windowreacts_enabled
-                        New: Linked to persistent.mas_android_notif_enabled
-                        """
+                        # REPLACEMENT: Notifications Button
+                        # Original: Linked to _mas_windowreacts_windowreacts_enabled
+                        # New: Linked to persistent.mas_android_notif_enabled
+                        textbutton _("Notificaciones"):
                             action ToggleField(persistent, "mas_android_notif_enabled", True, False)
-                            hovered tooltip.Action(layout.MAS_TT_ACTV_WND)
+                            hovered tooltip.Action(store.MAS_TT_ANDROID_NOTIF)
 
 
             null height (4 * gui.pref_spacing)
@@ -195,7 +191,6 @@ screen preferences():
 
 
                     store.mas_randchat_prev = persistent._mas_randchat_freq
-
 
 
 
@@ -355,25 +350,21 @@ screen notif_settings():
             style_prefix "generic_fancy_check"
             hbox:
                 spacing 25
-                """
-                REPLACEMENT: Use Notifications
-                Original: _mas_enable_notifications
-                New: mas_android_notif_enabled
-                """
+                # REPLACEMENT: Use Notifications
+                # Original: _mas_enable_notifications
+                # New: mas_android_notif_enabled
                 textbutton _("Usar notificaciones"):
                     action ToggleField(persistent, "mas_android_notif_enabled")
                     selected persistent.mas_android_notif_enabled
-                    hovered tooltip.Action(mas_submods.MAS_TT_ANDROID_NOTIF)
+                    hovered tooltip.Action(store.MAS_TT_ANDROID_NOTIF)
 
-                """
-                REPLACEMENT: Sounds
-                Original: _mas_notification_sounds
-                New: mas_android_notif_sound
-                """
+                # REPLACEMENT: Sounds
+                # Original: _mas_notification_sounds
+                # New: mas_android_notif_sound
                 textbutton _("Sonidos"):
                     action ToggleField(persistent, "mas_android_notif_sound")
                     selected persistent.mas_android_notif_sound
-                    hovered tooltip.Action(mas_submods.MAS_TT_ANDROID_SOUND)
+                    hovered tooltip.Action(store.MAS_TT_ANDROID_SOUND)
 
             label _("Filtros de alerta")
 
@@ -382,21 +373,19 @@ screen notif_settings():
             box_wrap True
             spacing 25
 
-            """
-            REPLACEMENT: Filters
-            Original: Topic Alerts / Window Reactions (from _android_valid_filters logic)
-            New: Calendar Events (Alertas temáticas) / Action Buttons (Reacciones de ventana)
-            """
+            # REPLACEMENT: Filters
+            # Original: Topic Alerts / Window Reactions (from _android_valid_filters logic)
+            # New: Calendar Events (Alertas temáticas) / Action Buttons (Reacciones de ventana)
             
             textbutton _("Alertas temáticas"):
                 action ToggleField(persistent, "mas_android_calendar_events")
                 selected persistent.mas_android_calendar_events
-                hovered tooltip.Action(mas_submods.MAS_TT_ANDROID_CALENDAR)
+                hovered tooltip.Action(store.MAS_TT_ANDROID_CALENDAR)
 
             textbutton _("Reacciones de Ventana"):
                 action ToggleField(persistent, "mas_android_action_buttons")
                 selected persistent.mas_android_action_buttons
-                hovered tooltip.Action(mas_submods.MAS_TT_ANDROID_WND_REACT)
+                hovered tooltip.Action(store.MAS_TT_ANDROID_WND_REACT)
 
 
     text tooltip.value:
