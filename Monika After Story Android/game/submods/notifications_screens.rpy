@@ -16,11 +16,23 @@ init python:
         "Activa el sonido y vibración para las notificaciones de Monika."
     )
     store.MAS_TT_ANDROID_CALENDAR = _(
-        "Permite notificaciones para fechas especiales como cumpleaños y festividades."
+        "Habilita notificaciones especiales en fechas importantes y festividades."
     )
     store.MAS_TT_ANDROID_WND_REACT = _(
-        "Activa botones interactivos en las notificaciones para responderle a Monika."
+        "Añade botones interactivos a las notificaciones. Úsalos para responder a Monika y mejorar tu afecto."
     )
+    store.MAS_TT_ANDROID_FREQ = _(
+        "Ajusta cuánto tiempo debe esperar Monika antes de enviarte un mensaje si no la has visitado."
+    )
+
+    # Frequency Map for UI Display
+    store.mas_android_freq_map = {
+        1: _("Discreta (3 min)"),
+        2: _("Normal (2 min)"),
+        3: _("Atenta (1 min)"),
+        4: _("Intensa (30s)"),
+        5: _("Obsesiva (15s)")
+    }
 
 """
 OVERRIDE: NAVIGATION SCREEN
@@ -377,15 +389,26 @@ screen notif_settings():
             # Original: Topic Alerts / Window Reactions (from _android_valid_filters logic)
             # New: Calendar Events (Alertas temáticas) / Action Buttons (Reacciones de ventana)
             
-            textbutton _("Alertas temáticas"):
+            textbutton _("Eventos del Calendario"):
                 action ToggleField(persistent, "mas_android_calendar_events")
                 selected persistent.mas_android_calendar_events
                 hovered tooltip.Action(store.MAS_TT_ANDROID_CALENDAR)
 
-            textbutton _("Reacciones de Ventana"):
+            textbutton _("Respuestas Rápidas"):
                 action ToggleField(persistent, "mas_android_action_buttons")
                 selected persistent.mas_android_action_buttons
                 hovered tooltip.Action(store.MAS_TT_ANDROID_WND_REACT)
+        
+        null height gui.pref_spacing
+
+        # NEW: Frequency Slider
+        vbox:
+            style_prefix "slider"
+            hbox:
+                label _("Frecuencia de Ausencia")
+                label _("[[ " + store.mas_android_freq_map[persistent.mas_android_frequency_index] + " ]")
+
+            bar value FieldValue(persistent, "mas_android_frequency_index", range=5, offset=1, style="slider") hovered tooltip.Action(store.MAS_TT_ANDROID_FREQ)
 
 
     text tooltip.value:

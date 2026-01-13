@@ -30,3 +30,16 @@ init python:
     """
     if persistent.mas_android_action_buttons is None:
         persistent.mas_android_action_buttons = True
+
+    """
+    Index for Notification Absence Frequency (Slider in UI)
+    Range: 1 (Discreet) to 5 (Obsessive)
+    Default: 2 (Normal)
+    """
+    if persistent.mas_android_frequency_index is None:
+        persistent.mas_android_frequency_index = 2
+
+    """
+    Sound path for Android notifications
+    """
+    store.mas_android_notif_sound_path = "mod_assets/sounds/effects/notif.wav"
