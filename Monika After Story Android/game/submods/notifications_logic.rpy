@@ -94,7 +94,8 @@ init python:
             
         elif farewell_label == "bye_prompt_to_class":
             category = "farewell_class"
-            delay_seconds = random.randint(6 * 3600, 8 * 3600)
+            # TEST MODE: 1 minute
+            delay_seconds = 60
 
         # --- D. SHORT ERRANDS GROUP (2-4 hours) ---
         # Mapping common short absence labels
@@ -111,8 +112,12 @@ init python:
                 category = "mas_farewell_playgame" 
             else:
                 category = "farewell_short_errand"
-                 
-            delay_seconds = random.randint(2 * 3600, 4 * 3600)
+            
+            # TEST MODE: 1 minute for Shopping and Chores
+            if farewell_label in ["bye_prompt_shopping", "bye_prompt_chores"]:
+                delay_seconds = 60
+            else:
+                delay_seconds = random.randint(2 * 3600, 4 * 3600)
 
         # --- E. LONG ABSENCE GROUP (3 days) ---
         elif farewell_label == "bye_long_absence":

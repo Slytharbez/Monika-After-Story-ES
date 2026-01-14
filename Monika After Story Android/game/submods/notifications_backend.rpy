@@ -14,7 +14,10 @@ init 5 python:
         Intent = autoclass('android.content.Intent')
         PendingIntent = autoclass('android.app.PendingIntent')
         AlarmManager = autoclass('android.app.AlarmManager')
-        PythonActivity = autoclass('org.renpy.android.PythonActivity')
+        try:
+            PythonActivity = autoclass('org.renpy.android.PythonSDLActivity')
+        except:
+            PythonActivity = autoclass('org.renpy.android.PythonActivity')
         System = autoclass('java.lang.System')
         
         # Constants
