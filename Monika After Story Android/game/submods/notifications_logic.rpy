@@ -74,37 +74,39 @@ init python:
             return
 
         # --- A. DO NOTHING GROUP ---
-        if farewell_label in ["mas_farewell_restart", "mas_farewell_takingsomewhere"]:
+        #restart, taking somewhere
+        if farewell_label in ["bye_restart", "bye_taking_somewhere"]:
             return
 
         delay_seconds = 0
         category = "farewell_general"
         
         # --- B. SLEEP GROUP (7-9 hours) ---
-        if farewell_label == "mas_farewell_sleep":
+        if farewell_label in ["bye_prompt_sleep", "bye_going_to_sleep"]:
             category = "farewell_sleep"
             # Random delay between 7 and 9 hours (in seconds)
             delay_seconds = random.randint(7 * 3600, 9 * 3600)
 
         # --- C. WORK/SCHOOL GROUP (6-8 hours) ---
-        elif farewell_label == "mas_farewell_work":
+        elif farewell_label == "bye_prompt_to_work":
             category = "farewell_work"
             delay_seconds = random.randint(6 * 3600, 8 * 3600)
             
-        elif farewell_label == "mas_farewell_class":
+        elif farewell_label == "bye_prompt_to_class":
             category = "farewell_class"
             delay_seconds = random.randint(6 * 3600, 8 * 3600)
 
         # --- D. SHORT ERRANDS GROUP (2-4 hours) ---
+        # Mapping common short absence labels
         elif farewell_label in [
-            "mas_farewell_eat", 
-            "mas_farewell_shopping", 
-            "mas_farewell_chores", 
-            "mas_farewell_workout", 
-            "mas_farewell_friends", 
-            "mas_farewell_playgame"
+            "bye_prompt_eat", 
+            "bye_prompt_shopping", 
+            "bye_prompt_chores", 
+            "bye_prompt_workout", 
+            "bye_prompt_hangout", 
+            "bye_prompt_game"
         ]:
-            if farewell_label == "mas_farewell_playgame":
+            if farewell_label == "bye_prompt_game":
                 # Use specific category if data exists, handled in GetMessage
                 category = "mas_farewell_playgame" 
             else:
@@ -113,13 +115,13 @@ init python:
             delay_seconds = random.randint(2 * 3600, 4 * 3600)
 
         # --- E. LONG ABSENCE GROUP (3 days) ---
-        elif farewell_label == "mas_farewell_guilt":
+        elif farewell_label == "bye_long_absence":
             category = "absence_long"
             delay_seconds = 3 * 24 * 3600 # 3 days
             # TODO: Attach specific interactive buttons for this case in backend
 
         # --- F. GENERIC/DEFAULT GROUP ---
-        # Covers 'mas_farewell_goodbye' and any other unknown label
+        # Covers 'bye_goodbye', 'bye_sayanora', etc.
         else:
             category = "absence_short"
             # Delay based on persistent.mas_android_frequency_index

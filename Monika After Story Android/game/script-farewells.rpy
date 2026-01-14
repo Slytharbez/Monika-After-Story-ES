@@ -230,12 +230,17 @@ label mas_farewell_start:
         if _return != -1:
             $ mas_setEventPause(None)
 
+            if store.mas_submod_utils.isSubmodInstalled("Monika After Story Android"):
+                $ store.MAS_AndroidNotifs_CheckFarewell(_return.eventlabel)
+
             $ MASEventList.push(_return.eventlabel, skipeval=True)
             return
 
     $ mas_setEventPause(None)
 
     $ farewell = store.mas_farewells.selectFarewell()
+    if store.mas_submod_utils.isSubmodInstalled("Monika After Story Android"):
+        $ store.MAS_AndroidNotifs_CheckFarewell(farewell.eventlabel)
     $ MASEventList.push(farewell.eventlabel, skipeval=True)
 
     return

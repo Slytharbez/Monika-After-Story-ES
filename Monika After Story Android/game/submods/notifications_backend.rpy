@@ -14,26 +14,19 @@ init 5 python:
         Intent = autoclass('android.content.Intent')
         PendingIntent = autoclass('android.app.PendingIntent')
         AlarmManager = autoclass('android.app.AlarmManager')
-        NotificationManager = autoclass('android.app.NotificationManager')
-        NotificationCompat = autoclass('androidx.core.app.NotificationCompat$Builder')
-        # Use PythonActivity to get the current context
         PythonActivity = autoclass('org.renpy.android.PythonActivity')
+        System = autoclass('java.lang.System')
         
         # Constants
         ALARM_SERVICE = Context.ALARM_SERVICE
-        NOTIFICATION_SERVICE = Context.NOTIFICATION_SERVICE
-        # Use a fixed ID for the notification to update it if needed, or unique?
-        # For this submod, let's use a constant ID to avoiding spamming the bar
         MAS_NOTIF_ID = 1001 
+        
+        # ACTION DEFINED IN MANIFEST
+        NOTIF_ACTION = "com.monika.android.NOTIFICACION"
         
         def mas_android_schedule_notif(title, message, delay_seconds):
             """
-            Schedules an Android notification using AlarmManager.
-            
-            Args:
-                title (str): Notification title.
-                message (str): Notification body text.
-                delay_seconds (int): Delay in seconds from now.
+            Schedules an Android notification using AlarmManager broadcasting to AlarmReceiver.
             """
             if not persistent.mas_android_notif_enabled:
                 return
@@ -41,109 +34,79 @@ init 5 python:
             try:
                 context = PythonActivity.mActivity
                 
-                # 1. Intent for the Notification Receiver
-                # We typically rely on a generic receiver or the game's own receiver mechanism.
-                # Since we can't easily add Java classes, we'll try to use the generic 'Action' intent 
-                # or relying on Ren'Py's built-in notification system might be too limited (it's immediate).
-                #
-                # ALTERNATIVE: Since we cannot write new Java BroadcastReceivers, we must rely on 
-                # what Ren'Py or Android provides.
-                # However, AlarmManager usually needs a PendingIntent that targets a BroadcastReceiver.
-                #
-                # TRICK: We will try to hook into the standard notification display if possible,
-                # but standard Ren'Py doesn't expose 'Schedule'.
-                #
-                # DEEPER IMPLEMENTATION: Without a custom Java BroadcastReceiver, 
-                # we are limited. However, for many Ren'Py Android ports, 
-                # sending a broadcast to "org.renpy.android.ACTION_SCHEDULE_NOTIFICATION" might work 
-                # if the template supports it.
-                #
-                # SAFEST BET FOR SUBMOD: 
-                # Use the 'android_notification_scheduler' logic if available, or 
-                # admit we might need to assume the user has a receiver.
-                #
-                # Let's assume standard Ren'Py behavior: We can schedule a service or activity start.
-                # But starting activity brings app to front.
-                #
-                # REVISED APPROACH: We will use a standard Intent that triggers the app, 
-                # but wraps the notification data.
-                # Wait, AlarmManager fires an Intent. If that Intent targets the Activity, the App opens.
-                # We want a background notification.
-                #
-                # If we lack a custom Receiver, we might be stuck. 
-                # BUT, let's look at how other mods do it. 
-                # Usually they don't without Java editing.
-                #
-                # HOWEVER, Ren'Py 7+ has `renpy.notify`. Does it work in background? No.
-                # 
-                # LET'S TRY: Using standard `renpy` lib doesn't help.
-                # We will define a minimal implementation that logs for now if we hit a wall,
-                # BUT assuming standard Android APIs: 
-                # We can construct a Notification and issue it *immediately* with a Handler delay?
-                # No, app dies.
-                #
-                # CRITICAL: We need a BroadcastReceiver to catch the Alarm when the app is dead.
-                # If the app doesn't have one declared in AndroidManifest.xml for our custom action, 
-                # it won't work.
-                #
-                # Fortunately, `org.renpy.android.PythonActivity` IS an activity.
-                # Maybe we can use `NotificationManager` directly if the delay is short? No.
-                #
-                # PLAN B (The "Alarm" strategy used by other engines):
-                # Use `NotificationPublisher` if available (some builds have it).
-                #
-                # Let's try the standard Java approach for "Schedule a local notification".
-                # If we assume we can't edit manifest:
-                # We might be limited to what the Ren'Py template provides.
-                # 
-                # ACTUALLY: Ren'Py documentation says libraries like `plyer` are recommended.
-                # But we are doing manual JNI.
-                #
-                # HYPOTHESIS: We will attempt to use the AlarmManager to send a broadcast 
-                # to the system's Notification functionality? No.
-                #
-                # Let's implement the standard AlarmManager -> PendingIntent -> Broadcast flow
-                # targeting the *Publisher* usually found in Ren'Py apps or just try a standard approach
-                # knowing it might fail without Manifest changes.
-                #
-                # However, since this is a "Submod", we assume the "Monika After Story" APK 
-                # might NOT have custom receivers.
-                # 
-                # WAIT! If we are just replacing the PC notification system...
-                # The user asked for an "Android System".
-                #
-                # Let's write the code assuming we can schedule. 
-                # We will use `context.getSystemService(Context.ALARM_SERVICE)`
-                # And create an Intent.
+                # 1. Create the Intent for our Receiver
+                intent = Intent(NOTIF_ACTION)
+                # Helper: Explicitly set package to ensure it goes to OUR app (security/robustness)
+                intent.setPackage(context.getPackageName())
                 
-                # Intent setup
-                intent = Intent(context, PythonActivity) # This opens the app...
-                # We want a Notification.
+                # 2. Add Data
+                intent.putExtra("title", title)
+                intent.putExtra("message", message)
+                intent.putExtra("id", MAS_NOTIF_ID)
                 
-                # Let's simplify:
-                # Using plyer is safer if installed, but we assume raw python.
-                # We will write the functions to *prepare* the notification.
-                pass
+                # 3. Create PendingIntent (Broadcast)
+                # FLAG_IMMUTABLE (0x04000000) for Android 12+ compatibility if we were using raw int, 
+                # but Pyjnius might default to older constants if we don't supply it.
+                # However, for Broadcasts, standard flags are usually enough. 
+                # Let's try to use the PendingIntent.FLAG_IMMUTABLE if available or combine with UPDATE_CURRENT
+                
+                # FLAG_UPDATE_CURRENT = 134217728 (0x08000000)
+                # FLAG_IMMUTABLE = 67108864 (0x04000000)
+                # We can pass the raw integer to be safe: 
+                # 0x08000000 | 0x04000000 = 201326592
+                flags = 201326592 
+                
+                pending_intent = PendingIntent.getBroadcast(
+                    context, 
+                    MAS_NOTIF_ID, 
+                    intent, 
+                    flags
+                )
+                
+                # 4. Schedule Alarm
+                alarm_manager = cast(AlarmManager, context.getSystemService(Context.ALARM_SERVICE))
+                
+                # Calculate Trigger Time
+                trigger_time = System.currentTimeMillis() + (delay_seconds * 1000)
+                
+                # Use setExactAndAllowWhileIdle if available (API 23+) for reliability
+                # or setExact. Pyjnius handles method overload resolution usually.
+                # 0 = RTC_WAKEUP
+                
+                alarm_manager.setExactAndAllowWhileIdle(0, trigger_time, pending_intent)
+                
+                print("[MAS_ANDROID] Scheduled Native Notif: {} in {}s".format(message, delay_seconds))
 
             except Exception as e:
                 print("MAS Android Notif Error: " + str(e))
 
         def mas_android_cancel_all_notifs():
+            """
+            Cancels the pending notification.
+            """
             if not persistent.mas_android_notif_enabled:
                 return
             try:
                 context = PythonActivity.mActivity
                 alarm_manager = cast(AlarmManager, context.getSystemService(Context.ALARM_SERVICE))
-                intent = Intent(context, PythonActivity)
-                pending_intent = PendingIntent.getActivity(
+                
+                intent = Intent(NOTIF_ACTION)
+                intent.setPackage(context.getPackageName())
+                
+                # Must match flags
+                flags = 201326592 
+                
+                pending_intent = PendingIntent.getBroadcast(
                     context, 
                     MAS_NOTIF_ID, 
                     intent, 
-                    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE
+                    flags
                 )
+                
                 alarm_manager.cancel(pending_intent)
-            except:
-                pass
+                print("[MAS_ANDROID] Cancelled Native Notif")
+            except Exception as e:
+                print("MAS Android Cancel Error: " + str(e))
 
         # Expose functions
         store.mas_android_schedule_notif = mas_android_schedule_notif
