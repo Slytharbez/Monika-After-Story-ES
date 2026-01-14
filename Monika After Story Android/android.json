@@ -10,7 +10,7 @@
     "name": "Monika After Story",
     "numeric_version": 1,
     "orientation": "sensorLandscape",
-    "package": "com.theencodersclub.mas",
+    "package": "com.monikaafterstory.tec",
     "permissions": [
         "VIBRATE",
         "INTERNET",
