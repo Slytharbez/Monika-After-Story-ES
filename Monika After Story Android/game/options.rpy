@@ -43,7 +43,7 @@ define config.window_icon = None
 
 define build.icon_presplash = "android-icon.png"
 
-define build.android_icon_foreground = "android-icon-foreground.png"
+define build.android_icon_foreground = "android-icon_foreground.png"
 define build.android_icon_background = "#febce1"
 
 default preferences.text_cps = 50
