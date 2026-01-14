@@ -195,7 +195,8 @@ init python:
             "android.permission.WRITE_EXTERNAL_STORAGE",
             "android.permission.READ_EXTERNAL_STORAGE",
             "android.permission.MANAGE_EXTERNAL_STORAGE", 
-            "android.permission.POST_NOTIFICATIONS"
+            "android.permission.POST_NOTIFICATIONS",
+            "android.permission.SCHEDULE_EXACT_ALARM"
         ]
 
 # Decompiled by unrpyc: https://github.com/CensoredUsername/unrpyc
