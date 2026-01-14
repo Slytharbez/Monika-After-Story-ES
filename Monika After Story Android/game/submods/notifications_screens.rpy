@@ -27,12 +27,16 @@ init python:
 
     # Frequency Map for UI Display
     store.mas_android_freq_map = {
-        1: _("Discreta (3 min)"),
+        1: _("Pasiva (3 min)"),
         2: _("Normal (2 min)"),
         3: _("Atenta (1 min)"),
         4: _("Intensa (30s)"),
-        5: _("Obsesiva (15s)")
+        5: _("Posesiva (15s)")
     }
+
+    # Safety check to fix corrupted persistent data (e.g., if it was set to 6 due to bug)
+    if persistent.mas_android_frequency_index > 5:
+        persistent.mas_android_frequency_index = 5
 
 """
 OVERRIDE: NAVIGATION SCREEN
@@ -405,10 +409,11 @@ screen notif_settings():
         vbox:
             style_prefix "slider"
             hbox:
-                label _("Frecuencia de Ausencia")
-                label _("[[ " + store.mas_android_freq_map[persistent.mas_android_frequency_index] + " ]")
+                # Separated labels to prevent font jitter, with xmaximum overrides to prevent wrapping
+                label _("Frecuencia") xmaximum None
+                label _("[[ " + store.mas_android_freq_map.get(persistent.mas_android_frequency_index, "Error") + " ]") xmaximum None
 
-            bar value FieldValue(persistent, "mas_android_frequency_index", range=5, offset=1, style="slider") hovered tooltip.Action(store.MAS_TT_ANDROID_FREQ)
+            bar value FieldValue(persistent, "mas_android_frequency_index", range=4, offset=1, style="slider") hovered tooltip.Action(store.MAS_TT_ANDROID_FREQ)
 
 
     text tooltip.value:
