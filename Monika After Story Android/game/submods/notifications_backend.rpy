@@ -31,7 +31,10 @@ init 5 python:
             """
             Schedules an Android notification using AlarmManager broadcasting to AlarmReceiver.
             """
+            renpy.log("[MAS_ANDROID] DEBUG: mas_android_schedule_notif called with: '{}' ({}s)".format(message, delay_seconds))
+            
             if not persistent.mas_android_notif_enabled:
+                renpy.log("[MAS_ANDROID] DEBUG: Notifications DISABLED via persistent. Returning.")
                 return
 
             try:
@@ -48,11 +51,6 @@ init 5 python:
                 intent.putExtra("id", MAS_NOTIF_ID)
                 
                 # 3. Create PendingIntent (Broadcast)
-                # FLAG_IMMUTABLE (0x04000000) for Android 12+ compatibility if we were using raw int, 
-                # but Pyjnius might default to older constants if we don't supply it.
-                # However, for Broadcasts, standard flags are usually enough. 
-                # Let's try to use the PendingIntent.FLAG_IMMUTABLE if available or combine with UPDATE_CURRENT
-                
                 # FLAG_UPDATE_CURRENT = 134217728 (0x08000000)
                 # FLAG_IMMUTABLE = 67108864 (0x04000000)
                 # We can pass the raw integer to be safe: 
@@ -73,14 +71,13 @@ init 5 python:
                 trigger_time = System.currentTimeMillis() + (delay_seconds * 1000)
                 
                 # Use setExactAndAllowWhileIdle if available (API 23+) for reliability
-                # or setExact. Pyjnius handles method overload resolution usually.
-                # 0 = RTC_WAKEUP
-                
                 alarm_manager.setExactAndAllowWhileIdle(0, trigger_time, pending_intent)
                 
+                renpy.log("[MAS_ANDROID] Notification Scheduled via AlarmManager: {} in {}s".format(message, delay_seconds))
                 print("[MAS_ANDROID] Scheduled Native Notif: {} in {}s".format(message, delay_seconds))
 
             except Exception as e:
+                renpy.log("MAS Android Notif Error: " + str(e))
                 print("MAS Android Notif Error: " + str(e))
 
         def mas_android_cancel_all_notifs():
@@ -107,13 +104,20 @@ init 5 python:
                 )
                 
                 alarm_manager.cancel(pending_intent)
+                renpy.log("[MAS_ANDROID] Cancelled Native Notif")
                 print("[MAS_ANDROID] Cancelled Native Notif")
             except Exception as e:
+                renpy.log("MAS Android Cancel Error: " + str(e))
                 print("MAS Android Cancel Error: " + str(e))
 
         # Expose functions
         store.mas_android_schedule_notif = mas_android_schedule_notif
         store.mas_android_cancel_all_notifs = mas_android_cancel_all_notifs
+        
+        # FORCE ENABLE FOR DEBUGGING
+        if persistent.mas_android_notif_enabled is None:
+            persistent.mas_android_notif_enabled = True
+            renpy.log("[MAS_ANDROID] DEBUG: Persistent default enabled set to TRUE")
 
     else:
         # Fallback for PC or if Pyjnius missing

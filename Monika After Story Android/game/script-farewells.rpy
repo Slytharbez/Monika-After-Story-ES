@@ -230,16 +230,21 @@ label mas_farewell_start:
         if _return != -1:
             $ mas_setEventPause(None)
 
-            if store.mas_submod_utils.isSubmodInstalled("Monika After Story Android"):
+            # HOOK: Android Notifications
+            if hasattr(store, "MAS_AndroidNotifs_CheckFarewell"):
+                $ renpy.log("[MAS_ANDROID] DEBUG: Manual Farewell Hook Triggered for " + str(_return.eventlabel))
                 $ store.MAS_AndroidNotifs_CheckFarewell(_return.eventlabel)
-
+            
             $ MASEventList.push(_return.eventlabel, skipeval=True)
             return
-
+ 
     $ mas_setEventPause(None)
-
+ 
     $ farewell = store.mas_farewells.selectFarewell()
-    if store.mas_submod_utils.isSubmodInstalled("Monika After Story Android"):
+    
+    # HOOK: Android Notifications
+    if hasattr(store, "MAS_AndroidNotifs_CheckFarewell"):
+        $ renpy.log("[MAS_ANDROID] DEBUG: Auto Farewell Hook Triggered for " + str(farewell.eventlabel))
         $ store.MAS_AndroidNotifs_CheckFarewell(farewell.eventlabel)
     $ MASEventList.push(farewell.eventlabel, skipeval=True)
 
