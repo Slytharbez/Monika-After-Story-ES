@@ -71,8 +71,15 @@ init 5 python:
                 trigger_time = System.currentTimeMillis() + (delay_seconds * 1000)
                 
                 # Use setExactAndAllowWhileIdle if available (API 23+) for reliability
-                alarm_manager.setExactAndAllowWhileIdle(0, trigger_time, pending_intent)
-                
+                try:
+                    alarm_manager.setExactAndAllowWhileIdle(0, trigger_time, pending_intent)
+                except Exception as ex_alarm:
+                    renpy.log("[MAS_ANDROID] Exact alarm failed (likely permission): " + str(ex_alarm))
+                    # Fallback to stronger inexact alarm (Doze resistant)
+                    # setAndAllowWhileIdle does NOT require SCHEDULE_EXACT_ALARM permissions
+                    alarm_manager.setAndAllowWhileIdle(0, trigger_time, pending_intent)
+                    renpy.log("[MAS_ANDROID] Fallback to setAndAllowWhileIdle() alarm used.")
+
                 renpy.log("[MAS_ANDROID] Notification Scheduled via AlarmManager: {} in {}s".format(message, delay_seconds))
                 print("[MAS_ANDROID] Scheduled Native Notif: {} in {}s".format(message, delay_seconds))
 

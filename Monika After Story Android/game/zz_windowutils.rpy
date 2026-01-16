@@ -116,6 +116,11 @@ init python in mas_windowutils:
             
             store.mas_utils.mas_log.warning("Cannot detect current session type, disabling notifications.")
 
+    elif renpy.android:
+        # [MAS_ANDROID] Force Enable for Native Notifications
+        store.mas_windowreacts.can_show_notifs = True
+        store.mas_windowreacts.can_do_windowreacts = False # Window reacts not possible, but notifications YES.
+
     else:
         store.mas_windowreacts.can_do_windowreacts = False
 
@@ -685,10 +690,22 @@ init python:
             )
         ):
             
+            
             notif_success = mas_windowutils._tryShowNotif(
                 renpy.substitute(title),
                 renpy.substitute(renpy.random.choice(body))
             )
+
+            # [MAS_ANDROID] Hook for Native Notifications
+            if renpy.android:
+                try:
+                    _android_title = renpy.substitute(title)
+                    _android_body = renpy.substitute(renpy.random.choice(body))
+                    # Schedule closely (2s) to mimic immediate notification
+                    store.mas_android_schedule_notif(_android_title, _android_body, 2)
+                    notif_success = True
+                except Exception as e:
+                    renpy.log("[MAS_ANDROID] Display Notif Error: " + str(e))
             
             
             if persistent._mas_notification_sounds and notif_success:

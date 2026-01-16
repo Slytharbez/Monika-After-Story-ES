@@ -402,6 +402,10 @@ screen notif_settings():
                 action ToggleField(persistent, "mas_android_action_buttons")
                 selected persistent.mas_android_action_buttons
                 hovered tooltip.Action(store.MAS_TT_ANDROID_WND_REACT)
+
+            # TEST BUTTON (Temporary for User Request)
+            textbutton _("Probar Diálogo"):
+                action Jump("mas_notification_windowreact")
         
         null height gui.pref_spacing
 
