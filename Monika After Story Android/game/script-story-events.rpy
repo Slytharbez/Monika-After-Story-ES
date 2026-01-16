@@ -2130,6 +2130,7 @@ label mas_notification_windowreact:
 
                 m 1hua "¡Okey, [player]!"
                 m 2dsa "Solo dame un segundo para crear una notificación.{w=0.5}.{w=0.5}.{w=0.5}{nw}"
+                $ store.mas_android_schedule_notif("Monika", "¡Te amo, [player]!", 5)
                 $ mas_display_notif(m_name, ["¡Te amo, [player]!"], skip_checks=True)
                 m 1hub "¡Ahí está!"
             "No gracias":

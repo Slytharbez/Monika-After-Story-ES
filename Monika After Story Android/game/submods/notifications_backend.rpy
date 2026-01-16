@@ -55,11 +55,19 @@ init 5 python:
                 # FLAG_IMMUTABLE = 67108864 (0x04000000)
                 # We can pass the raw integer to be safe: 
                 # 0x08000000 | 0x04000000 = 201326592
-                flags = 201326592 
+                # FLAG_UPDATE_CURRENT = 134217728 (0x08000000)
+                # FLAG_MUTABLE = 33554432 (0x02000000)
+                # We need MUTABLE so we can update the extras (title/message) on the existing PendingIntent!
+                # 0x08000000 | 0x02000000 = 167772160
+                flags = 167772160 
+                
+                # Use unique request code to force new PendingIntent
+                # This ensures extras (text) are updated even if flags fail
+                unique_id = int(System.currentTimeMillis() % 2147483647)
                 
                 pending_intent = PendingIntent.getBroadcast(
                     context, 
-                    MAS_NOTIF_ID, 
+                    unique_id, 
                     intent, 
                     flags
                 )
@@ -100,8 +108,11 @@ init 5 python:
                 intent = Intent(NOTIF_ACTION)
                 intent.setPackage(context.getPackageName())
                 
-                # Must match flags
-                flags = 201326592 
+                # FLAG_UPDATE_CURRENT = 134217728 (0x08000000)
+                # FLAG_MUTABLE = 33554432 (0x02000000)
+                # We need MUTABLE so we can update the extras (title/message) on the existing PendingIntent!
+                # 0x08000000 | 0x02000000 = 167772160
+                flags = 167772160 
                 
                 pending_intent = PendingIntent.getBroadcast(
                     context, 
