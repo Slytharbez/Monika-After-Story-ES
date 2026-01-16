@@ -2127,11 +2127,20 @@ label mas_notification_windowreact:
         menu:
             m "¿Te gustaría ver cómo funcionan?{fast}"
             "¡Seguro!":
-
-                $ store.mas_android_schedule_notif("Monika", "¡Te amo, [player]!", 5)
-                m 1hua "¡Okey, [player]!"
-                m 2dsa "Solo dame un segundo para crear una notificación.{w=0.5}.{w=0.5}.{w=0.5}{nw}"
-                m 1hub "¡Allí está!"
+                $ _dismiss_pause = False
+                $ store.mas_android_schedule_notif("Monika", "¡Te amo, [player]!")
+                show monika 1hua
+                $ m("{cps=20}¡Okey, [player]!{/cps}{nw}", what_slow_abortable=False)
+                show monika 2dsa
+                $ m("{cps=20}Solo dame un segundo para crear una notificación...{/cps}{nw}", what_slow_abortable=False)
+                window hide
+                $ renpy.pause(1.65, hard=True)
+                window show
+                show monika 1hub
+                $ m("¡Allí está!", interact=False)
+                $ renpy.pause(1.5, hard=True)
+                $ _dismiss_pause = True
+                $ renpy.pause()
             "No gracias":
 
                 m 2eka "De acuerdo, [player]."
@@ -2146,10 +2155,10 @@ label mas_notification_windowreact:
             m 3rksdla "Además, ya que estás usando Linux... ahora sé cómo comprobar cuál es tu ventana activa."
 
         if not renpy.macintosh:
-            m 3eub "... Entonces, si tengo algo de qué hablar mientras estoy en segundo plano, ¡puedo hacértelo saber!"
-            m 3hksdlb "Y no te preocupes, sé que es posible que no quieras que te observe constantemente y respeto tu privacidad."
-            m 3eua "Así que solo miraré lo que estás haciendo si estás de acuerdo."
-            m 2eua "Si habilitas 'Notificaciones' en el menú de ajustes, me dirá que te parece bien que eche un vistazo."
+            m 3eub "... Entonces, si tengo algo de qué decirte mientras la aplicación esté cerrada, ¡puedo hacértelo saber!"
+            m 3hksdlb "Y no te preocupes, sé que es posible que no quieras que te mande mensajes constantemente y respeto tu privacidad."
+            m 3eua "Así que solo lo haré si estás de acuerdo."
+            m 2eua "Si habilitas 'Notificaciones' en el menú de ajustes, me dirá que te parece bien que te mande notificaciones."
 
             if mas_isMoniNormal(higher=True):
                 m 1tuu "No es como si tuvieras algo que ocultarle a tu novia..."

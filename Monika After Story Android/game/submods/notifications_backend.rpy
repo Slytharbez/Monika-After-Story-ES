@@ -19,6 +19,7 @@ init 5 python:
         except:
             PythonActivity = autoclass('org.renpy.android.PythonActivity')
         System = autoclass('java.lang.System')
+        String = autoclass('java.lang.String')
         
         # Constants
         ALARM_SERVICE = Context.ALARM_SERVICE
@@ -27,7 +28,7 @@ init 5 python:
         # ACTION DEFINED IN MANIFEST
         NOTIF_ACTION = "com.monika.android.NOTIFICACION"
         
-        def mas_android_schedule_notif(title, message, delay_seconds):
+        def mas_android_schedule_notif(title, message, delay_seconds=0):
             """
             Schedules an Android notification using AlarmManager broadcasting to AlarmReceiver.
             """
@@ -40,14 +41,19 @@ init 5 python:
             try:
                 context = PythonActivity.mActivity
                 
+                # Apply variable substitution (e.g. [player] -> User Name)
+                # This fixes the issue where raw tags appear in the notification
+                title = renpy.substitute(title)
+                message = renpy.substitute(message)
+                
                 # 1. Create the Intent for our Receiver
                 intent = Intent(NOTIF_ACTION)
                 # Helper: Explicitly set package to ensure it goes to OUR app (security/robustness)
                 intent.setPackage(context.getPackageName())
                 
-                # 2. Add Data
-                intent.putExtra("title", title)
-                intent.putExtra("message", message)
+                # 2. Add Data (Explicitly cast to Java String to avoid Pyjnius issues)
+                intent.putExtra("title", String(title))
+                intent.putExtra("message", String(message))
                 intent.putExtra("id", MAS_NOTIF_ID)
                 
                 # 3. Create PendingIntent (Broadcast)
@@ -139,7 +145,7 @@ init 5 python:
 
     else:
         # Fallback for PC or if Pyjnius missing
-        def mas_android_schedule_notif(title, message, delay_seconds):
+        def mas_android_schedule_notif(title, message, delay_seconds=0):
             # Just log it for debugging
             print("[MAS_ANDROID] Would schedule: '{}' in {} seconds.".format(message, delay_seconds))
             
@@ -148,3 +154,8 @@ init 5 python:
 
         store.mas_android_schedule_notif = mas_android_schedule_notif
         store.mas_android_cancel_all_notifs = mas_android_cancel_all_notifs
+
+# Screen to block all input (makes text unskippable)
+screen mas_block_input():
+    zorder 200
+    modal True
