@@ -6,6 +6,36 @@ init -5 python:
     except ImportError:
         mas_android_backend_available = False
 
+init python:
+    # BUILD CONFIGURATION (Executed by RAPT on PC)
+    # NOTE: Since we are injecting 'app-AndroidManifest.xml' manually into the SDK, 
+    # we do NOT need to inject these via Python config. Doing so causes DUPLICATE tags.
+    # Leaving this commented out for reference.
+    
+    pass
+    
+    # # 1. Inject Manifest Components (Receiver)
+    # if "android_manifest_components" not in config.__dict__:
+    #     config.__dict__["android_manifest_components"] = []
+    # 
+    # config.android_manifest_components.append("""
+    # <receiver android:name="com.monikaafterstory.tec.es.AlarmReceiver" android:exported="true">
+    #     <intent-filter>
+    #         <action android:name="com.monika.android.NOTIFICACION" />
+    #     </intent-filter>
+    # </receiver>
+    # """)
+    #
+    # # 2. Inject Permissions
+    # if "android_permissions" not in config.__dict__:
+    #     config.__dict__["android_permissions"] = []
+    #     
+    # if "android.permission.WAKE_LOCK" not in config.android_permissions:
+    #     config.android_permissions.append("android.permission.WAKE_LOCK")
+    # if "android.permission.RECEIVE_BOOT_COMPLETED" not in config.android_permissions:
+    #     config.android_permissions.append("android.permission.RECEIVE_BOOT_COMPLETED")
+
+
 init 5 python:
     if mas_android_backend_available and renpy.android:
         
@@ -46,10 +76,11 @@ init 5 python:
                 title = renpy.substitute(title)
                 message = renpy.substitute(message)
                 
-                # 1. Create the Intent for our Receiver
-                intent = Intent(NOTIF_ACTION)
-                # Helper: Explicitly set package to ensure it goes to OUR app (security/robustness)
-                intent.setPackage(context.getPackageName())
+                # 1. Create Explicit Intent for our Receiver
+                # Explicit Intent is REQUIRED for background execution on Android 8+ (Oreo)
+                intent = Intent()
+                # setClassName(String packageName, String className)
+                intent.setClassName(context.getPackageName(), "com.monikaafterstory.tec.es.AlarmReceiver")
                 
                 # 2. Add Data (Explicitly cast to Java String to avoid Pyjnius issues)
                 intent.putExtra("title", String(title))

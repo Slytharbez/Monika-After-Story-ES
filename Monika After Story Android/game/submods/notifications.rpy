@@ -338,6 +338,8 @@ Initialize the global store variable to point to our data
 """
 init 5 python:
     # We assign these first to avoid shadowing the 'mas_android_notifs' module with the dictionary variable
+    # We assign these first to avoid shadowing the 'mas_android_notifs' module with the dictionary variable
     store.mas_android_notif_gain_amount = mas_android_notifs.gain_amount
     store.mas_android_notif_daily_limit = mas_android_notifs.daily_limit
-    store.mas_android_notifs = mas_android_notifs.data
+    # Rename to avoid overwriting the module 'mas_android_notifs'
+    store.mas_android_notifs_data = mas_android_notifs.data

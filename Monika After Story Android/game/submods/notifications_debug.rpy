@@ -13,20 +13,9 @@ init 5 python:
 label mas_debug_android_test:
     m 1eua "¡Claro! Vamos a probar las notificaciones nativas."
 
-    $ _dismiss_pause = False
-    $ store.mas_android_schedule_notif("Monika", "¡Te amo, [player]!")
-
-    show monika 1hua
-    $ m("{cps=20}¡Okey, [player]!{/cps}{nw}", what_slow_abortable=False)
-    show monika 2dsa
-    $ m("{cps=20}Solo dame un segundo para crear una notificación...{/cps}{nw}", what_slow_abortable=False)
-    
-    window hide
-    $ renpy.pause(1.65, hard=True)
-    window show
-    
-    show monika 1hub
-    $ m("¡Allí está!", interact=False)
-    $ renpy.pause(1.5, hard=True)
+    m 1hua "¡Okey, [player]!"
+    m 2dsa "Solo dame un segundo para hacer una notificación.{w=0.5}.{w=0.5}.{w=0.5}{nw}"
+    $ mas_display_notif("Monika", ["¡Te amo, [player]!"], skip_checks=True)
+    m 1hub "¡Ahí está!"
 
     return

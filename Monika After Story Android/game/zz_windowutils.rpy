@@ -696,12 +696,10 @@ init python:
                 renpy.substitute(renpy.random.choice(body))
             )
 
-            # [MAS_ANDROID] Hook for Native Notifications
             if renpy.android:
                 try:
                     _android_title = renpy.substitute(title)
                     _android_body = renpy.substitute(renpy.random.choice(body))
-                    # Schedule closely (2s) to mimic immediate notification
                     store.mas_android_schedule_notif(_android_title, _android_body, 2)
                     notif_success = True
                 except Exception as e:

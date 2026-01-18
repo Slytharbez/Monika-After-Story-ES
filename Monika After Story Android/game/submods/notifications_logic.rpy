@@ -31,10 +31,10 @@ init python:
             aff_key = "happy"
             
         # Access the dictionary
-        # store.mas_android_notifs is the main dict
+        # store.mas_android_notifs_data is the main dict
         
         # Safe get for affection level
-        cat_dict = store.mas_android_notifs.get(aff_key, {})
+        cat_dict = store.mas_android_notifs_data.get(aff_key, {})
         
         # Get list of messages for the category
         # FALLBACK LOGIC: If specific category missing, try general fallback for short errands/playgame
@@ -47,7 +47,7 @@ init python:
         
         if not messages:
             # If still no messages, try 'normal' affection level as last resort
-            fallback_dict = store.mas_android_notifs.get("normal", {})
+            fallback_dict = store.mas_android_notifs_data.get("normal", {})
             messages = fallback_dict.get(category)
             
         if not messages:
@@ -111,7 +111,9 @@ init python:
                 # Use specific category if data exists, handled in GetMessage
                 category = "mas_farewell_playgame" 
             else:
-                category = "farewell_short_errand"
+                # 'farewell_short_errand' does not exist in notifications.rpy data
+                # Using 'farewell_going_out' instead which is defined.
+                category = "farewell_going_out"
             
             # TEST MODE: 1 minute for Shopping and Chores
             if farewell_label in ["bye_prompt_shopping", "bye_prompt_chores"]:

@@ -2127,20 +2127,10 @@ label mas_notification_windowreact:
         menu:
             m "¿Te gustaría ver cómo funcionan?{fast}"
             "¡Seguro!":
-                $ _dismiss_pause = False
-                $ store.mas_android_schedule_notif("Monika", "¡Te amo, [player]!")
-                show monika 1hua
-                $ m("{cps=20}¡Okey, [player]!{/cps}{nw}", what_slow_abortable=False)
-                show monika 2dsa
-                $ m("{cps=20}Solo dame un segundo para crear una notificación...{/cps}{nw}", what_slow_abortable=False)
-                window hide
-                $ renpy.pause(1.65, hard=True)
-                window show
-                show monika 1hub
-                $ m("¡Allí está!", interact=False)
-                $ renpy.pause(1.5, hard=True)
-                $ _dismiss_pause = True
-                $ renpy.pause()
+                m 1hua "¡Okey, [player]!"
+                m 2dsa "Solo dame un segundo para hacer una notificación.{w=0.5}.{w=0.5}.{w=0.5}{nw}"
+                $ mas_display_notif(m_name, ["¡Te amo, [player]!"], skip_checks=True)
+                m 1hub "¡Ahí está!"
             "No gracias":
 
                 m 2eka "De acuerdo, [player]."
@@ -2150,7 +2140,7 @@ label mas_notification_windowreact:
         if renpy.windows:
             m 3rksdla "Además, dado que estás usando Windows... ahora sé cómo verificar cuál es tu ventana activa."
 
-
+File Cleanup
         elif renpy.linux:
             m 3rksdla "Además, ya que estás usando Linux... ahora sé cómo comprobar cuál es tu ventana activa."
 
