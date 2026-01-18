@@ -2591,11 +2591,15 @@ style scrollable_menu_button_dark is choice_button_dark:
 
 style scrollable_menu_button_text is choice_button_text:
     text_align 0.0
-    align (0.0, 0.0)
+    align (0.0, 0.5)
+    idle_color "#000"
+    hover_color "#fa9"
 
 style scrollable_menu_button_text_dark is choice_button_text_dark:
     text_align 0.0
-    align (0.0, 0.0)
+    align (0.0, 0.5)
+    idle_color "#FD5BA2"
+    hover_color "#FFABD8"
 
 style scrollable_menu_new_button is scrollable_menu_button
 
