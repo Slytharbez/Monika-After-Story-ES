@@ -2857,6 +2857,7 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
                 id "search_input"
                 style_prefix "input"
                 length 50
+                default_focus (not renpy.variant("mobile"))
                 xalign 0.0
                 layout "nobreak"
                 first_indent (0 if flt_evs is None else 10)
