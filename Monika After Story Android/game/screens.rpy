@@ -2750,6 +2750,7 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
             bar:
                 style "classroom_vscrollbar"
                 value YScrollValue("viewport")
+                unscrollable "hide"
 
                 xalign left_align / 2 + 0.005
 
@@ -2769,6 +2770,7 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
             bar:
                 adjustment prev_adj
                 style "classroom_vscrollbar"
+                unscrollable "hide"
                 xalign left_align
 
             vbox:
@@ -2809,6 +2811,7 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
                 bar:
                     adjustment main_adj
                     style "classroom_vscrollbar"
+                    unscrollable "hide"
                     xalign right_align
 
                 vbox:
@@ -2911,6 +2914,7 @@ screen scrollable_menu(items, display_area, scroll_align, nvm_text, remove=None)
         bar:
             style "classroom_vscrollbar"
             value YScrollValue("viewport")
+            unscrollable "hide"
             xalign scroll_align
 
 
@@ -2987,6 +2991,7 @@ screen mas_gen_scrollable_menu(items, display_area, scroll_align, *args):
         bar:
             style "classroom_vscrollbar"
             value YScrollValue("viewport")
+            unscrollable "hide"
             xalign scroll_align
 
 
