@@ -2403,8 +2403,12 @@ init python:
         if markSeen:
             persistent._seen_ever[event.eventlabel] = True
         
+        stored_ev = eventdb.setdefault(event.eventlabel, event)
         
-        eventdb.setdefault(event.eventlabel, event)
+        if stored_ev is not event:
+
+            if event.prompt and (not stored_ev.prompt or stored_ev.prompt == event.eventlabel):
+                stored_ev.prompt = event.prompt
 
     @store.mas_utils.deprecated(use_instead="mas_hideEVL", should_raise=True)
     def hideEventLabel(

@@ -736,11 +736,11 @@ default quick_menu = True
 
 
 style quick_button:
-    # properties gui.button_properties("quick_button")
+
     activate_sound gui.activate_sound
 
 style quick_button_dark:
-    # properties gui.button_properties("quick_button_dark")
+
     activate_sound gui.activate_sound
 
 style quick_button_text:
@@ -2894,7 +2894,16 @@ screen scrollable_menu(items, display_area, scroll_align, nvm_text, remove=None)
 
                 has vbox
                 for i_caption, i_label in items:
-                    textbutton i_caption:
+                    $ button_text = i_caption
+                    if not button_text:
+                        $ ev = store.mas_all_ev_db.get(i_label, None)
+                        if ev and ev.prompt:
+                            $ button_text = ev.prompt
+                        else:
+                            $ button_text = i_label
+                    
+                    textbutton "[button_text]":
+                        text_style "scrollable_menu_button_text"
                         if renpy.has_label(i_label) and not seen_event(i_label):
                             style "scrollable_menu_new_button"
 
@@ -2958,7 +2967,16 @@ screen mas_gen_scrollable_menu(items, display_area, scroll_align, *args):
 
                 has vbox
                 for item_prompt, item_value, is_italic, is_bold in items:
-                    textbutton item_prompt:
+                    $ button_text = item_prompt
+                    if not button_text:
+                        $ ev = store.mas_all_ev_db.get(item_value, None)
+                        if ev and ev.prompt:
+                            $ button_text = ev.prompt
+                        else:
+                            $ button_text = item_value
+
+                    textbutton "[button_text]":
+                        text_style "scrollable_menu_button_text"
                         if is_italic and is_bold:
                             style "scrollable_menu_crazy_button"
 

@@ -63,7 +63,7 @@ label import_ddlc_persistent:
             This causes the game to think there is DDLC data to import.
             SOLUTION: Disable automatic DDLC search in own save folder.
             """
-            check_paths = [] 
+            check_paths = []
             
             """
             If import support is desired in future, it should look in a DIFFERENT folder

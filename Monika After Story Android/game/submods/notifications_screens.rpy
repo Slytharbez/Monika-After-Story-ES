@@ -54,13 +54,13 @@ screen navigation():
 
         if main_menu:
 
-            textbutton _("Nuevo Juego") action Start()
+            textbutton _("Solo Monika") action If(persistent.playername, true=Start(), false=Show(screen="name_input", message="Por favor introduce tu nombre", ok_action=Function(FinishEnterName)))
 
             textbutton _("Cargar Juego") action ShowMenu("load")
 
         else:
 
-            textbutton _("Historia") action ShowMenu("history")
+            textbutton _("Historial") action ShowMenu("history")
 
             textbutton _("Guardar Juego") action ShowMenu("save")
 
@@ -69,9 +69,6 @@ screen navigation():
         if store.mas_submod_utils.submod_map:
             textbutton _("Submods") action [ShowMenu("submods"), SensitiveIf(renpy.get_screen("submods") == None)]
 
-        # REPLACEMENT: Alertas Button
-        # Original condition: if store.mas_windowreacts.can_show_notifs and not main_menu:
-        # New condition: Show if not main menu (allows access to our submod settings)
         if not main_menu:
             textbutton _("Alertas") action [ShowMenu("notif_settings"), SensitiveIf(renpy.get_screen("notif_settings") == None)]
 

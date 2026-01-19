@@ -311,12 +311,23 @@ init 50 python:
                             # Open as binary to avoid encoding issues on read, then decode
                             with open(full_path, "rb") as f_obj:
                                 content_bytes = f_obj.read()
-                                # Decode to unicode assuming UTF-8 (standard for Ren'Py)
-                                content_unicode = content_bytes.decode("utf-8")
                                 
+                            # [ANDROID] ENCODING SAFETY
+                            # Try common encodings to prevent crash if user file is not UTF-8
+                            content_unicode = None
+                            for enc in ["utf-8", "latin-1", "cp1252"]:
+                                try:
+                                    content_unicode = content_bytes.decode(enc)
+                                    break
+                                except:
+                                    continue
+                                    
+                            if content_unicode:
                                 # Manually load the script content
                                 renpy.load_string(content_unicode, filename=full_path)
                                 # print("[ANDROID_LOADER] Cargado: " + f)
+                            else:
+                                print("[ANDROID_LOADER] ERROR: No se pudo decodificar " + f)
                                 
                         except Exception as e:
                             print("ERROR cargando " + f + ": " + str(e))
