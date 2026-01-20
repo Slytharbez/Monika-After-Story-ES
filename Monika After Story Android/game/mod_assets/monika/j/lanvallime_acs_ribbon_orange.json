@@ -1,0 +1,29 @@
+﻿{
+    "__author": "LanvalLime",
+    "version": 3,
+    "type": 0,
+    "name": "lanvallime_ribbon_orange",
+    "img_sit": "lanvallime_ribbon_orange",
+    "pose_map": {
+        "default": "0",
+        "l_default": "5"
+    },
+    "rec_layer": 3,
+    "acs_type": "ribbon",
+    "mux_type": [
+        "ribbon"
+    ],
+    "stay_on_start": true,
+    "select_info": {
+        "display_name": "Cinta colo anaranjado",
+        "thumb": "lanvallime_ribbon_orange",
+        "group": "ribbon",
+        "hover_dlg": [
+            "¡Un color maravilloso!"
+        ],
+        "select_dlg": [
+            "Puedo imaginarnos acurrucados juntos durante un paseo en un carro lleno de heno~"
+        ]
+    },
+    "giftname": "cintacoloanaranjado"
+}

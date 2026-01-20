@@ -1,0 +1,29 @@
+﻿{
+    "__author": "briaryoung",
+    "version": 3,
+    "type": 2,
+    "name": "briaryoung_heart_cut_bikini_yellow",
+    "img_sit": "briaryoung_heart_cut_bikini_yellow",
+    "pose_map": {
+        "mpm_type": 0,
+        "default": true,
+        "use_reg_for_l": true
+    },
+    "stay_on_start": true,
+    "ex_props": {
+        "compat-downtiedstrand": true,
+        "bare-shoulders": true
+    },
+    "select_info": {
+        "display_name": "Bikini de color amarillo con escote de corazón",
+        "thumb": "briaryoung_heart_cut_bikini_yellow",
+        "group": "clothes",
+        "select_dlg": [
+            "¡Me encanta este look!"
+        ]
+    },
+    "giftname": "bikinidecoloramarilloconescotedecorazon",
+    "pose_arms": {
+        
+    }
+}

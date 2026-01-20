@@ -1,0 +1,29 @@
+﻿{
+    "__author": "LanvalLime",
+    "version": 3,
+    "type": 0,
+    "name": "lanvallime_ribbon_lime_green",
+    "img_sit": "lanvallime_ribbon_lime_green",
+    "pose_map": {
+        "default": "0",
+        "l_default": "5"
+    },
+    "rec_layer": 3,
+    "acs_type": "ribbon",
+    "mux_type": [
+        "ribbon"
+    ],
+    "stay_on_start": true,
+    "select_info": {
+        "display_name": "Cinta color verde lima",
+        "thumb": "lanvallime_ribbon_lime_green",
+        "group": "ribbon",
+        "hover_dlg": [
+            "¡Me recuerda a un pájaro que me gusta mucho!"
+        ],
+        "select_dlg": [
+            "Gran elección, ¡ya sabes cuánto me gusta el verde!"
+        ]
+    },
+    "giftname": "cintacolorverdelima"
+}

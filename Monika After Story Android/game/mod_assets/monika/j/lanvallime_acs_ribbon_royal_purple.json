@@ -1,0 +1,29 @@
+﻿{
+    "__author": "LanvalLime",
+    "version": 3,
+    "type": 0,
+    "name": "lanvallime_ribbon_royal_purple",
+    "img_sit": "lanvallime_ribbon_royal_purple",
+    "pose_map": {
+        "default": "0",
+        "l_default": "5"
+    },
+    "rec_layer": 3,
+    "acs_type": "ribbon",
+    "mux_type": [
+        "ribbon"
+    ],
+    "stay_on_start": true,
+    "select_info": {
+        "display_name": "Cinta color púpura royal",
+        "thumb": "lanvallime_ribbon_royal_purple",
+        "group": "ribbon",
+        "hover_dlg": [
+            "¿Puedo pedirte prestada tu pluma?"
+        ],
+        "select_dlg": [
+            "¿Quieres que leamos un libro juntos?"
+        ]
+    },
+    "giftname": "cintacolorpupuraroyal"
+}
