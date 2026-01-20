@@ -2710,6 +2710,7 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
     on "hide" action Function(store.main_adj.change, 0)
 
     default flt_evs = None
+    default is_search_active = False
 
     style_prefix "twopane_scrollable_menu"
 
@@ -2848,26 +2849,43 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
         ysize 40
         background Solid(store.mas_ui.TEXT_FIELD_BG)
 
-        viewport:
-            draggable False
-            arrowkeys False
-            mousewheel "horizontal"
-            xsize right_area[0] - left_area[0] + right_area[2] - 10
-            ysize 38
-            xadjustment ui.adjustment(ranged=store.mas_ui.twopane_menu_adj_ranged_callback)
+        if is_search_active:
+            viewport:
+                draggable False
+                arrowkeys False
+                mousewheel "horizontal"
+                xsize right_area[0] - left_area[0] + right_area[2] - 10
+                ysize 38
+                xadjustment ui.adjustment(ranged=store.mas_ui.twopane_menu_adj_ranged_callback)
+    
+                input:
+                    id "search_input"
+                    style_prefix "input"
+                    length 50
+                    default_focus True
+                    xalign 0.0
+                    layout "nobreak"
+                    first_indent (0 if flt_evs is None else 10)
+    
+                    changed store.mas_ui.twopane_menu_search_callback
+                    
+        else:
+            button:
+                xfill True
+                yfill True
+                background None
+                padding (0, 0)
+                action SetScreenVariable("is_search_active", True)
 
-            input:
-                id "search_input"
-                style_prefix "input"
-                length 50
-                default_focus (not renpy.variant("mobile"))
-                xalign 0.0
-                layout "nobreak"
-                first_indent (0 if flt_evs is None else 10)
+                text "Buscar una conversación...":
+                    text_align 0.0
+                    layout "nobreak"
+                    color "#EEEEEEB2"
+                    first_indent 10
+                    line_leading 1
+                    outlines []
 
-                changed store.mas_ui.twopane_menu_search_callback
-
-        if flt_evs is None:
+        if flt_evs is None and is_search_active:
             text "Buscar una conversación...":
                 text_align 0.0
                 layout "nobreak"
