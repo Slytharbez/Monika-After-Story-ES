@@ -3411,6 +3411,7 @@ screen mas_selector_sidebar(items, mailbox, confirm, cancel, restore, remover=No
             ysize 38
             xadjustment ui.adjustment(ranged=store.mas_selspr.selector_adj_ranged_callback)
 
+        if not persistent._mas_hidesearch:
             input:
                 id "search_input"
                 style_prefix "input"

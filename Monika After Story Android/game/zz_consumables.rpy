@@ -1395,7 +1395,7 @@ label mas_consumables_generic_get(consumable):
             line_starter = renpy.substitute("Voy por un [a_an] de [consumable.disp_name].")
 
     if store.mas_globals.in_idle_mode or (mas_canCheckActiveWindow() and not mas_isFocused()):
-        m 1eua "[line_starter] Vuelvo enseguida. {w=1}{nw}"
+        m 1eua "[line_starter] Vuelvo enseguida.{w=1}{nw}"
     else:
 
         m 1eua "[line_starter]"
@@ -1423,7 +1423,7 @@ label mas_consumables_generic_get(consumable):
     $ consumable.acs.keep_on_desk = True
 
     if store.mas_globals.in_idle_mode or (mas_canCheckActiveWindow() and not mas_isFocused()):
-        m 1hua "¡Volví! {w=1.5}{nw}"
+        m 1hua "¡Volví!{w=1.5}{nw}"
     else:
 
         m 1eua "Bien, ¿qué más deberíamos hacer hoy?"
@@ -1509,7 +1509,7 @@ label mas_consumables_generic_finish_having(consumable):
     $ consumable.acs.keep_on_desk = True
 
     if store.mas_globals.in_idle_mode or (mas_canCheckActiveWindow() and not mas_isFocused()):
-        m 1hua "¡Volví! {w=1.5}{nw}"
+        m 1hua "¡Volví!{w=1.5}{nw}"
 
         if (
             not mas_inEVL("mas_consumables_generic_queued_running_out")
@@ -1572,7 +1572,7 @@ label mas_consumables_generic_finished_prepping(consumable):
     $ consumable.acs.keep_on_desk = True
 
     if store.mas_globals.in_idle_mode or (mas_canCheckActiveWindow() and not mas_isFocused()):
-        m 1hua "¡Volví! {w=1.5}{nw}"
+        m 1hua "¡Volví!{w=1.5}{nw}"
     else:
 
         m 1eua "Bien, ¿qué más deberíamos hacer hoy?"
@@ -1702,7 +1702,7 @@ label mas_consumables_generic_queued_running_out_dlg(low_cons):
         python:
             items_running_out_of = ""
             if len(low_cons) == 2:
-                items_running_out_of = "{0} and {1}".format(low_cons[0].disp_name, low_cons[1].disp_name)
+                items_running_out_of = "{0} y {1}".format(low_cons[0].disp_name, low_cons[1].disp_name)
             else:
                 items_running_out_of = low_cons[0].disp_name
 
@@ -1745,7 +1745,7 @@ label mas_consumables_remove_thermos:
     window auto
 
     if store.mas_globals.in_idle_mode or (mas_canCheckActiveWindow() and not mas_isFocused()):
-        m 1hua "¡Volví! {w=1.5}{nw}"
+        m 1hua "¡Volví!{w=1.5}{nw}"
     else:
 
         m "Bien, ¿qué más deberíamos hacer hoy?"
@@ -1873,7 +1873,7 @@ label monika_consumables_check:
         python:
             items_running_out_of = ""
             if len(low_cons) == 2:
-                items_running_out_of = "{0} and {1}".format(low_cons[0].disp_name, low_cons[1].disp_name)
+                items_running_out_of = "{0} y {1}".format(low_cons[0].disp_name, low_cons[1].disp_name)
             else:
                 items_running_out_of = low_cons[0].disp_name
 

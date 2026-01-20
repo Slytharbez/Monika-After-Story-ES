@@ -1246,7 +1246,7 @@ label mas_reaction_gift_hairclip(hairclip_name, desc=None):
             $ desc = "lindo"
 
         if len(store.mas_selspr.filter_acs(True, "left-hair-clip")) > 0:
-            m 1hub "¡Oh!{w=1} ¡Otra horquilla!"
+            m 1hub "¡Oh! {w=1}¡Otra horquilla!"
         else:
 
             m 1wuo "¡Oh!"
@@ -1298,7 +1298,7 @@ label mas_reaction_gift_coffee:
         m 1eka "Te avisaré cuando se me acabe, ¿de acuerdo?"
     else:
 
-        m 1wub "¡Oh!{w=0.2} {nw}"
+        m 1wub "¡Oh! {w=0.2}{nw}"
         extend 3hub "¡Café!"
 
         if mas_consumable_coffee.enabled() and mas_consumable_coffee.hasServing():
@@ -1334,9 +1334,9 @@ label mas_reaction_gift_coffee:
                 call mas_transition_to_emptydesk
                 pause 2.0
                 m "Sé que hay una máquina de café en algún lugar... {w=2}{nw}"
-                m "¡Ah, ahí está! {w=2}{nw}"
+                m "¡Ah, ahí está!{w=2}{nw}"
                 pause 5.0
-                m "¡Y ya está! {w=2}{nw}"
+                m "¡Y ya está!{w=2}{nw}"
                 call mas_transition_from_emptydesk ()
 
 
@@ -1689,7 +1689,7 @@ label mas_reaction_candy:
         show screen mas_py_console_teaching
 
         call mas_wx_cmd ("import os", local_ctx, w_wait=1.0)
-        call mas_wx_cmd ("os.remove(os.path.normcase(basedir+'/characters/candy.gift'))", local_ctx, w_wait=1.0, x_wait=1.0)
+        call mas_wx_cmd ("os.remove(os.path.normcase(basedir+'/characters/dulce.gift'))", local_ctx, w_wait=1.0, x_wait=1.0)
         $ store.mas_ptod.ex_cn()
         hide screen mas_py_console_teaching
         show monika at t11
@@ -1751,7 +1751,7 @@ label mas_reaction_candycorn:
         show screen mas_py_console_teaching
 
         call mas_wx_cmd ("import os", local_ctx, w_wait=1.0)
-        call mas_wx_cmd ("os.remove(os.path.normcase(basedir+'/characters/candycorn.gift'))", local_ctx, w_wait=1.0, x_wait=1.0)
+        call mas_wx_cmd ("os.remove(os.path.normcase(basedir+'/characters/maizdulce.gift'))", local_ctx, w_wait=1.0, x_wait=1.0)
         $ store.mas_ptod.ex_cn()
         hide screen mas_py_console_teaching
         show monika at t11
@@ -1855,7 +1855,7 @@ label mas_reaction_christmascookies:
 
 init python:
     if store.mas_isD25Season():
-        addReaction("mas_reaction_candycane", "bastoncaramelo", is_good=True, exclude_on=["d25g"])
+        addReaction("mas_reaction_candycane", "bastonescaramelo", is_good=True, exclude_on=["d25g"])
 
 label mas_reaction_candycane:
     $ mas_giftCapGainAff(1)
@@ -2275,7 +2275,7 @@ label mas_reaction_new_ribbon:
     $ mas_giftCapGainAff(3)
     if persistent._mas_current_gifted_ribbons == 0:
         m 1suo "¡Una cinta nueva!"
-        m 3hub "... Y es [_mas_new_ribbon_color]!"
+        m 3hub "... ¡Y es [_mas_new_ribbon_color]!"
 
 
         if _mas_new_ribbon_color == "verde" or _mas_new_ribbon_color == "esmeralda":
@@ -2304,7 +2304,7 @@ label mas_reaction_new_ribbon:
     else:
 
         m 1suo "¡Otra cinta!"
-        m 3hub "... Y esta vez es [_mas_new_ribbon_color]!"
+        m 3hub "... ¡Y esta vez es [_mas_new_ribbon_color]!"
 
 
         if _mas_new_ribbon_color == "verde" or _mas_new_ribbon_color == "esmeralda":
@@ -2337,7 +2337,7 @@ label mas_reaction_gift_roses:
     if not persistent._date_last_given_roses and not renpy.seen_label('monika_valentines_start'):
         $ mas_giftCapGainAff(10)
 
-        m 1eka "[player]... N-No sé qué decir..."
+        m 1eka "[player]... n-no sé qué decir..."
         m 1ekbsb "¡Nunca hubiera pensado que me iba a tocar algo así!"
         m 3skbsa "Estoy tan feliz ahora mismo."
         if mas_isF14():
@@ -2668,7 +2668,7 @@ label mas_reaction_gift_clothes_orcaramelo_sakuya_izayoi:
     m 2hua "Entonces, {w=0.5}¿cómo me veo?"
     m 3eub "Casi siento que podría hacer cualquier cosa antes de que pudieras parpadear."
     m 1eua "... Siempre y cuando no me mantengas demasiado ocupada, jejeje~"
-    m 1lkbfb "Todavía me gustaría poder pasar tiempo con usted, maest--{nw}"
+    m 1lkbfb "Todavía me gustaría poder pasar tiempo con usted, maest...{nw}"
     $ _history_list.pop()
     m 1ekbfb "Todavía me gustaría poder pasar tiempo contigo,{fast} [player]."
 

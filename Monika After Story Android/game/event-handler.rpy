@@ -3335,6 +3335,7 @@ label prompt_menu:
             else:
                 talk_menu.append((_("¡Te amo!"), "love"))
         talk_menu.append((_("Me siento..."), "moods"))
+        talk_menu.append((_("Menú para Android"), "anmenu"))
         talk_menu.append((_("Adiós"), "goodbye"))
         talk_menu.append((_("No importa"),"nevermind"))
 
@@ -3363,6 +3364,9 @@ label prompt_menu:
 
     elif madechoice == "moods":
         call mas_mood_start
+
+    elif madechoice == "anmenu":
+        jump anmenu
 
     elif madechoice == "goodbye":
         call mas_farewell_start

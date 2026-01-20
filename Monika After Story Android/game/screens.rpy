@@ -664,10 +664,13 @@ screen rigged_choice(items):
 
 style talk_choice_vbox is choice_vbox:
     xcenter 960
+    yalign 0.10
 
-style talk_choice_button is choice_button
+style talk_choice_button is choice_button:
+    xmaximum 600
 
-style talk_choice_button_dark is choice_button_dark
+style talk_choice_button_dark is choice_button_dark:
+    xmaximum 600
 
 style talk_choice_button_text is choice_button_text
 
@@ -2842,41 +2845,51 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
 
 
 
-    frame:
-        xpos left_area[0]
-        ypos left_area[1] - 55
-        xsize right_area[0] - left_area[0] + right_area[2]
-        ysize 40
-        background Solid(store.mas_ui.TEXT_FIELD_BG)
+    if not persistent._mas_hidesearch:
+        frame:
+            xpos left_area[0]
+            ypos left_area[1] - 55
+            xsize right_area[0] - left_area[0] + right_area[2]
+            ysize 40
+            background Solid(store.mas_ui.TEXT_FIELD_BG)
 
-        if is_search_active:
-            viewport:
-                draggable False
-                arrowkeys False
-                mousewheel "horizontal"
-                xsize right_area[0] - left_area[0] + right_area[2] - 10
-                ysize 38
-                xadjustment ui.adjustment(ranged=store.mas_ui.twopane_menu_adj_ranged_callback)
-    
-                input:
-                    id "search_input"
-                    style_prefix "input"
-                    length 50
-                    default_focus True
-                    xalign 0.0
-                    layout "nobreak"
-                    first_indent (0 if flt_evs is None else 10)
-    
-                    changed store.mas_ui.twopane_menu_search_callback
-                    
-        else:
-            button:
-                xfill True
-                yfill True
-                background None
-                padding (0, 0)
-                action SetScreenVariable("is_search_active", True)
+            if is_search_active:
+                viewport:
+                    draggable False
+                    arrowkeys False
+                    mousewheel "horizontal"
+                    xsize right_area[0] - left_area[0] + right_area[2] - 10
+                    ysize 38
+                    xadjustment ui.adjustment(ranged=store.mas_ui.twopane_menu_adj_ranged_callback)
+        
+                    input:
+                        id "search_input"
+                        style_prefix "input"
+                        length 50
+                        default_focus True
+                        xalign 0.0
+                        layout "nobreak"
+                        first_indent (0 if flt_evs is None else 10)
+        
+                        changed store.mas_ui.twopane_menu_search_callback
+                        
+            else:
+                button:
+                    xfill True
+                    yfill True
+                    background None
+                    padding (0, 0)
+                    action SetScreenVariable("is_search_active", True)
 
+                    text "Buscar una conversación...":
+                        text_align 0.0
+                        layout "nobreak"
+                        color "#EEEEEEB2"
+                        first_indent 10
+                        line_leading 1
+                        outlines []
+
+            if flt_evs is None and is_search_active:
                 text "Buscar una conversación...":
                     text_align 0.0
                     layout "nobreak"
@@ -2884,15 +2897,6 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
                     first_indent 10
                     line_leading 1
                     outlines []
-
-        if flt_evs is None and is_search_active:
-            text "Buscar una conversación...":
-                text_align 0.0
-                layout "nobreak"
-                color "#EEEEEEB2"
-                first_indent 10
-                line_leading 1
-                outlines []
 
 
 screen scrollable_menu(items, display_area, scroll_align, nvm_text, remove=None):
