@@ -2729,7 +2729,7 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
                 anchor (0, 0)
 
                 viewport:
-                    id "viewport"
+                    id "search_viewport"
                     yfill False
                     mousewheel True
                     arrowkeys True
@@ -2753,7 +2753,7 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
 
             bar:
                 style "classroom_vscrollbar"
-                value YScrollValue("viewport")
+                value YScrollValue("search_viewport")
                 unscrollable "hide"
 
                 xalign left_align / 2 + 0.005
@@ -2771,18 +2771,12 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
             else:
                 ysize left_area[3] + evhand.LEFT_EXTRA_SPACE
 
-            bar:
-                adjustment prev_adj
-                style "classroom_vscrollbar"
-                unscrollable "hide"
-                xalign left_align
-
             vbox:
                 ypos 0
                 yanchor 0
 
                 viewport:
-                    yadjustment prev_adj
+                    id "prev_viewport"
                     yfill False
                     mousewheel True
                     arrowkeys True
@@ -2807,23 +2801,23 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
                     elif cat_length > 1:
                         textbutton _("Regresar") action [Return(-1), Function(store.prev_adj.change, 0)]
 
+            bar:
+                style "classroom_vscrollbar"
+                value YScrollValue("prev_viewport")
+                unscrollable "hide"
+                xalign left_align
+
 
         if main_items:
             fixed:
                 area right_area
-
-                bar:
-                    adjustment main_adj
-                    style "classroom_vscrollbar"
-                    unscrollable "hide"
-                    xalign right_align
 
                 vbox:
                     ypos 0
                     yanchor 0
 
                     viewport:
-                        yadjustment main_adj
+                        id "main_viewport"
                         yfill False
                         mousewheel True
                         arrowkeys True
@@ -2838,10 +2832,16 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
                                     style "twopane_scrollable_menu_special_button"
 
                                 action [Return(i_label), Function(store.prev_adj.change, 0)]
-
+                                
                     null height 20
 
                     textbutton _("No importa") action [Return(False), Function(store.prev_adj.change, 0)]
+
+                bar:
+                    style "classroom_vscrollbar"
+                    value YScrollValue("main_viewport")
+                    unscrollable "hide"
+                    xalign right_align
 
 
 
@@ -2910,7 +2910,7 @@ screen scrollable_menu(items, display_area, scroll_align, nvm_text, remove=None)
             yanchor 0
 
             viewport:
-                id "viewport"
+                id "scrollable_menu_viewport"
                 yfill False
                 mousewheel True
 
@@ -2944,7 +2944,7 @@ screen scrollable_menu(items, display_area, scroll_align, nvm_text, remove=None)
 
         bar:
             style "classroom_vscrollbar"
-            value YScrollValue("viewport")
+            value YScrollValue("scrollable_menu_viewport")
             unscrollable "hide"
             xalign scroll_align
 
@@ -2983,7 +2983,7 @@ screen mas_gen_scrollable_menu(items, display_area, scroll_align, *args):
             yanchor 0
 
             viewport:
-                id "viewport"
+                id "mas_gen_viewport"
                 yfill False
                 mousewheel True
 
@@ -3030,7 +3030,7 @@ screen mas_gen_scrollable_menu(items, display_area, scroll_align, *args):
 
         bar:
             style "classroom_vscrollbar"
-            value YScrollValue("viewport")
+            value YScrollValue("mas_gen_viewport")
             unscrollable "hide"
             xalign scroll_align
 
@@ -3080,7 +3080,7 @@ screen mas_check_scrollable_menu(items, display_area, scroll_align, selected_but
             yanchor 0
 
             viewport:
-                id "viewport"
+                id "check_scrollable_viewport"
                 yfill False
                 mousewheel True
 
@@ -3109,7 +3109,8 @@ screen mas_check_scrollable_menu(items, display_area, scroll_align, selected_but
 
         bar:
             style "classroom_vscrollbar"
-            value YScrollValue("viewport")
+            value YScrollValue("check_scrollable_viewport")
+            unscrollable "hide"
             xalign scroll_align
 
 
