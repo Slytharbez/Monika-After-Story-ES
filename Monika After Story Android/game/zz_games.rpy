@@ -150,7 +150,7 @@ init python:
         Event(
             persistent._mas_game_database,
             eventlabel="mas_hangman",
-            prompt="[mas_games.HANGMAN_NAME]"
+            prompt=_("Ahorcado")
         ),
         code="GME",
         restartBlacklist=True

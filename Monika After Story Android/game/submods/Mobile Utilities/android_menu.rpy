@@ -311,7 +311,7 @@ label ropa:
             ("Vestido blanco con azul marino", "vestidoblancoconazulmarino.gift"),
             ("Vestido color azul oscuro brillante", "vestidocolorazuloscurobrillante.gift"),
             ("Vestido de color verde", "vestidodecolorverde.gift"),
-            ("YoRHa N.2 Tipo B", "yorhano2tipoB.gift"),
+            ("YoRHa Nº2 Tipo B", "yorhanotipob.gift"),
             ("Volver", "return")
         ]
         
