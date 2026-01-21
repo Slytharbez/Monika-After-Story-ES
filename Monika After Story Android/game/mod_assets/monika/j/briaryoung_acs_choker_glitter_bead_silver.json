@@ -1,27 +1,27 @@
-﻿{
+{
     "__author": "Briar Young",
-    "version": 3,
-    "type": 0,
-    "name": "briaryoung_choker_glitter_bead_silver",
-    "img_sit": "briaryoung_choker_glitter_bead_silver",
+    "version": 4,
+    "arm_split": {
+        "default": "0",
+        "use_reg_for_l": true
+    },
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
+    "select_info": {
+        "group": "choker",
+        "display_name": "Gargantillad de plata brillante",
+        "thumb": "briaryoung_choker_glitter_bead_silver"
+    },
+    "dlg_desc": "gargantilla",
+    "priority": 8,
+    "img_sit": "briaryoung_choker_glitter_bead_silver",
+    "stay_on_start": true,
+    "dlg_plural": false,
+    "giftname": "gargantilladdeplatabrillante",
+    "type": 0,
     "rec_layer": 8,
     "acs_type": "choker",
-    "stay_on_start": true,
-    "priority": 8,
-    "dlg_desc": "choker",
-    "dlg_plural": false,
-    "select_info": {
-        "display_name": "Gargantillad de plata brillante",
-        "thumb": "briaryoung_choker_glitter_bead_silver",
-        "group": "choker"
-    },
-    "giftname": "gargantilladdeplatabrillante",
-    "arm_split": {
-        "default": "0",
-        "use_reg_for_l": true
-    }
+    "name": "briaryoung_choker_glitter_bead_silver"
 }

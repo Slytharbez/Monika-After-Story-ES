@@ -1,27 +1,27 @@
-﻿{
-    "__author": "Orcaramelo",
-    "version": 3,
-    "type": 0,
-    "name": "orcaramelo_hairflower_pink",
-    "img_sit": "orcaramelo_hairflower_pink",
-    "pose_map": {
-        "default": "0",
-        "l_default": "5"
-    },
-    "stay_on_start": true,
-    "rec_layer": 5,
-    "priority": 20,
-    "acs_type": "left-hair-flower",
-    "mux_type": [
-        "left-hair-flower"
-    ],
+{
+    "__author": "Orcaramelo", 
     "ex_props": {
         "left-hair-strand-eye-level": true
-    },
+    }, 
+    "version": 4, 
+    "pose_map": {
+        "default": "0", 
+        "l_default": "5"
+    }, 
     "select_info": {
-        "display_name": "Flor rosada",
-        "thumb": "orcaramelo_hairflower_pink",
-        "group": "left-hair-flower"
-    },
-    "giftname": "florrosada"
+        "group": "left-hair-flower", 
+        "display_name": "Flor rosada", 
+        "thumb": "orcaramelo_hairflower_pink"
+    }, 
+    "priority": 20, 
+    "img_sit": "orcaramelo_hairflower_pink", 
+    "mux_type": [
+        "left-hair-flower"
+    ], 
+    "stay_on_start": true, 
+    "giftname": "florrosada", 
+    "type": 0, 
+    "rec_layer": 5, 
+    "acs_type": "left-hair-flower", 
+    "name": "orcaramelo_hairflower_pink"
 }

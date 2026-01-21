@@ -1,34 +1,34 @@
-﻿{
+{
     "__author": "JMO",
-    "version": 3,
-    "type": 0,
-    "name": "jmo_hairclip_musicnote",
-    "img_sit": "jmo_hairclip_musicnote",
+    "ex_props": {
+        "left-hair-strand-eye-level": true
+    },
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
-    "rec_layer": 5,
-    "acs_type": "left-hair-clip",
-    "mux_type": [
-        "left-hair-clip"
-    ],
-    "stay_on_start": true,
-    "ex_props": {
-        "left-hair-strand-eye-level": true
-    },
     "select_info": {
-        "display_name": "Horquilla 8ª nota",
-        "thumb": "jmo_hairclip_musicnote",
-        "group": "left-hair-clip",
-        "hover_dlg": [
-            "{i}Cada día~{/i}"
-        ],
         "select_dlg": [
             "Me encanta esta horquilla.",
             "¡Esta horquilla es adorable!",
             "¡Lindo!"
+        ],
+        "group": "left-hair-clip",
+        "display_name": "Horquilla 8ª nota",
+        "thumb": "jmo_hairclip_musicnote",
+        "hover_dlg": [
+            "{i}Cada día~{/i}"
         ]
     },
-    "giftname": "horquilla8nota"
+    "img_sit": "jmo_hairclip_musicnote",
+    "mux_type": [
+        "left-hair-clip"
+    ],
+    "stay_on_start": true,
+    "giftname": "horquilla8nota",
+    "type": 0,
+    "rec_layer": 5,
+    "acs_type": "left-hair-clip",
+    "name": "jmo_hairclip_musicnote"
 }

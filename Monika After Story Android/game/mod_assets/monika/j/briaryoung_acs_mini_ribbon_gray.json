@@ -1,25 +1,25 @@
-﻿{
+{
     "__author": "briaryoung",
-    "version": 3,
-    "type": 0,
-    "name": "briaryoung_mini_ribbon_gray",
-    "img_sit": "briaryoung_mini_ribbon_gray",
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
-    "rec_layer": 3,
-    "acs_type": "mini-ribbon",
-    "stay_on_start": true,
-    "dlg_desc": "gray ribbon",
-    "dlg_plural": false,
     "select_info": {
-        "display_name": "Cintilla color gris",
-        "thumb": "briaryoung_mini_ribbon_gray",
-        "group": "ribbon",
         "select_dlg": [
             "¡El gris siempre tiene algo de elegante!"
-        ]
+        ],
+        "group": "ribbon",
+        "display_name": "Cintilla color gris",
+        "thumb": "briaryoung_mini_ribbon_gray"
     },
-    "giftname": "cintillacolorgris"
+    "dlg_desc": "cintilla de color gris",
+    "img_sit": "briaryoung_mini_ribbon_gray",
+    "stay_on_start": true,
+    "dlg_plural": false,
+    "giftname": "cintillacolorgris",
+    "type": 0,
+    "rec_layer": 3,
+    "acs_type": "mini-ribbon",
+    "name": "briaryoung_mini_ribbon_gray"
 }

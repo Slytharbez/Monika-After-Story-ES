@@ -1,25 +1,25 @@
-﻿{
+{
     "__author": "retroadamshow",
-    "version": 3,
-    "type": 0,
-    "name": "retro_ribbon_amdek_amber",
-    "img_sit": "retro_ribbon_amdek_amber",
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
-    "rec_layer": 3,
-    "acs_type": "ribbon",
-    "stay_on_start": true,
-    "giftname": "cintaamdekambar",
-    "dlg_desc": "Amdek-style amber ribbon",
-    "dlg_plural": false,
     "select_info": {
-        "display_name": "Cinta amdek ámbar",
-        "thumb": "retro_ribbon_amdek_amber",
-        "group": "ribbon",
         "select_dlg": [
             "¡Qué nostalgia!"
-        ]
-    }
+        ],
+        "group": "ribbon",
+        "display_name": "Cinta amdek ámbar",
+        "thumb": "retro_ribbon_amdek_amber"
+    },
+    "dlg_desc": "cinta amdek de color ámbar",
+    "img_sit": "retro_ribbon_amdek_amber",
+    "stay_on_start": true,
+    "dlg_plural": false,
+    "giftname": "cintaamdekambar",
+    "type": 0,
+    "rec_layer": 3,
+    "acs_type": "ribbon",
+    "name": "retro_ribbon_amdek_amber"
 }

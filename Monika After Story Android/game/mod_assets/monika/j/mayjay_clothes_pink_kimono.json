@@ -1,73 +1,73 @@
 {
+    "pose_arms": {
+        "steepling": {
+            "layers": "10",
+            "tag": "steepling"
+        },
+        "right-point": {
+            "layers": "0",
+            "tag": "point"
+        },
+        "def|left-def": {
+            "layers": "10",
+            "tag": "def"
+        },
+        "def|right-def": {
+            "layers": "5^10",
+            "tag": "def"
+        },
+        "right-restpoint": {
+            "layers": "10",
+            "tag": "restpoint"
+        },
+        "crossed": {
+            "layers": "5",
+            "tag": "crossed"
+        },
+        "right-down": {
+            "layers": "0",
+            "tag": "down"
+        },
+        "left-down": {
+            "layers": "0",
+            "tag": "down"
+        },
+        "left-rest": {
+            "layers": "10",
+            "tag": "rest"
+        }
+    },
     "__author": "MayJay",
     "ex_props": {
         "compat-downtiedstrand": true,
         "home": true,
         "date": true
     },
-    "version": 3,
-    "type": 2,
-    "name": "mayjay_pink_kimono",
-    "img_sit": "mayjay_pink_kimono",
+    "version": 4,
     "pose_map": {
-        "mpm_type": 0,
-        "default": false,
-        "use_reg_for_l": true,
-        "p1": true,
         "p2": true,
         "p3": true,
+        "use_reg_for_l": true,
+        "p1": true,
+        "p6": true,
+        "p7": true,
         "p4": true,
         "p5": true,
-        "p6": true,
-        "p7": true
+        "default": false,
+        "mpm_type": 0
     },
-    "stay_on_start": true,
     "select_info": {
-        "display_name": "Kimono color rosa",
-        "thumb": "mayjay_pink_kimono",
-        "group": "clothes",
         "select_dlg": [
             "¡Qué hermoso kimono~",
             "¡Imagino usarlo en un festival!"
-        ]
+        ],
+        "group": "clothes",
+        "display_name": "Kimono color rosa",
+        "thumb": "mayjay_pink_kimono"
     },
+    "img_sit": "mayjay_pink_kimono",
+    "stay_on_start": true,
     "giftname": "kemonorosa",
-    "pose_arms": {
-        "crossed": {
-            "tag": "crossed",
-            "layers": "5"
-        },
-        "left-down": {
-            "tag": "down",
-            "layers": "0"
-        },
-        "left-rest": {
-            "tag": "rest",
-            "layers": "10"
-        },
-        "right-down": {
-            "tag": "down",
-            "layers": "0"
-        },
-        "right-point": {
-            "tag": "point",
-            "layers": "0"
-        },
-        "right-restpoint": {
-            "tag": "restpoint",
-            "layers": "10"
-        },
-        "steepling": {
-            "tag": "steepling",
-            "layers": "10"
-        },
-        "def|left-def": {
-            "tag": "def",
-            "layers": "10"
-        },
-        "def|right-def": {
-            "tag": "def",
-            "layers": "5^10"
-        }
-    }
+    "type": 2,
+    "name": "mayjay_pink_kimono"
 }

@@ -1,34 +1,34 @@
-﻿{
+{
     "__author": "JMO",
-    "version": 3,
-    "type": 0,
-    "name": "jmo_hairclip_cherry",
-    "img_sit": "jmo_hairclip_cherry",
+    "ex_props": {
+        "left-hair-strand-eye-level": true
+    },
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
-    "rec_layer": 5,
-    "acs_type": "left-hair-clip",
-    "mux_type": [
-        "left-hair-clip"
-    ],
-    "stay_on_start": true,
-    "ex_props": {
-        "left-hair-strand-eye-level": true
-    },
     "select_info": {
-        "display_name": "Horquilla de cereza",
-        "thumb": "jmo_hairclip_cherry",
-        "group": "left-hair-clip",
-        "hover_dlg": [
-            "¿Has oído hablar del beso de cereza, [player]?~"
-        ],
         "select_dlg": [
             "Me encanta esta horquilla.",
             "¡Esta horquilla es adorable!",
             "¡Lindo!"
+        ],
+        "group": "left-hair-clip",
+        "display_name": "Horquilla de cereza",
+        "thumb": "jmo_hairclip_cherry",
+        "hover_dlg": [
+            "¿Has oído hablar del beso de cereza, [player]?~"
         ]
     },
-    "giftname": "horquilladecereza"
+    "img_sit": "jmo_hairclip_cherry",
+    "mux_type": [
+        "left-hair-clip"
+    ],
+    "stay_on_start": true,
+    "giftname": "horquilladecereza",
+    "type": 0,
+    "rec_layer": 5,
+    "acs_type": "left-hair-clip",
+    "name": "jmo_hairclip_cherry"
 }

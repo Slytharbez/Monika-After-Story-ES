@@ -1,22 +1,22 @@
-﻿{
+{
     "__author": "anonymioo",
-    "version": 3,
-    "type": 0,
-    "name": "anonymioo_ribbon_brown",
-    "img_sit": "anonymioo_ribbon_brown",
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
+    "select_info": {
+        "group": "ribbon",
+        "display_name": "Cinta color marrón",
+        "thumb": "anonymioo_ribbon_brown"
+    },
+    "dlg_desc": "cinta de color marrón",
+    "img_sit": "anonymioo_ribbon_brown",
+    "stay_on_start": true,
+    "dlg_plural": false,
+    "giftname": "cintacolormarron",
+    "type": 0,
     "rec_layer": 3,
     "acs_type": "ribbon",
-    "stay_on_start": true,
-    "dlg_desc": "brown ribbon",
-    "dlg_plural": false,
-    "select_info": {
-        "display_name": "Cinta color marrón",
-        "thumb": "anonymioo_ribbon_brown",
-        "group": "ribbon"
-    },
-    "giftname": "cintacolormarron"
+    "name": "anonymioo_ribbon_brown"
 }

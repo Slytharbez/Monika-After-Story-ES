@@ -1,29 +1,27 @@
-﻿{
+{
+    "pose_arms": {},
     "__author": "briaryoung",
-    "version": 3,
-    "type": 2,
-    "name": "briaryoung_heart_cut_bikini_purple",
-    "img_sit": "briaryoung_heart_cut_bikini_purple",
-    "pose_map": {
-        "mpm_type": 0,
-        "default": true,
-        "use_reg_for_l": true
-    },
-    "stay_on_start": true,
     "ex_props": {
         "compat-downtiedstrand": true,
         "bare-shoulders": true
     },
+    "version": 4,
+    "pose_map": {
+        "default": true,
+        "use_reg_for_l": true,
+        "mpm_type": 0
+    },
     "select_info": {
-        "display_name": "Bikini de color púrpura con escote de corazón",
-        "thumb": "briaryoung_heart_cut_bikini_purple",
-        "group": "clothes",
         "select_dlg": [
             "¡Me encanta este look!"
-        ]
+        ],
+        "group": "clothes",
+        "display_name": "Bikini de color púrpura con escote de corazón",
+        "thumb": "briaryoung_heart_cut_bikini_purple"
     },
+    "img_sit": "briaryoung_heart_cut_bikini_purple",
+    "stay_on_start": true,
     "giftname": "bikinidecolorpurpuraconescotedecorazon",
-    "pose_arms": {
-        
-    }
+    "type": 2,
+    "name": "briaryoung_heart_cut_bikini_purple"
 }

@@ -1,69 +1,69 @@
-﻿{
-    "__author": "hatana",
-    "version": 3,
-    "type": 2,
-    "name": "hatana_2b",
-    "img_sit": "hatana_2b",
-    "pose_map": {
-        "mpm_type": 0,
-        "default": false,
-        "l_default": false,
-        "p1": true,
-        "p2": true,
-        "p3": true,
-        "p4": true,
-        "p5": true,
-        "p6": true,
-        "p7": true
-    },
-    "stay_on_start": true,
-    "ex_props": {
-        "cosplay": true,
-        "costume": "o31",
-        "hide-ring": true
-    },
-    "select_info": {
-        "display_name": "YoRHa N.2 Tipo B",
-        "thumb": "hatana_2b",
-        "group": "clothes"
-    },
-    "giftname": "yorhano2tipoB",
+{
     "pose_arms": {
-        "crossed": {
-            "tag": "crossed",
-            "layers": "5^10"
-        },
-        "left-down": {
-            "tag": "down",
-            "layers": "0"
-        },
-        "left-rest": {
-            "tag": "rest",
-            "layers": "10"
-        },
-        "right-down": {
-            "tag": "down",
-            "layers": "0"
+        "steepling": {
+            "layers": "10",
+            "tag": "steepling"
         },
         "right-point": {
-            "tag": "point",
-            "layers": "0"
-        },
-        "right-restpoint": {
-            "tag": "restpoint",
-            "layers": "10"
-        },
-        "steepling": {
-            "tag": "steepling",
-            "layers": "10"
+            "layers": "0",
+            "tag": "point"
         },
         "def|left-def": {
-            "tag": "def",
-            "layers": "10"
+            "layers": "10",
+            "tag": "def"
         },
         "def|right-def": {
-            "tag": "def",
-            "layers": "5^10"
+            "layers": "5^10",
+            "tag": "def"
+        },
+        "right-restpoint": {
+            "layers": "10",
+            "tag": "restpoint"
+        },
+        "crossed": {
+            "layers": "5^10",
+            "tag": "crossed"
+        },
+        "right-down": {
+            "layers": "0",
+            "tag": "down"
+        },
+        "left-down": {
+            "layers": "0",
+            "tag": "down"
+        },
+        "left-rest": {
+            "layers": "10",
+            "tag": "rest"
         }
-    }
+    },
+    "__author": "hatana",
+    "ex_props": {
+        "hide-ring": true,
+        "cosplay": true,
+        "costume": "o31"
+    },
+    "version": 4,
+    "pose_map": {
+        "p2": true,
+        "p3": true,
+        "p1": true,
+        "p6": true,
+        "p7": true,
+        "p4": true,
+        "p5": true,
+        "default": false,
+        "mpm_type": 0,
+        "l_default": false
+    },
+    "select_info": {
+        "group": "clothes",
+        "display_name": "YoRHa Nº2 Tipo B",
+        "thumb": "hatana_2b"
+    },
+    "img_sit": "hatana_2b",
+    "stay_on_start": true,
+    "giftname": "yorhano2tipoB",
+    "type": 2,
+    "name": "hatana_2b"
 }

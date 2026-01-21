@@ -1,19 +1,20 @@
-﻿{
+{
     "__author": "Briar Young",
-    "version": 3,
-    "type": 1,
-    "name": "briaryoung_bun_middle",
-    "img_sit": "briaryoung_bun_middle",
+    "version": 4,
     "pose_map": {
-        "mpm_type": 0,
         "default": true,
-        "use_reg_for_l": true
+        "use_reg_for_l": false,
+        "mpm_type": 0
     },
-    "stay_on_start": true,
     "select_info": {
+        "group": "hair",
         "display_name": "Moño en el medio",
-        "thumb": "briaryoung_bun_middle",
-        "group": "hair"
+        "thumb": "briaryoung_bun_middle"
     },
-    "unlock": true
+    "unlock": true,
+    "img_sit": "briaryoung_bun_middle",
+    "stay_on_start": true,
+    "type": 1,
+    "use_numeric_layer_ids": true,
+    "name": "briaryoung_bun_middle"
 }

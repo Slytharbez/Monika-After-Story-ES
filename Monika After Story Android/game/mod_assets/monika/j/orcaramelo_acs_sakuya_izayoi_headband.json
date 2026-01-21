@@ -1,17 +1,17 @@
-﻿{
-    "__author": "Orcaramelo",
-    "version": 3,
-    "type": 0,
-    "name": "orcaramelo_sakuya_izayoi_headband",
-    "img_sit": "orcaramelo_sakuya_izayoi_headband",
-    "pose_map": {
-        "default": "0",
-        "l_default": "5"
-    },
-    "rec_layer": 5,
-    "acs_type": "headband",
+{
+    "__author": "Orcaramelo", 
     "ex_props": {
         "required-hair-prop": "bunbraid"
-    },
-    "stay_on_start": true
+    }, 
+    "version": 4, 
+    "pose_map": {
+        "default": "0", 
+        "l_default": "5"
+    }, 
+    "img_sit": "orcaramelo_sakuya_izayoi_headband", 
+    "stay_on_start": true, 
+    "type": 0, 
+    "rec_layer": 5, 
+    "acs_type": "headband", 
+    "name": "orcaramelo_sakuya_izayoi_headband"
 }

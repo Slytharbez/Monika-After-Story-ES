@@ -1,27 +1,27 @@
-﻿{
+{
+    "pose_arms": {},
     "__author": "Finale",
-    "version": 3,
-    "type": 2,
-    "name": "finale_tanktop",
-    "img_sit": "finale_tanktop",
-    "pose_map": {
-        "mpm_type": 0,
-        "default": true,
-        "use_reg_for_l": true
-    },
-    "stay_on_start": true,
     "ex_props": {
         "bare-shoulders": true
     },
+    "version": 4,
+    "pose_map": {
+        "default": true,
+        "use_reg_for_l": true,
+        "mpm_type": 0
+    },
     "select_info": {
-        "display_name": "Camiseteta color blanco",
-        "thumb": "finale_tanktop",
-        "group": "clothes",
         "select_dlg": [
             "¿Cómo me veo, [player]?",
             "Perfecto para un día caluroso."
-        ]
+        ],
+        "group": "clothes",
+        "display_name": "Camiseteta color blanco",
+        "thumb": "finale_tanktop"
     },
+    "img_sit": "finale_tanktop",
+    "stay_on_start": true,
     "giftname": "camisetacolorblanco",
-    "pose_arms": {}
+    "type": 2,
+    "name": "finale_tanktop"
 }

@@ -1,29 +1,29 @@
-﻿{
+{
     "__author": "LanvalLime",
-    "version": 3,
-    "type": 0,
-    "name": "lanvallime_ribbon_navy_blue",
-    "img_sit": "lanvallime_ribbon_navy_blue",
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
-    "rec_layer": 3,
-    "acs_type": "ribbon",
+    "select_info": {
+        "select_dlg": [
+            "Siempre mantienes mi corazón a flote~"
+        ],
+        "group": "ribbon",
+        "display_name": "Cinta color azul marino",
+        "thumb": "lanvallime_ribbon_navy_blue",
+        "hover_dlg": [
+            "¿Tú eres un fan del agua, [player]?"
+        ]
+    },
+    "img_sit": "lanvallime_ribbon_navy_blue",
     "mux_type": [
         "ribbon"
     ],
     "stay_on_start": true,
-    "select_info": {
-        "display_name": "Cinta color azul marino",
-        "thumb": "lanvallime_ribbon_navy_blue",
-        "group": "ribbon",
-        "hover_dlg": [
-            "¿Tú eres un fan del agua, [player]?"
-        ],
-        "select_dlg": [
-            "Siempre mantienes mi corazón a flote~"
-        ]
-    },
-    "giftname": "cintacolorazulmarino"
+    "giftname": "cintacolorazulmarino",
+    "type": 0,
+    "rec_layer": 3,
+    "acs_type": "ribbon",
+    "name": "lanvallime_ribbon_navy_blue"
 }

@@ -1,29 +1,29 @@
-﻿{
+{
     "__author": "LanvalLime",
-    "version": 3,
-    "type": 0,
-    "name": "lanvallime_ribbon_coffee",
-    "img_sit": "lanvallime_ribbon_coffee",
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
-    "rec_layer": 3,
-    "acs_type": "ribbon",
+    "select_info": {
+        "select_dlg": [
+            "Igual que mi café~"
+        ],
+        "group": "ribbon",
+        "display_name": "Cinta color café",
+        "thumb": "lanvallime_ribbon_coffee",
+        "hover_dlg": [
+            "Me gusta mucho este color..."
+        ]
+    },
+    "img_sit": "lanvallime_ribbon_coffee",
     "mux_type": [
         "ribbon"
     ],
     "stay_on_start": true,
-    "select_info": {
-        "display_name": "Cinta color café",
-        "thumb": "lanvallime_ribbon_coffee",
-        "group": "ribbon",
-        "hover_dlg": [
-            "Me gusta mucho este color..."
-        ],
-        "select_dlg": [
-            "Igual que mi café~"
-        ]
-    },
-    "giftname": "cintacolorcafe"
+    "giftname": "cintacolorcafe",
+    "type": 0,
+    "rec_layer": 3,
+    "acs_type": "ribbon",
+    "name": "lanvallime_ribbon_coffee"
 }

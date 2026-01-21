@@ -1,30 +1,30 @@
 {
     "__author": "HistoryVariety",
-    "version": 3,
-    "type": 0,
-    "name": "historyvariety_star_necklace",
-    "img_sit": "historyvariety_star_necklace",
+    "version": 4,
+    "arm_split": {
+        "default": "0",
+        "use_reg_for_l": true
+    },
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
+    "select_info": {
+        "select_dlg": [
+            "¡Llevame a la luna~!"
+        ],
+        "group": "necklace",
+        "display_name": "Gargantilla de estrella púrpura",
+        "thumb": "historyvariety_star_necklace"
+    },
+    "dlg_desc": "gargantilla",
+    "priority": 8,
+    "img_sit": "historyvariety_star_necklace",
+    "stay_on_start": true,
+    "dlg_plural": false,
+    "giftname": "gargantilladestrellapurpura",
+    "type": 0,
     "rec_layer": 8,
     "acs_type": "necklace",
-    "stay_on_start": true,
-    "priority": 8,
-    "dlg_desc": "necklace",
-    "dlg_plural": false,
-    "select_info": {
-        "display_name": "Gargantilla de estrella púrpura",
-        "thumb": "historyvariety_star_necklace",
-        "group": "necklace",
-        "select_dlg": [
-            "¡Llévame a la luna~!"
-        ]
-    },
-    "giftname": "gargantilladestrellapurpura",
-    "arm_split": {
-        "default": "0",
-        "use_reg_for_l": true
-    }
+    "name": "historyvariety_star_necklace"
 }

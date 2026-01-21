@@ -1715,6 +1715,9 @@ init 189 python in mas_sprites_json:
             return False
         
         
+        if "use_numeric_layer_ids" in jobj:
+            save_obj["use_numeric_layer_ids"] = jobj.pop("use_numeric_layer_ids")
+
         if "use_numeric_layer_ids" not in save_obj:
             save_obj["use_numeric_layer_ids"] = False
         

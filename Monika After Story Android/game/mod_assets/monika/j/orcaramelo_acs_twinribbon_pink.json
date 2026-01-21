@@ -1,26 +1,26 @@
-﻿{
+{
     "__author": "Orcaramelo",
-    "version": 3,
-    "type": 0,
-    "name": "orcaramelo_twinribbon_pink",
-    "img_sit": "orcaramelo_twinribbon_pink",
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
-    "rec_layer": 3,
-    "acs_type": "twin-ribbons",
-    "stay_on_start": true,
-    "dlg_desc": "pink twin ribbons",
-    "dlg_plural": true,
     "select_info": {
-        "display_name": "Cinta gemela color rosa",
-        "thumb": "orcaramelo_twinribbon_pink",
-        "group": "ribbon",
         "select_dlg": [
             "El rosa me queda muy bien, ¿verdad?",
             "Me encanta este color, [player]."
-        ]
+        ],
+        "group": "ribbon",
+        "display_name": "Cinta gemela color rosa",
+        "thumb": "orcaramelo_twinribbon_pink"
     },
-    "giftname": "cintagemelacolorrosa"
+    "dlg_desc": "cinta gemela de color rosa",
+    "img_sit": "orcaramelo_twinribbon_pink",
+    "stay_on_start": true,
+    "dlg_plural": true,
+    "giftname": "cintagemelacolorrosa",
+    "type": 0,
+    "rec_layer": 3,
+    "acs_type": "twin-ribbons",
+    "name": "orcaramelo_twinribbon_pink"
 }

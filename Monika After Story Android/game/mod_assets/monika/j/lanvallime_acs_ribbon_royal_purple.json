@@ -1,29 +1,29 @@
-﻿{
+{
     "__author": "LanvalLime",
-    "version": 3,
-    "type": 0,
-    "name": "lanvallime_ribbon_royal_purple",
-    "img_sit": "lanvallime_ribbon_royal_purple",
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
-    "rec_layer": 3,
-    "acs_type": "ribbon",
+    "select_info": {
+        "select_dlg": [
+            "¿Quieres que leamos un libro juntos?"
+        ],
+        "group": "ribbon",
+        "display_name": "Cinta color púrpura royal",
+        "thumb": "lanvallime_ribbon_royal_purple",
+        "hover_dlg": [
+            "¡Puedo pedirte prestada tu pluma?"
+        ]
+    },
+    "img_sit": "lanvallime_ribbon_royal_purple",
     "mux_type": [
         "ribbon"
     ],
     "stay_on_start": true,
-    "select_info": {
-        "display_name": "Cinta color púpura royal",
-        "thumb": "lanvallime_ribbon_royal_purple",
-        "group": "ribbon",
-        "hover_dlg": [
-            "¿Puedo pedirte prestada tu pluma?"
-        ],
-        "select_dlg": [
-            "¿Quieres que leamos un libro juntos?"
-        ]
-    },
-    "giftname": "cintacolorpupuraroyal"
+    "giftname": "cintacolorpupuraroyal",
+    "type": 0,
+    "rec_layer": 3,
+    "acs_type": "ribbon",
+    "name": "lanvallime_ribbon_royal_purple"
 }

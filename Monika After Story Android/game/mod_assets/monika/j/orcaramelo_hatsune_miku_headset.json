@@ -1,19 +1,19 @@
-﻿{
-    "__author": "Orcaramelo",
-    "version": 3,
-    "type": 0,
-    "name": "orcaramelo_hatsune_miku_headset",
-    "img_sit": "orcaramelo_hatsune_miku_headset",
+{
+    "__author": "Orcaramelo", 
+    "version": 4, 
     "pose_map": {
-        "default": "0",
+        "default": "0", 
         "l_default": "5"
-    },
-    "rec_layer": 5,
-    "acs_type": "headset",
+    }, 
+    "img_sit": "orcaramelo_hatsune_miku_headset", 
     "mux_type": [
-        "headset",
-        "headphones",
+        "headset", 
+        "headphones", 
         "earphones"
-    ],
-    "stay_on_start": true
+    ], 
+    "stay_on_start": true, 
+    "type": 0, 
+    "rec_layer": 5, 
+    "acs_type": "headset", 
+    "name": "orcaramelo_hatsune_miku_headset"
 }

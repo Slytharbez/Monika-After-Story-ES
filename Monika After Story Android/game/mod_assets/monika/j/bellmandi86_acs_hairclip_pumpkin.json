@@ -1,30 +1,30 @@
-﻿{
+{
     "__author": "bellmandi86",
-    "version": 3,
-    "type": 0,
-    "name": "bellmandi86_hairclip_pumpkin",
-    "img_sit": "bellmandi86_hairclip_pumpkin",
+    "ex_props": {
+        "o31": true
+    },
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
-    "rec_layer": 5,
-    "acs_type": "left-hair-clip",
-    "stay_on_start": true,
-    "ex_props": {
-        "o31": true
-    },
     "select_info": {
-        "display_name": "Horquilla de calabaza",
-        "thumb": "bellmandi86_hairclip_pumpkin",
-        "group": "left-hair-clip",
         "select_dlg": [
-            "¿Qué se obtiene si se divide la circunferencia de una calabaza por su diámetro? ¡Pi de calabaza!",
+            "¡Qué se obtiene si se divide la circunferencia de una calabaza por su diámetro? ¡Pi de calabaza!",
             "¡Bibbidi-bobbidi-boo!",
-            "Me pregunto si esto solía ser un carruaje...",
+            "Me pregunto si esto solamente ser un carruaje...",
             "¡Es la gran calabaza, [player]!",
             "Qué bonito, mi pequeña calabaza~"
-        ]
+        ],
+        "group": "left-hair-clip",
+        "display_name": "Horquilla de calabaza",
+        "thumb": "bellmandi86_hairclip_pumpkin"
     },
-    "giftname": "horquilladecalabaza"
+    "img_sit": "bellmandi86_hairclip_pumpkin",
+    "stay_on_start": true,
+    "giftname": "horquilladecalabaza",
+    "type": 0,
+    "rec_layer": 5,
+    "acs_type": "left-hair-clip",
+    "name": "bellmandi86_hairclip_pumpkin"
 }

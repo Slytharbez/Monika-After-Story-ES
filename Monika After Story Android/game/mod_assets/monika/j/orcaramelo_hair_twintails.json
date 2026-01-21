@@ -1,23 +1,24 @@
-﻿{
-    "__author": "Orcaramelo",
-    "version": 3,
-    "type": 1,
-    "name": "orcaramelo_twintails",
-    "img_sit": "orcaramelo_twintails",
-    "pose_map": {
-        "mpm_type": 0,
-        "default": true,
-        "use_reg_for_l": true
-    },
-    "stay_on_start": true,
+{
+    "__author": "Orcaramelo", 
     "ex_props": {
-        "ribbon": true,
-        "twintails": true
-    },
+        "twintails": true, 
+        "ribbon": true
+    }, 
+    "version": 4, 
+    "pose_map": {
+        "default": true, 
+        "use_reg_for_l": false, 
+        "mpm_type": 0
+    }, 
     "select_info": {
-        "display_name": "Colas de gemelo",
-        "thumb": "orcaramelo_twintails",
-        "group": "hair"
-    },
-    "unlock": true
+        "group": "hair", 
+        "display_name": "Colas de gemelo", 
+        "thumb": "orcaramelo_twintails"
+    }, 
+    "unlock": true, 
+    "img_sit": "orcaramelo_twintails", 
+    "stay_on_start": true, 
+    "type": 1, 
+    "use_numeric_layer_ids": true, 
+    "name": "orcaramelo_twintails"
 }

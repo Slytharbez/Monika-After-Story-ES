@@ -1,25 +1,25 @@
-﻿{
+{
     "__author": "briaryoung",
-    "version": 3,
-    "type": 0,
-    "name": "briaryoung_mini_ribbon_royal_blue",
-    "img_sit": "briaryoung_mini_ribbon_royal_blue",
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
-    "rec_layer": 3,
-    "acs_type": "mini-ribbon",
-    "stay_on_start": true,
-    "dlg_desc": "royal blue ribbon",
-    "dlg_plural": false,
     "select_info": {
-        "display_name": "Cintilla color azul royal",
-        "thumb": "briaryoung_mini_ribbon_royal_blue",
-        "group": "ribbon",
         "select_dlg": [
             "¡El azul siempre es una buena opción!"
-        ]
+        ],
+        "group": "ribbon",
+        "display_name": "Cintilla color azul royal",
+        "thumb": "briaryoung_mini_ribbon_royal_blue"
     },
-    "giftname": "cintillacolorazulroyal"
+    "dlg_desc": "cintilla de color azul royal",
+    "img_sit": "briaryoung_mini_ribbon_royal_blue",
+    "stay_on_start": true,
+    "dlg_plural": false,
+    "giftname": "cintillacolorazulroyal",
+    "type": 0,
+    "rec_layer": 3,
+    "acs_type": "mini-ribbon",
+    "name": "briaryoung_mini_ribbon_royal_blue"
 }

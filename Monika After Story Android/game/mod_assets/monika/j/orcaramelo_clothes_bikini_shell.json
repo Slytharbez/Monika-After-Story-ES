@@ -1,30 +1,28 @@
-﻿{
+{
+    "pose_arms": {},
     "__author": "Orcaramelo",
-    "version": 3,
-    "type": 2,
-    "name": "orcaramelo_bikini_shell",
-    "img_sit": "orcaramelo_bikini_shell",
-    "pose_map": {
-        "mpm_type": 0,
-        "default": true,
-        "use_reg_for_l": true
-    },
-    "stay_on_start": true,
     "ex_props": {
         "bikini": true,
         "bare-shoulders": true
     },
+    "version": 4,
+    "pose_map": {
+        "default": true,
+        "use_reg_for_l": true,
+        "mpm_type": 0
+    },
     "select_info": {
-        "display_name": "Bikini de concha",
-        "thumb": "orcaramelo_bikini_shell",
-        "group": "clothes",
         "select_dlg": [
             "Conchas marinas, a la orilla del mar~",
             "¿Quién dice que las sirenas no son reales?"
-        ]
+        ],
+        "group": "clothes",
+        "display_name": "Bikini de concha",
+        "thumb": "orcaramelo_bikini_shell"
     },
+    "img_sit": "orcaramelo_bikini_shell",
+    "stay_on_start": true,
     "giftname": "bikinideconcha",
-    "pose_arms": {
-        
-    }
+    "type": 2,
+    "name": "orcaramelo_bikini_shell"
 }

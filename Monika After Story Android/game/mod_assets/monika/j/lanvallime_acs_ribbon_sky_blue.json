@@ -1,30 +1,30 @@
-﻿{
+{
     "__author": "LanvalLime",
-    "version": 3,
-    "type": 0,
-    "name": "lanvallime_ribbon_sky_blue",
-    "img_sit": "lanvallime_ribbon_sky_blue",
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
-    "rec_layer": 3,
-    "acs_type": "ribbon",
+    "select_info": {
+        "select_dlg": [
+            "Siempre me haces sentir como si estuviera en las nubes, [player]."
+        ],
+        "group": "ribbon",
+        "display_name": "Cinta color azul cielo",
+        "thumb": "lanvallime_ribbon_sky_blue",
+        "hover_dlg": [
+            "¿Alguna vez has estado observando las nubes?",
+            "¿Alguna vez has estado contemplando las nubes?"
+        ]
+    },
+    "img_sit": "lanvallime_ribbon_sky_blue",
     "mux_type": [
         "ribbon"
     ],
     "stay_on_start": true,
-    "select_info": {
-        "display_name": "Cinta color azul cielo",
-        "thumb": "lanvallime_ribbon_sky_blue",
-        "group": "ribbon",
-        "hover_dlg": [
-            "¿Alguna vez has estado observando las nubes?",
-            "¿Alguna vez has estado contemplando las nubes?"
-        ],
-        "select_dlg": [
-            "Siempre me haces sentir como si estuviera en las nubes, [player]."
-        ]
-    },
-    "giftname": "cintacolorazulcielo"
+    "giftname": "cintacolorazulcielo",
+    "type": 0,
+    "rec_layer": 3,
+    "acs_type": "ribbon",
+    "name": "lanvallime_ribbon_sky_blue"
 }

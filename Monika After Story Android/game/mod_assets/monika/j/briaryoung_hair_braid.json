@@ -1,22 +1,23 @@
-﻿{
-    "__author": "Briar Young",
-    "version": 3,
-    "type": 1,
-    "name": "briaryoung_braid",
-    "img_sit": "briaryoung_braid",
-    "pose_map": {
-        "mpm_type": 0,
-        "default": true,
-        "use_reg_for_l": true
-    },
-    "stay_on_start": true,
+{
+    "__author": "Briar Young", 
     "ex_props": {
         "ribbon": true
-    },
+    }, 
+    "version": 4, 
+    "pose_map": {
+        "default": true, 
+        "use_reg_for_l": false, 
+        "mpm_type": 0
+    }, 
     "select_info": {
-        "display_name": "Trenzado",
-        "thumb": "briaryoung_braid",
-        "group": "hair"
-    },
-    "unlock": true
+        "group": "hair", 
+        "display_name": "Trenzado", 
+        "thumb": "briaryoung_braid"
+    }, 
+    "unlock": true, 
+    "img_sit": "briaryoung_braid", 
+    "stay_on_start": true, 
+    "type": 1, 
+    "use_numeric_layer_ids": true, 
+    "name": "briaryoung_braid"
 }

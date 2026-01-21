@@ -1,25 +1,25 @@
-﻿{
+{
     "__author": "retroadamshow",
-    "version": 3,
-    "type": 0,
-    "name": "retro_ribbon_red",
-    "img_sit": "retro_ribbon_red",
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
-    "rec_layer": 3,
-    "acs_type": "ribbon",
-    "stay_on_start": true,
-    "giftname": "cintaroja8bit",
-    "dlg_desc": "8-bit red ribbon",
-    "dlg_plural": false,
     "select_info": {
-        "display_name": "Cinta roja 8-bit",
-        "thumb": "retro_ribbon_red",
-        "group": "ribbon",
         "select_dlg": [
             "¡Qué nostalgia!"
-        ]
-    }
+        ],
+        "group": "ribbon",
+        "display_name": "Cinta roja 8-bit",
+        "thumb": "retro_ribbon_red"
+    },
+    "dlg_desc": "cinta 8-bit de color rojo",
+    "img_sit": "retro_ribbon_red",
+    "stay_on_start": true,
+    "dlg_plural": false,
+    "giftname": "cintaroja8bit",
+    "type": 0,
+    "rec_layer": 3,
+    "acs_type": "ribbon",
+    "name": "retro_ribbon_red"
 }

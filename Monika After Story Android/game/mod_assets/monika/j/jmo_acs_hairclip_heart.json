@@ -1,34 +1,34 @@
-﻿{
+{
     "__author": "JMO",
-    "version": 3,
-    "type": 0,
-    "name": "jmo_hairclip_heart",
-    "img_sit": "jmo_hairclip_heart",
+    "ex_props": {
+        "left-hair-strand-eye-level": true
+    },
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
-    "rec_layer": 5,
-    "acs_type": "left-hair-clip",
-    "mux_type": [
-        "left-hair-clip"
-    ],
-    "stay_on_start": true,
-    "ex_props": {
-        "left-hair-strand-eye-level": true
-    },
     "select_info": {
-        "display_name": "Horquilla de corazón",
-        "thumb": "jmo_hairclip_heart",
-        "group": "left-hair-clip",
-        "hover_dlg": [
-            "Un poco de amor..."
-        ],
         "select_dlg": [
             "Me encanta esta horquilla.",
             "¡Esta horquilla es adorable!",
             "¡Precioso!"
+        ],
+        "group": "left-hair-clip",
+        "display_name": "Horquilla de corazón",
+        "thumb": "jmo_hairclip_heart",
+        "hover_dlg": [
+            "Un poco de amor..."
         ]
     },
-    "giftname": "horquilladecorazon"
+    "img_sit": "jmo_hairclip_heart",
+    "mux_type": [
+        "left-hair-clip"
+    ],
+    "stay_on_start": true,
+    "giftname": "horquilladecorazon",
+    "type": 0,
+    "rec_layer": 5,
+    "acs_type": "left-hair-clip",
+    "name": "jmo_hairclip_heart"
 }

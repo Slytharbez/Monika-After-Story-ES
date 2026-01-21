@@ -1,21 +1,22 @@
-﻿{
-    "version": 3,
-    "type": 1,
-    "name": "bun",
-    "img_sit": "bun",
-    "pose_map": {
-        "mpm_type": 0,
-        "default": true,
-        "use_reg_for_l": true
-    },
-    "stay_on_start": true,
+{
     "ex_props": {
         "ribbon": true
     },
-    "select_info": {
-        "display_name": "Moño",
-        "thumb": "bun",
-        "group": "hair"
+    "version": 4,
+    "pose_map": {
+        "default": true,
+        "use_reg_for_l": false,
+        "mpm_type": 0
     },
-    "unlock": true
+    "select_info": {
+        "group": "hair",
+        "display_name": "Moño",
+        "thumb": "bun"
+    },
+    "unlock": true,
+    "img_sit": "bun",
+    "stay_on_start": true,
+    "type": 1,
+    "use_numeric_layer_ids": true,
+    "name": "bun"
 }

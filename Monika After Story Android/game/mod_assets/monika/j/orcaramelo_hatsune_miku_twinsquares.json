@@ -1,24 +1,24 @@
-﻿{
-    "__author": "Orcaramelo",
-    "version": 3,
-    "type": 0,
-    "name": "orcaramelo_hatsune_miku_twinsquares",
-    "img_sit": "orcaramelo_hatsune_miku_twinsquares",
-    "pose_map": {
-        "default": "0",
-        "l_default": "5"
-    },
-    "rec_layer": 3,
-    "acs_type": "twin-ribbons",
-    "mux_type": [
-        "twin-ribbons",
-        "ribbon",
-        "bow"
-    ],
-    "stay_on_start": true,
+{
+    "__author": "Orcaramelo", 
     "ex_props": {
-        "twin-ribbon": true,
-        "ribbon-like": true,
-        "required-hair-prop": "twintails"
-    }
+        "twin-ribbon": true, 
+        "required-hair-prop": "twintails", 
+        "ribbon-like": true
+    }, 
+    "version": 4, 
+    "pose_map": {
+        "default": "0", 
+        "l_default": "5"
+    }, 
+    "img_sit": "orcaramelo_hatsune_miku_twinsquares", 
+    "mux_type": [
+        "twin-ribbons", 
+        "ribbon", 
+        "bow"
+    ], 
+    "stay_on_start": true, 
+    "type": 0, 
+    "rec_layer": 3, 
+    "acs_type": "twin-ribbons", 
+    "name": "orcaramelo_hatsune_miku_twinsquares"
 }

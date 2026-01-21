@@ -1,29 +1,29 @@
-﻿{
+{
     "__author": "anonymioo",
-    "version": 3,
-    "type": 0,
-    "name": "anonymioo_ribbon_striped_blueandwhite",
-    "img_sit": "anonymioo_ribbon_striped_blueandwhite",
+    "ex_props": {
+        "striped": true,
+        "ribbon-multicolor": true
+    },
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
-    "rec_layer": 3,
-    "acs_type": "ribbon",
-    "stay_on_start": true,
-    "dlg_desc": "blue-and-white-striped ribbon",
-    "dlg_plural": false,
-    "ex_props": {
-        "ribbon-multicolor": true,
-        "striped": true
-    },
     "select_info": {
-        "display_name": "Cinta con rayas azules y blancas",
-        "thumb": "anonymioo_ribbon_striped_blueandwhite",
-        "group": "ribbon",
         "select_dlg": [
             "¡Ideal para un día de playa!"
-        ]
+        ],
+        "group": "ribbon",
+        "display_name": "Cinta con rayas azules y blancas",
+        "thumb": "anonymioo_ribbon_striped_blueandwhite"
     },
-    "giftname": "cintaconrayasazulesyblancas"
+    "dlg_desc": "cinta con rayas azules y blancas",
+    "img_sit": "anonymioo_ribbon_striped_blueandwhite",
+    "stay_on_start": true,
+    "dlg_plural": false,
+    "giftname": "cintaconrayasazulesyblancas",
+    "type": 0,
+    "rec_layer": 3,
+    "acs_type": "ribbon",
+    "name": "anonymioo_ribbon_striped_blueandwhite"
 }

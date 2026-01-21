@@ -1,29 +1,29 @@
-﻿{
-    "__author": "LanvalLime",
-    "version": 3,
-    "type": 0,
-    "name": "lanvallime_ribbon_gold",
-    "img_sit": "lanvallime_ribbon_gold",
+{
+    "__author": "LanvalLime", 
+    "version": 4, 
     "pose_map": {
-        "default": "0",
+        "default": "0", 
         "l_default": "5"
-    },
-    "rec_layer": 3,
-    "acs_type": "ribbon",
-    "mux_type": [
-        "ribbon"
-    ],
-    "stay_on_start": true,
+    }, 
     "select_info": {
-        "display_name": "Cinta color oro",
-        "thumb": "lanvallime_ribbon_gold",
-        "group": "ribbon",
-        "hover_dlg": [
-            "Todo lo que brilla..."
-        ],
         "select_dlg": [
             "Es mejor cuando estoy contigo."
+        ], 
+        "group": "ribbon", 
+        "display_name": "Cinta color oro", 
+        "thumb": "lanvallime_ribbon_gold", 
+        "hover_dlg": [
+            "Todo lo que brilla..."
         ]
-    },
-    "giftname": "cintacolororo"
+    }, 
+    "img_sit": "lanvallime_ribbon_gold", 
+    "mux_type": [
+        "ribbon"
+    ], 
+    "stay_on_start": true, 
+    "giftname": "cintacolororo", 
+    "type": 0, 
+    "rec_layer": 3, 
+    "acs_type": "ribbon", 
+    "name": "lanvallime_ribbon_gold"
 }

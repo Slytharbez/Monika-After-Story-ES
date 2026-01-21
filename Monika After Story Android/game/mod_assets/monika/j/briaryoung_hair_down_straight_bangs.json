@@ -1,23 +1,24 @@
-﻿{
-    "__author": "briaryoung",
-    "version": 3,
-    "type": 1,
-    "name": "briaryoung_down_straight_bangs",
-    "img_sit": "briaryoung_down_straight_bangs",
-    "pose_map": {
-        "mpm_type": 0,
-        "default": true,
-        "use_reg_for_l": true
-    },
-    "stay_on_start": true,
+{
+    "__author": "briaryoung", 
     "ex_props": {
-        "no-tails": true,
-        "straight-bangs": true
-    },
+        "straight-bangs": true, 
+        "no-tails": true
+    }, 
+    "version": 4, 
+    "pose_map": {
+        "default": true, 
+        "use_reg_for_l": false, 
+        "mpm_type": 0
+    }, 
     "select_info": {
-        "display_name": "Flequillo recto hacia abajo",
-        "thumb": "briaryoung_down_straight_bangs",
-        "group": "hair"
-    },
-    "unlock": true
+        "group": "hair", 
+        "display_name": "Flequillo recto hacia abajo", 
+        "thumb": "briaryoung_down_straight_bangs"
+    }, 
+    "unlock": true, 
+    "img_sit": "briaryoung_down_straight_bangs", 
+    "stay_on_start": true, 
+    "type": 1, 
+    "use_numeric_layer_ids": true, 
+    "name": "briaryoung_down_straight_bangs"
 }

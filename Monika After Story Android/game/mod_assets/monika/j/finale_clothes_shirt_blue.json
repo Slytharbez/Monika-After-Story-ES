@@ -1,67 +1,67 @@
-﻿{
-    "__author": "Finale",
-    "version": 3,
-    "type": 2,
-    "name": "finale_shirt_blue",
-    "img_sit": "finale_shirt_blue",
-    "pose_map": {
-        "mpm_type": 0,
-        "default": false,
-        "use_reg_for_l": true,
-        "p1": true,
-        "p2": true,
-        "p3": true,
-        "p4": true,
-        "p5": true,
-        "p6": true,
-        "p7": true
-    },
-    "stay_on_start": true,
-    "select_info": {
-        "display_name": "Camiseta de color azul",
-        "thumb": "finale_shirt_blue",
-        "group": "clothes",
-        "select_dlg": [
-            "¡Gran elección, [player]! Esto es tan cómodo~"
-        ]
-    },
-    "giftname": "camisetadecolorazul",
+{
     "pose_arms": {
-        "crossed": {
-            "tag": "crossed",
-            "layers": "5^10"
-        },
-        "left-down": {
-            "tag": "down",
-            "layers": "0"
-        },
-        "left-rest": {
-            "tag": "rest",
-            "layers": "10"
-        },
-        "right-down": {
-            "tag": "down",
-            "layers": "0"
+        "steepling": {
+            "layers": "10",
+            "tag": "steepling"
         },
         "right-point": {
-            "tag": "point",
-            "layers": "0"
-        },
-        "right-restpoint": {
-            "tag": "restpoint",
-            "layers": "10"
-        },
-        "steepling": {
-            "tag": "steepling",
-            "layers": "10"
+            "layers": "0",
+            "tag": "point"
         },
         "def|left-def": {
-            "tag": "def",
-            "layers": "10"
+            "layers": "10",
+            "tag": "def"
         },
         "def|right-def": {
-            "tag": "def",
-            "layers": "5^10"
+            "layers": "5^10",
+            "tag": "def"
+        },
+        "right-restpoint": {
+            "layers": "10",
+            "tag": "restpoint"
+        },
+        "crossed": {
+            "layers": "5^10",
+            "tag": "crossed"
+        },
+        "right-down": {
+            "layers": "0",
+            "tag": "down"
+        },
+        "left-down": {
+            "layers": "0",
+            "tag": "down"
+        },
+        "left-rest": {
+            "layers": "10",
+            "tag": "rest"
         }
-    }
+    },
+    "__author": "Finale",
+    "version": 4,
+    "pose_map": {
+        "p2": true,
+        "p3": true,
+        "use_reg_for_l": true,
+        "p1": true,
+        "p6": true,
+        "p7": true,
+        "p4": true,
+        "p5": true,
+        "default": false,
+        "mpm_type": 0
+    },
+    "select_info": {
+        "select_dlg": [
+            "¡Gran elección, [player]! Esto es tan cómodo~"
+        ],
+        "group": "clothes",
+        "display_name": "Camiseta de color azul",
+        "thumb": "finale_shirt_blue"
+    },
+    "img_sit": "finale_shirt_blue",
+    "stay_on_start": true,
+    "giftname": "camisetadecolorazul",
+    "type": 2,
+    "name": "finale_shirt_blue"
 }

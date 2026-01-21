@@ -1,25 +1,25 @@
-﻿{
+{
     "__author": "anonymioo",
-    "version": 3,
-    "type": 0,
-    "name": "anonymioo_ribbon_starsky_red",
-    "img_sit": "anonymioo_ribbon_starsky_red",
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
-    "rec_layer": 3,
-    "acs_type": "ribbon",
-    "stay_on_start": true,
-    "dlg_desc": "night-sky-themed ribbon",
-    "dlg_plural": false,
     "select_info": {
-        "display_name": "Cinta de cielo rojo estrellado",
-        "thumb": "anonymioo_ribbon_starsky_red",
-        "group": "ribbon",
         "select_dlg": [
             "Una noche estrellada..."
-        ]
+        ],
+        "group": "ribbon",
+        "display_name": "Cinta de cielo rojo estrellado",
+        "thumb": "anonymioo_ribbon_starsky_red"
     },
-    "giftname": "cintadecielorojoestrellado"
+    "dlg_desc": "cinta de cielo rojo estrellado",
+    "img_sit": "anonymioo_ribbon_starsky_red",
+    "stay_on_start": true,
+    "dlg_plural": false,
+    "giftname": "cintadecielorojoestrellado",
+    "type": 0,
+    "rec_layer": 3,
+    "acs_type": "ribbon",
+    "name": "anonymioo_ribbon_starsky_red"
 }

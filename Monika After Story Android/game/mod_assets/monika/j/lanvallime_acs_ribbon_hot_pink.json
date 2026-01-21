@@ -1,29 +1,29 @@
-﻿{
+{
     "__author": "LanvalLime",
-    "version": 3,
-    "type": 0,
-    "name": "lanvallime_ribbon_hot_pink",
-    "img_sit": "lanvallime_ribbon_hot_pink",
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
-    "rec_layer": 3,
-    "acs_type": "ribbon",
+    "select_info": {
+        "select_dlg": [
+            "Me recuerda a alguien..."
+        ],
+        "group": "ribbon",
+        "display_name": "Cinta color rosa caliente",
+        "thumb": "lanvallime_ribbon_hot_pink",
+        "hover_dlg": [
+            "¡Lindo!"
+        ]
+    },
+    "img_sit": "lanvallime_ribbon_hot_pink",
     "mux_type": [
         "ribbon"
     ],
     "stay_on_start": true,
-    "select_info": {
-        "display_name": "Cinta color rosa caliente",
-        "thumb": "lanvallime_ribbon_hot_pink",
-        "group": "ribbon",
-        "hover_dlg": [
-            "¡Lindo!"
-        ],
-        "select_dlg": [
-            "Me recuerda a alguien..."
-        ]
-    },
-    "giftname": "cintacolorrosacaliente"
+    "giftname": "cintacolorrosacaliente",
+    "type": 0,
+    "rec_layer": 3,
+    "acs_type": "ribbon",
+    "name": "lanvallime_ribbon_hot_pink"
 }

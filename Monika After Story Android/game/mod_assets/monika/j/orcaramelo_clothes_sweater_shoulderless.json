@@ -1,70 +1,70 @@
-﻿{
-    "__author": "Orcaramelo \u0026 moniking",
-    "version": 3,
-    "type": 2,
-    "name": "orcaramelo_sweater_shoulderless",
-    "img_sit": "orcaramelo_sweater_shoulderless",
-    "pose_map": {
-        "mpm_type": 0,
-        "p1": true,
-        "p2": true,
-        "p3": true,
-        "p4": true,
-        "p5": true,
-        "p6": true,
-        "p7": true
+{
+    "pose_arms": {
+        "steepling": {
+            "layers": "10",
+            "tag": "steepling"
+        },
+        "right-point": {
+            "layers": "0",
+            "tag": "point"
+        },
+        "def|left-def": {
+            "layers": "10",
+            "tag": "def"
+        },
+        "def|right-def": {
+            "layers": "5^10",
+            "tag": "def"
+        },
+        "right-restpoint": {
+            "layers": "10",
+            "tag": "restpoint"
+        },
+        "crossed": {
+            "layers": "5^10",
+            "tag": "crossed"
+        },
+        "right-down": {
+            "layers": "0",
+            "tag": "down"
+        },
+        "left-down": {
+            "layers": "0",
+            "tag": "down"
+        },
+        "left-rest": {
+            "layers": "10",
+            "tag": "rest"
+        }
     },
-    "stay_on_start": true,
+    "__author": "Orcaramelo & moniking",
     "ex_props": {
         "bare-shoulders": true
     },
+    "version": 4,
+    "pose_map": {
+        "p2": true,
+        "p3": true,
+        "p1": true,
+        "p6": true,
+        "p7": true,
+        "p4": true,
+        "p5": true,
+        "mpm_type": 0
+    },
     "select_info": {
-        "display_name": "Jersey sin hombros",
-        "thumb": "orcaramelo_sweater_shoulderless",
-        "group": "clothes",
         "select_dlg": [
             "Acogedor~",
             "¡Adecuado para un día de invierno!",
             "Es muy cálido..."
-        ]
+        ],
+        "group": "clothes",
+        "display_name": "Jersey sin hombros",
+        "thumb": "orcaramelo_sweater_shoulderless"
     },
+    "img_sit": "orcaramelo_sweater_shoulderless",
+    "stay_on_start": true,
     "giftname": "jerseysinhombros",
-    "pose_arms": {
-        "crossed": {
-            "tag": "crossed",
-            "layers": "5^10"
-        },
-        "left-down": {
-            "tag": "down",
-            "layers": "0"
-        },
-        "left-rest": {
-            "tag": "rest",
-            "layers": "10"
-        },
-        "right-down": {
-            "tag": "down",
-            "layers": "0"
-        },
-        "right-point": {
-            "tag": "point",
-            "layers": "0"
-        },
-        "right-restpoint": {
-            "tag": "restpoint",
-            "layers": "10"
-        },
-        "steepling": {
-            "tag": "steepling",
-            "layers": "10"
-        },
-        "def|left-def": {
-            "tag": "def",
-            "layers": "10"
-        },
-        "def|right-def": {
-            "tag": "def",
-            "layers": "5^10"
-        }
-    }
+    "type": 2,
+    "name": "orcaramelo_sweater_shoulderless"
 }

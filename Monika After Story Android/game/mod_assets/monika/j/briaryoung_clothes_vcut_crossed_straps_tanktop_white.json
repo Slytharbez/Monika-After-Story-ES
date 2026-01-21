@@ -1,29 +1,27 @@
-﻿{
+{
+    "pose_arms": {},
     "__author": "briaryoung",
-    "version": 3,
-    "type": 2,
-    "name": "briaryoung_vcut_crossed_straps_tanktop_white",
-    "img_sit": "briaryoung_vcut_crossed_straps_tanktop_white",
-    "pose_map": {
-        "mpm_type": 0,
-        "default": true,
-        "use_reg_for_l": true
-    },
-    "stay_on_start": true,
     "ex_props": {
         "bare-shoulders": true
     },
+    "version": 4,
+    "pose_map": {
+        "default": true,
+        "use_reg_for_l": true,
+        "mpm_type": 0
+    },
     "select_info": {
-        "display_name": "Camiseta blanca de tirantes cruzados de corte en V",
-        "thumb": "briaryoung_vcut_crossed_straps_tanktop_white",
-        "group": "clothes",
         "select_dlg": [
             "¿Qué tal me veo?",
             "Perfecto para un día de verano."
-        ]
+        ],
+        "group": "clothes",
+        "display_name": "Camiseta blanca de tirantes cruzados de corte en V",
+        "thumb": "briaryoung_vcut_crossed_straps_tanktop_white"
     },
+    "img_sit": "briaryoung_vcut_crossed_straps_tanktop_white",
+    "stay_on_start": true,
     "giftname": "camisetablancadetirantescruzadosdecorteenv",
-    "pose_arms": {
-        
-    }
+    "type": 2,
+    "name": "briaryoung_vcut_crossed_straps_tanktop_white"
 }

@@ -1,25 +1,25 @@
-﻿{
+{
     "__author": "briaryoung",
-    "version": 3,
-    "type": 0,
-    "name": "briaryoung_mini_ribbon_pink",
-    "img_sit": "briaryoung_mini_ribbon_pink",
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
-    "rec_layer": 3,
-    "acs_type": "mini-ribbon",
-    "stay_on_start": true,
-    "dlg_desc": "pink ribbon",
-    "dlg_plural": false,
     "select_info": {
-        "display_name": "Cintilla color rosa",
-        "thumb": "briaryoung_mini_ribbon_pink",
-        "group": "ribbon",
         "select_dlg": [
             "¡Lindo!"
-        ]
+        ],
+        "group": "ribbon",
+        "display_name": "Cintilla color rosa",
+        "thumb": "briaryoung_mini_ribbon_pink"
     },
-    "giftname": "cintillacolorrosa"
+    "dlg_desc": "cintilla de color rosa",
+    "img_sit": "briaryoung_mini_ribbon_pink",
+    "stay_on_start": true,
+    "dlg_plural": false,
+    "giftname": "cintillacolorrosa",
+    "type": 0,
+    "rec_layer": 3,
+    "acs_type": "mini-ribbon",
+    "name": "briaryoung_mini_ribbon_pink"
 }

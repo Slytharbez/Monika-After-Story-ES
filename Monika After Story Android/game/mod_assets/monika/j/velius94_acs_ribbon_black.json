@@ -1,23 +1,23 @@
-﻿{
+{
     "__author": "Velius94",
-    "version": 3,
-    "type": 0,
-    "name": "velius94_ribbon_black",
-    "img_sit": "velius94_ribbon_black",
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
+    "select_info": {
+        "select_dlg": [
+            "¡Vamos a algún sitio especial, [player]?"
+        ],
+        "group": "ribbon",
+        "display_name": "Cinta color negro tipo-s",
+        "thumb": "velius94_ribbon_black"
+    },
+    "img_sit": "velius94_ribbon_black",
+    "stay_on_start": true,
+    "giftname": "cintacolornegrotipos",
+    "type": 0,
     "rec_layer": 3,
     "acs_type": "s-type-ribbon",
-    "stay_on_start": true,
-    "select_info": {
-        "display_name": "Cinta color negro tipo-s",
-        "thumb": "velius94_ribbon_black",
-        "group": "ribbon",
-        "select_dlg": [
-            "¿Vamos a algún sitio especial, [player]?"
-        ]
-    },
-    "giftname": "cintacolornegrotipos"
+    "name": "velius94_ribbon_black"
 }

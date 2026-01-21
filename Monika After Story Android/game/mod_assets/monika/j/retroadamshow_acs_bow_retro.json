@@ -1,25 +1,25 @@
-﻿{
+{
     "__author": "retroadamshow",
-    "version": 3,
-    "type": 0,
-    "name": "retro_bow_normal",
-    "img_sit": "retro_ribbon_normal",
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
-    "rec_layer": 3,
-    "acs_type": "ribbon",
-    "stay_on_start": true,
-    "giftname": "cintablanca8bit",
-    "dlg_desc": "8-bit ribbon",
-    "dlg_plural": false,
     "select_info": {
-        "display_name": "Cinta blanca 8-bit",
-        "thumb": "retro_ribbon_normal",
-        "group": "ribbon",
         "select_dlg": [
             "¡Qué nostalgia!"
-        ]
-    }
+        ],
+        "group": "ribbon",
+        "display_name": "Cinta blanca 8-bit",
+        "thumb": "retro_ribbon_normal"
+    },
+    "dlg_desc": "cinta 8-bit de color blanco",
+    "img_sit": "retro_ribbon_normal",
+    "stay_on_start": true,
+    "dlg_plural": false,
+    "giftname": "cintablanca8bit",
+    "type": 0,
+    "rec_layer": 3,
+    "acs_type": "ribbon",
+    "name": "retro_bow_normal"
 }

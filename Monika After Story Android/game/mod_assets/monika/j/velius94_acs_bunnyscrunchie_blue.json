@@ -1,25 +1,25 @@
-﻿{
+{
     "__author": "Velius94",
-    "version": 3,
-    "type": 0,
-    "name": "velius94_bunnyscrunchie_blue",
-    "img_sit": "velius94_bunnyscrunchie_blue",
+    "ex_props": {
+        "ribbon-like": true
+    },
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
+    "select_info": {
+        "group": "ribbon",
+        "display_name": "Coletero azul de conejita",
+        "thumb": "velius94_bunnyscrunchie_blue"
+    },
+    "dlg_desc": "coletero azul de conejita",
+    "img_sit": "velius94_bunnyscrunchie_blue",
+    "stay_on_start": true,
+    "dlg_plural": false,
+    "giftname": "coleteroazuldeconejita",
+    "type": 0,
     "rec_layer": 3,
     "acs_type": "bunny-scrunchie",
-    "stay_on_start": true,
-    "giftname": "coleteroazuldeconejita",
-    "ex_props": {
-        "ribbon-like": true
-    },
-    "dlg_desc": "blue bunny scrunchie",
-    "dlg_plural": false,
-    "select_info": {
-        "display_name": "Coletero azul de conejita",
-        "thumb": "velius94_bunnyscrunchie_blue",
-        "group": "ribbon"
-    }
+    "name": "velius94_bunnyscrunchie_blue"
 }

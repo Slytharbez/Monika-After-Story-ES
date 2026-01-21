@@ -1,24 +1,25 @@
-﻿{
+{
     "__author": "Orcaramelo",
-    "version": 3,
-    "type": 1,
-    "name": "orcaramelo_bunbraid",
-    "img_sit": "orcaramelo_bunbraid",
-    "pose_map": {
-        "mpm_type": 0,
-        "default": true,
-        "use_reg_for_l": true
-    },
-    "stay_on_start": true,
     "ex_props": {
-        "ribbon": true,
         "braidstrand": true,
-        "bunbraid": true
+        "bunbraid": true,
+        "ribbon": true
+    },
+    "version": 4,
+    "pose_map": {
+        "default": true,
+        "use_reg_for_l": false,
+        "mpm_type": 0
     },
     "select_info": {
+        "group": "hair",
         "display_name": "Trenza con moño",
-        "thumb": "orcaramelo_bunbraid",
-        "group": "hair"
+        "thumb": "orcaramelo_bunbraid"
     },
-    "unlock": true
+    "unlock": true,
+    "img_sit": "orcaramelo_bunbraid",
+    "stay_on_start": true,
+    "type": 1,
+    "use_numeric_layer_ids": true,
+    "name": "orcaramelo_bunbraid"
 }

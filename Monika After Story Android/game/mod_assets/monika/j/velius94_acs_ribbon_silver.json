@@ -1,23 +1,23 @@
-﻿{
+{
     "__author": "Velius94",
-    "version": 3,
-    "type": 0,
-    "name": "velius94_ribbon_silver",
-    "img_sit": "velius94_ribbon_silver",
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
-    "rec_layer": 3,
-    "acs_type": "s-type-ribbon",
-    "stay_on_start": true,
     "select_info": {
-        "display_name": "Cinta color plata tipo-s",
-        "thumb": "velius94_ribbon_silver",
-        "group": "ribbon",
         "select_dlg": [
             "Buena elección, [player]."
-        ]
+        ],
+        "group": "ribbon",
+        "display_name": "Cinta color plata tipo-s",
+        "thumb": "velius94_ribbon_silver"
     },
-    "giftname": "cintacolorplatatipos"
+    "img_sit": "velius94_ribbon_silver",
+    "stay_on_start": true,
+    "giftname": "cintacolorplatatipos",
+    "type": 0,
+    "rec_layer": 3,
+    "acs_type": "s-type-ribbon",
+    "name": "velius94_ribbon_silver"
 }

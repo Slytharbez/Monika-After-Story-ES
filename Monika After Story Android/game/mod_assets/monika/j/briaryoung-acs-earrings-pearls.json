@@ -1,28 +1,28 @@
-﻿{
+{
     "__author": "briaryoung",
-    "version": 3,
-    "type": 0,
-    "name": "briaryoung_earrings_pearls",
-    "img_sit": "briaryoung_earrings_pearls",
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
-    "rec_layer": 10,
-    "acs_type": "earrings",
+    "select_info": {
+        "select_dlg": [
+            "Lindo, ¿eh?"
+        ],
+        "group": "earrings",
+        "display_name": "Pendientes de perlas",
+        "thumb": "briaryoung_earrings_pearls"
+    },
+    "dlg_desc": "pendientes de perlas",
+    "img_sit": "briaryoung_earrings_pearls",
     "mux_type": [
         "earrings"
     ],
     "stay_on_start": true,
-    "giftname": "pendientesdeperlas",
-    "dlg_desc": "pearl earrings",
     "dlg_plural": true,
-    "select_info": {
-        "display_name": "Pendientes de perlas",
-        "thumb": "briaryoung_earrings_pearls",
-        "group": "earrings",
-        "select_dlg": [
-            "Lindo, ¿eh?"
-        ]
-    }
+    "giftname": "pendientesdeperlas",
+    "type": 0,
+    "rec_layer": 10,
+    "acs_type": "earrings",
+    "name": "briaryoung_earrings_pearls"
 }

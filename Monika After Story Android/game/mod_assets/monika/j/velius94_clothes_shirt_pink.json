@@ -1,28 +1,26 @@
-﻿{
-    "__author": "Velius94",
-    "version": 3,
-    "type": 2,
-    "name": "velius94_shirt_pink",
-    "img_sit": "velius94_shirt_pink",
-    "pose_map": {
-        "mpm_type": 0,
-        "default": true,
-        "use_reg_for_l": true
-    },
-    "stay_on_start": true,
+{
+    "pose_arms": {}, 
+    "__author": "Velius94", 
     "ex_props": {
         "bare-shoulders": true
-    },
+    }, 
+    "version": 4, 
+    "pose_map": {
+        "default": true, 
+        "use_reg_for_l": true, 
+        "mpm_type": 0
+    }, 
     "select_info": {
-        "display_name": "Camisa color rosa",
-        "thumb": "velius94_shirt_pink",
-        "group": "clothes",
         "select_dlg": [
             "Bonito y rosa~"
-        ]
-    },
-    "giftname": "camisacolorrosa",
-    "pose_arms": {
-        
-    }
+        ], 
+        "group": "clothes", 
+        "display_name": "Camisa color rosa", 
+        "thumb": "velius94_shirt_pink"
+    }, 
+    "img_sit": "velius94_shirt_pink", 
+    "stay_on_start": true, 
+    "giftname": "camisacolorrosa", 
+    "type": 2, 
+    "name": "velius94_shirt_pink"
 }

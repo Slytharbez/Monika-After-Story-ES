@@ -1,26 +1,26 @@
-﻿{
+{
     "__author": "Orcaramelo",
-    "version": 3,
-    "type": 0,
-    "name": "orcaramelo_twinribbon_blue",
-    "img_sit": "orcaramelo_twinribbon_blue",
+    "version": 4,
     "pose_map": {
         "default": "0",
         "l_default": "5"
     },
-    "rec_layer": 3,
-    "acs_type": "twin-ribbons",
-    "stay_on_start": true,
-    "dlg_desc": "blue twin ribbons",
-    "dlg_plural": true,
     "select_info": {
-        "display_name": "Cinta gemela color azul",
-        "thumb": "orcaramelo_twinribbon_blue",
-        "group": "ribbon",
         "select_dlg": [
             "¡Buena elección, [player]!",
             "¡Me encanta este color!"
-        ]
+        ],
+        "group": "ribbon",
+        "display_name": "Cinta gemela color azul",
+        "thumb": "orcaramelo_twinribbon_blue"
     },
-    "giftname": "cintagemelacolorazul"
+    "dlg_desc": "cinta gemela de color azul",
+    "img_sit": "orcaramelo_twinribbon_blue",
+    "stay_on_start": true,
+    "dlg_plural": true,
+    "giftname": "cintagemelacolorazul",
+    "type": 0,
+    "rec_layer": 3,
+    "acs_type": "twin-ribbons",
+    "name": "orcaramelo_twinribbon_blue"
 }

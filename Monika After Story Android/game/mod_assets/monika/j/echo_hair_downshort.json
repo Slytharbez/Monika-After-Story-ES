@@ -1,22 +1,23 @@
-﻿{
-    "__author": "Echo",
-    "version": 3,
-    "type": 1,
-    "name": "echo_downshort",
-    "img_sit": "echo_downshort",
-    "pose_map": {
-        "mpm_type": 0,
-        "default": true,
-        "use_reg_for_l": true
-    },
-    "stay_on_start": true,
+{
+    "__author": "Echo", 
     "ex_props": {
         "no-tails": true
-    },
+    }, 
+    "version": 4, 
+    "pose_map": {
+        "default": true, 
+        "use_reg_for_l": false, 
+        "mpm_type": 0
+    }, 
     "select_info": {
-        "display_name": "Corto hacia abajo",
-        "thumb": "echo_downshort",
-        "group": "hair"
-    },
-    "unlock": true
+        "group": "hair", 
+        "display_name": "Corto hacia abajo", 
+        "thumb": "echo_downshort"
+    }, 
+    "unlock": true, 
+    "img_sit": "echo_downshort", 
+    "stay_on_start": true, 
+    "type": 1, 
+    "use_numeric_layer_ids": true, 
+    "name": "echo_downshort"
 }
