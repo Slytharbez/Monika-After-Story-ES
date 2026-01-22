@@ -724,8 +724,9 @@ screen quick_menu():
 
             textbutton _("Cargar") action Function(_mas_quick_menu_cb, "load")
 
+            textbutton _("Marcar") action Function(_mas_hk_bookmark_topic)
 
-
+            textbutton _("Ocultar") action HideInterface()
 
             textbutton _("Ajustes") action Function(_mas_quick_menu_cb, "preferences")
 
