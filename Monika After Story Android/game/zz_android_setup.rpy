@@ -503,11 +503,50 @@ init python:
 
 init 50 python:
     """
-    OVERRIDES AGRESIVOS (Monkey Patching)
-
-    Modificaciones en tiempo de ejecución para redirigir subsistemas
-    a las rutas de "La Mochila".
+    Subdirectorios a rutas de "La Mochila".
     """
+    def mas_extract_stockfish():
+        if not renpy.android: return None
+        try:
+            import zipfile
+            import sys
+            
+            # 1. Detect Architecture
+            # We use maxsize to determine if we are running 64-bit python
+            is_64_bit = sys.maxsize > 2**32
+            target_abi = "arm64-v8a" if is_64_bit else "armeabi-v7a"
+            
+            # 2. Paths
+            CurrentActivity = mas_get_current_activity()
+            if not CurrentActivity: return None
+            
+            context = CurrentActivity.getApplicationContext()
+            apk_path = context.getApplicationInfo().publicSourceDir
+            
+            private_dir = os.environ.get("ANDROID_PRIVATE", "")
+            out_file = os.path.join(private_dir, "files", "stockfish_bin")
+            
+            # 3. Extract
+            with zipfile.ZipFile(apk_path, "r") as z:
+                # Path inside APK: lib/<abi>/libstockfish.so
+                target_entry = "lib/" + target_abi + "/libstockfish.so"
+                
+                if target_entry not in z.namelist():
+                    print("[MAS_STOCKFISH] Entry not found: " + target_entry)
+                    return None
+                    
+                with open(out_file, "wb") as f:
+                    f.write(z.read(target_entry))
+            
+            # 4. Permission
+            os.chmod(out_file, 0o755)
+            # print("[MAS_STOCKFISH] Extracted to " + out_file)
+            return out_file
+            
+        except Exception as e:
+            print("[MAS_STOCKFISH] Error: " + str(e))
+            return None
+
     if renpy.android:
         """
         VÁLVULA DE SEGURIDAD
@@ -524,12 +563,17 @@ init 50 python:
                 store.mas_chess.CHESS_SAVE_PATH = ANDROID_CHESS_PATH
                 
                 """
-                Redirigir binario de Stockfish a almacenamiento interno ejecutable
+                Redirigir binario de Stockfish a extraccion manual
                 """
-                private_dir = os.environ.get('ANDROID_PRIVATE', '')
-                store.mas_chess.STOCKFISH_PATH = os.path.join(private_dir, "files", "stockfish_android")
+                sf_path = mas_extract_stockfish()
+                if sf_path:
+                    store.mas_chess.STOCKFISH_PATH = sf_path
+                else:
+                    # Fallback path if extraction fails
+                    p_dir = os.environ.get('ANDROID_PRIVATE', '')
+                    store.mas_chess.STOCKFISH_PATH = os.path.join(p_dir, "files", "stockfish_bin")
                 
-                # print("[ANDROID_OVERRIDES] Chess Save Path & Binary redirected")
+                # print("[ANDROID_OVERRIDES] Chess Save Path & Binary configured")
             
             if hasattr(store, 'mas_docking_station'):
                 store.mas_docking_station.station = ANDROID_CHARACTERS_PATH
