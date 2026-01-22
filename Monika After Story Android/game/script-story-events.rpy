@@ -674,10 +674,10 @@ label mas_birthdate:
         $ bday_str, diff = store.mas_calendar.genFormalDispDate(persistent._mas_player_bday)
         m 3eksdlc "Sé que me has dicho tu cumpleaños antes, pero no estoy segura de haber sido clara sobre si te pedí tu {i}fecha de nacimiento{/i} o solo tu {i}cumpleaños...{/i}"
 
-        m "Así que para estar segura, ¿tu fecha de nacimiento es [bday_str]?{nw}"
+        m "Así que para estar segura, ¿tu fecha de nacimiento es el [bday_str]?{nw}"
         $ _history_list.pop()
         menu:
-            m "Así que para estar segura, ¿tu fecha de nacimiento es [bday_str]?{fast}"
+            m "Así que para estar segura, ¿tu fecha de nacimiento es el [bday_str]?{fast}"
             "Sí":
                 if datetime.date.today().year - persistent._mas_player_bday.year < 5:
                     m 2rksdla "¿Estás seguro de eso, [player]?"

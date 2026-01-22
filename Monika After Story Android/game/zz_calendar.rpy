@@ -1293,12 +1293,17 @@ init -1 python in mas_calendar:
             [0]: nicely formtted display date, suitable for text
             [1]: timedelta between today and the given _date
         """
+        month_names = [
+            "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+            "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+        ]
+
         return (
-            " ".join([
-                _date.strftime("%B"), 
-                _formatDay(_date.day) + ",", 
-                str(_date.year) 
-            ]),
+            "{} de {} del {}".format(
+                str(_date.day),
+                month_names[_date.month - 1],
+                str(_date.year)
+            ),
             datetime.date.today() - _date
         )
 
