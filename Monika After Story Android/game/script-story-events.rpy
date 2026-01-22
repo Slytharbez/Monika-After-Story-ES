@@ -2140,7 +2140,7 @@ label mas_notification_windowreact:
         if renpy.windows:
             m 3rksdla "Además, dado que estás usando Windows... ahora sé cómo verificar cuál es tu ventana activa."
 
-File Cleanup
+
         elif renpy.linux:
             m 3rksdla "Además, ya que estás usando Linux... ahora sé cómo comprobar cuál es tu ventana activa."
 
