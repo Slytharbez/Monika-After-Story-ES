@@ -144,7 +144,7 @@ label giftmenu:
         gift_categories = [
             ("Cintas", "menuCinta"),
             ("Consumibles", "menucnsb"),
-            ("Ropa", "ropa"),
+            ("Ropa", "ropa_menu"),
             ("Accesorios", "acsand"),
             ("Otros", "others"),
             ("Volver", "return")
@@ -276,7 +276,7 @@ label menucnsb:
         $ mas_android_create_gift(result)
         jump menucnsb
 
-label ropa:
+label ropa_menu:
     python:
         clothes = [
             ("Bikini de color amarillo con escote de corazón", "bikinidecoloramarilloconescotedecorazon.gift"),
@@ -321,7 +321,7 @@ label ropa:
         jump giftmenu
     else:
         $ mas_android_create_gift(result)
-        jump ropa
+        jump ropa_menu
 
 label acsand:
     python:
