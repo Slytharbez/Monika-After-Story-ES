@@ -311,7 +311,7 @@ label chara_monika_scare:
 
 label bookmark_derand_intro:
 
-    m 1hua "Si quieres volver a revisar fácilmente algo de lo que hablo, solo usa los marcadores."
+    m 1hua "Si quieres volver a revisar fácilmente algo de lo que hablo, solo presiona en 'Marcadores' y lo marcaré para ti."
     m 2rksdlc "Y si resulta que hay algo que no quieres que vuelva a mencionar, házmelo saber y me aseguraré de evitarlo en el futuro."
     m 4hksdlb "... Esperemos que no haya demasiadas cosas como esa, ¡jajaja!"
     return
