@@ -726,6 +726,8 @@ screen quick_menu():
 
             textbutton _("Marcar") action Function(_mas_hk_bookmark_topic)
 
+            textbutton _("Desistir") action Function(_mas_hk_derandom_topic)
+
             textbutton _("Ocultar") action HideInterface()
 
             textbutton _("Ajustes") action Function(_mas_quick_menu_cb, "preferences")
