@@ -2129,7 +2129,7 @@ label mas_notification_windowreact:
             "¡Seguro!":
                 m 1hua "¡Okey, [player]!"
                 m 2dsa "Solo dame un segundo para hacer una notificación.{w=0.5}.{w=0.5}.{w=0.5}{nw}"
-                $ mas_android_send_test_notif(m_name, "¡Te amo, [player]!")
+                $ mas_android_send_test_notif([m_name], "¡Te amo, [player]!")
                 m 1hub "¡Ahí está!"
             "No gracias":
 
