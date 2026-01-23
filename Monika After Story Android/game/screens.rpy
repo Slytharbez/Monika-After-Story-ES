@@ -2705,13 +2705,14 @@ style check_scrollable_menu_crazy_button_text is scrollable_menu_crazy_button_te
 style check_scrollable_menu_crazy_button_text_dark is scrollable_menu_crazy_button_text_dark
 
 
-define prev_adj = ui.adjustment()
-define main_adj = ui.adjustment()
+define mas_category_adj = ui.adjustment()
+define mas_topic_adj = ui.adjustment()
+define mas_scrollable_menu_adj = ui.adjustment()
 
 
 
 screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, right_area, right_align, cat_length):
-    on "hide" action Function(store.main_adj.change, 0)
+    #on "hide" action Function(store.main_adj.change, 0)
 
     default flt_evs = None
     default is_search_active = False
@@ -2750,7 +2751,7 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
                 textbutton _("No importa"):
                     style "scrollable_menu_button"
                     xsize right_area[0] - left_area[0] + right_area[2]
-                    action [Return(False), Function(store.prev_adj.change, 0)]
+                    action [Return(False)]
 
             bar:
                 style "classroom_vscrollbar"
@@ -2778,6 +2779,7 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
 
                 viewport:
                     id "prev_viewport"
+                    yadjustment store.mas_category_adj
                     yfill False
                     mousewheel True
                     arrowkeys True
@@ -2791,16 +2793,16 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
                             elif not renpy.has_label(i_label):
                                 style "twopane_scrollable_menu_special_button"
 
-                            action Return(i_label)
+                            action [Function(store.mas_topic_adj.change, 0), Return(i_label)]
 
                 if cat_length != 1:
                     null height 20
 
                     if cat_length == 0:
-                        textbutton _("No importa") action [Return(False), Function(store.prev_adj.change, 0)]
+                        textbutton _("No importa") action [Return(False)]
 
                     elif cat_length > 1:
-                        textbutton _("Regresar") action [Return(-1), Function(store.prev_adj.change, 0)]
+                        textbutton _("Regresar") action [Return(-1)]
 
             bar:
                 style "classroom_vscrollbar"
@@ -2819,6 +2821,7 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
 
                     viewport:
                         id "main_viewport"
+                        yadjustment store.mas_topic_adj
                         yfill False
                         mousewheel True
                         arrowkeys True
@@ -2832,11 +2835,11 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
                                 elif not renpy.has_label(i_label):
                                     style "twopane_scrollable_menu_special_button"
 
-                                action [Return(i_label), Function(store.prev_adj.change, 0)]
+                                action [Return(i_label)]
                                 
                     null height 20
 
-                    textbutton _("No importa") action [Return(False), Function(store.prev_adj.change, 0)]
+                    textbutton _("No importa") action [Return(False)]
 
                 bar:
                     style "classroom_vscrollbar"
@@ -2912,6 +2915,7 @@ screen scrollable_menu(items, display_area, scroll_align, nvm_text, remove=None)
 
             viewport:
                 id "scrollable_menu_viewport"
+                yadjustment store.mas_scrollable_menu_adj
                 yfill False
                 mousewheel True
 
