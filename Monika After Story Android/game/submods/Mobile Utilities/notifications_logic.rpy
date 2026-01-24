@@ -56,6 +56,11 @@ init python:
         # Pick a random message
         final_text = random.choice(messages)
         
+        # --- FIX: Extract Text from Dict ---
+        # If the chosen item is a dictionary (common in MAS), extract 'msg'
+        if isinstance(final_text, dict):
+            final_text = final_text.get("msg", "Te estaré esperando...")
+
         # TEXT SUBSTITUTION
         # Manually substitute common tags since we are outside Ren'Py dialogue engine
         final_text = renpy.substitute(final_text)
@@ -94,15 +99,17 @@ init python:
             
         elif farewell_label == "bye_prompt_to_class":
             category = "farewell_class"
-            # TEST MODE: 1 minute
-            delay_seconds = 60
+            # FAST TRACK TEST: 30 seconds
+            delay_seconds = 30 
+            # Normal: random.randint(4 * 3600, 6 * 3600)
 
         # --- D. SHORT ERRANDS GROUP (2-4 hours) ---
         # Mapping common short absence labels
+        # Note: Corrected labels for Shopping and Housework
         elif farewell_label in [
             "bye_prompt_eat", 
-            "bye_prompt_shopping", 
-            "bye_prompt_chores", 
+            "bye_going_shopping",  # Corrected from bye_prompt_shopping
+            "bye_prompt_housework", # Corrected from bye_prompt_chores
             "bye_prompt_workout", 
             "bye_prompt_hangout", 
             "bye_prompt_game"
@@ -115,9 +122,9 @@ init python:
                 # Using 'farewell_going_out' instead which is defined.
                 category = "farewell_going_out"
             
-            # TEST MODE: 1 minute for Shopping and Chores
-            if farewell_label in ["bye_prompt_shopping", "bye_prompt_chores"]:
-                delay_seconds = 60
+            # FAST TRACK TEST: 30 seconds for specific errands
+            if farewell_label in ["bye_going_shopping", "bye_prompt_housework"]:
+                delay_seconds = 30
             else:
                 delay_seconds = random.randint(2 * 3600, 4 * 3600)
 
@@ -148,9 +155,15 @@ init python:
         # --- EXECUTION ---
         message = MAS_AndroidNotifs_GetMessage(category)
         
+        # Action Buttons Definition
+        # Format: (Action 1 Label [Launch], Action 2 Label [Dismiss])
+        actions = None
+        if farewell_label == "bye_prompt_housework": # ONLY for this test case
+            actions = (u"Ya voy", u"Después")
+        
         if message:
             # Call backend to schedule
             # Check if backend function exists (to prevent PC errors)
             if hasattr(store, "mas_android_schedule_notif"):
-                store.mas_android_schedule_notif("Monika", message, delay_seconds)
+                store.mas_android_schedule_notif("[m_name]", message, delay_seconds, actions)
 

@@ -44,108 +44,216 @@ init python:
 
 init 5 python:
     # --- REAL IMPLEMENTATION (Priority 5) ---
-    # If environment is valid, we overwrite the stubs with the real deal.
+    # WorkManager Implementation for Android Notifications
     
     if mas_android_backend_available and renpy.android:
         
-        def mas_android_send_test_notif(title, message):
+        # 1. SCHEDULED NOTIFICATIONS (WorkManager) - For Closing App
+        def mas_android_schedule_notif(title, message, delay_seconds, actions=None):
             """
-            Sends an immediate notification using Android Native API (Pyjnius).
+            Schedules a notification using Android WorkManager.
+            Args:
+                actions (list/tuple, optional): List of labels for buttons. 
+                                                Index 0 = Action 1 (Launch), Index 1 = Action 2 (Dismiss).
             """
             try:
-                # 0. Text Substitution (CRITICAL FIX)
-                # Replaces [player] with the user's name
+                # --- FIX: Content & Title Parsing ---
+                if isinstance(message, dict):
+                    message = message.get("msg", "Te estaré esperando...")
+                
                 title = renpy.substitute(title)
                 message = renpy.substitute(message)
+                
+                # Imports
+                try: 
+                    PythonActivity = autoclass('org.renpy.android.PythonSDLActivity')
+                except: 
+                    PythonActivity = autoclass('org.renpy.android.PythonActivity')
+                    
+                WorkManager = autoclass('androidx.work.WorkManager')
+                OneTimeWorkRequest = autoclass('androidx.work.OneTimeWorkRequest$Builder')
+                Data = autoclass('androidx.work.Data$Builder')
+                TimeUnit = autoclass('java.util.concurrent.TimeUnit')
+                ExistingWorkPolicy = autoclass('androidx.work.ExistingWorkPolicy')
+                Collections = autoclass('java.util.Collections')
+                
+                # Worker Class
+                WorkerClass = autoclass('com.monikaafterstory.tec.es.NotificationWorker')
+                
+                context = PythonActivity.mActivity
+                
+                # Prepare Data
+                data_builder = Data()
+                data_builder.putString("title", title)
+                data_builder.putString("message", message)
+                
+                # Add Actions if present
+                if actions and len(actions) >= 1:
+                    data_builder.putString("action1_label", actions[0])
+                if actions and len(actions) >= 2:
+                    data_builder.putString("action2_label", actions[1])
+                    
+                input_data = data_builder.build()
+                
+                # Build Work Request
+                delay_long = long(delay_seconds)
+                
+                work_request_builder = OneTimeWorkRequest(WorkerClass)
+                work_request_builder.setInitialDelay(delay_long, TimeUnit.SECONDS)
+                work_request_builder.setInputData(input_data)
+                work_request_builder.addTag("mas_notification")
+                
+                work_request = work_request_builder.build()
+                
+                # Enqueue Unique Work
+                work_list = Collections.singletonList(work_request)
+                
+                wm = WorkManager.getInstance(context)
+                wm.enqueueUniqueWork("mas_notification_job", ExistingWorkPolicy.REPLACE, work_list)
+                
+                print("[MAS_ANDROID] Notification Scheduled: {}s - {}".format(delay_seconds, title))
+                return True
+                
+            except Exception as e:
+                print("[MAS_ANDROID] Schedule Notif Error: " + str(e))
+                return False
 
-                # 1. Imports
+        def mas_android_cancel_all_notifs():
+            """
+            Cancels all scheduled MAS notifications.
+            """
+            try:
+                try: 
+                    PythonActivity = autoclass('org.renpy.android.PythonSDLActivity')
+                except: 
+                    PythonActivity = autoclass('org.renpy.android.PythonActivity')
+                    
+                WorkManager = autoclass('androidx.work.WorkManager')
+                
+                context = PythonActivity.mActivity
+                wm = WorkManager.getInstance(context)
+                wm.cancelUniqueWork("mas_notification_job")
+                
+                print("[MAS_ANDROID] All Notifications Cancelled")
+                
+            except Exception as e:
+                print("[MAS_ANDROID] Cancel Error: " + str(e))
+
+        # 2. IMMEDIATE NOTIFICATIONS (Direct JNI) - For Introduction/Debug
+        def mas_android_display_notif(title, message):
+            """
+            Sends an immediate notification using Android Native API (Pyjnius).
+            Used for the introduction event sample.
+            """
+            try:
+                # Text Substitution
+                title = renpy.substitute(title)
+                message = renpy.substitute(message)
+                
+                # Imports
                 Context = autoclass('android.content.Context')
+                Notification = autoclass('android.app.Notification')
                 NotificationManager = autoclass('android.app.NotificationManager')
                 NotificationChannel = autoclass('android.app.NotificationChannel')
                 NotificationBuilder = autoclass('android.app.Notification$Builder')
-                # BigTextStyle for 2-line formatting
                 BigTextStyle = autoclass('android.app.Notification$BigTextStyle') 
-                
                 String = autoclass('java.lang.String')
                 Build = autoclass('android.os.Build$VERSION')
                 
-                try:
+                try: 
                     PythonActivity = autoclass('org.renpy.android.PythonSDLActivity')
-                except:
+                except: 
                     PythonActivity = autoclass('org.renpy.android.PythonActivity')
 
                 context = PythonActivity.mActivity
                 nm = cast(NotificationManager, context.getSystemService(Context.NOTIFICATION_SERVICE))
                 
-                channel_id = "mas_test_channel"
+                # FIXED: Changed Channel ID to V2 to ensure sound settings are refreshed
+                channel_id = "mas_test_channel_v2"
                 
-                # 2. Create Channel (Android 8.0+ / API 26+)
+                # Resource Lookup (Dynamic)
+                res = context.getResources()
+                pkg = context.getPackageName()
+                # Corrected Resource Names
+                smallIconId = res.getIdentifier("ic_stat_smoll", "drawable", pkg)
+                soundId = res.getIdentifier("notif", "raw", pkg)
+                
+                if smallIconId == 0:
+                    smallIconId = 17301628 # Fallback: visible system icon
+                    
+                # Create Channel (Android 8.0+)
                 if Build.SDK_INT >= 26:
-                    name = String("MAS Debug Channel")
-                    description = String("Canal para pruebas de notificaciones en vivo")
+                    name = String("MAS Test Channel")
+                    description = String("Canal para pruebas de notificaciones")
                     importance = NotificationManager.IMPORTANCE_HIGH
                     
                     channel = NotificationChannel(String(channel_id), name, importance)
                     channel.setDescription(description)
-                    # Enable Vibration to ensure heads-up
                     channel.enableVibration(True)
+                    
+                    # Sound Setup for Channel
+                    if soundId != 0:
+                        Uri = autoclass('android.net.Uri')
+                        AudioAttributes = autoclass('android.media.AudioAttributes$Builder')
+                        
+                        soundUri = Uri.parse("android.resource://" + pkg + "/" + str(soundId))
+                        audioAttr = AudioAttributes().setUsage(5).setContentType(4).build() # USAGE_NOTIFICATION, CONTENT_TYPE_SONIFICATION
+                        channel.setSound(soundUri, audioAttr)
+                        
                     nm.createNotificationChannel(channel)
                     
-                # 3. Build Notification
+                # Build Notification
                 if Build.SDK_INT >= 26:
                     builder = NotificationBuilder(context, String(channel_id))
                 else:
                     builder = NotificationBuilder(context)
                 
-                # Apply Text & Style
                 j_title = String(title)
                 j_message = String(message)
                 
                 builder.setContentTitle(j_title)
                 builder.setContentText(j_message)
+                builder.setSmallIcon(smallIconId)
                 
-                # STYLE: BigTextStyle
-                # Forces expansion and usually ensures title/text separation
                 style = BigTextStyle()
                 style.bigText(j_message)
                 style.setBigContentTitle(j_title)
                 builder.setStyle(style)
                 
-                # Small Icon - System Chat Icon as safe fallback
-                builder.setSmallIcon(17301628) 
-                
                 builder.setAutoCancel(True)
                 
-                # TIMEOUT: 9 Seconds (Requested)
-                # Only works on API 26+ (Android 8.0)
                 if Build.SDK_INT >= 26:
                     builder.setTimeoutAfter(9000)
                 
-                # Defaults for Sound/Vibration
-                # Notification.DEFAULT_ALL = -1
-                builder.setDefaults(-1) 
+                # Defaults for pre-Oreo
+                builder.setDefaults(Notification.DEFAULT_VIBRATE) 
                 
-                # 4. Show it (ID 777)
-                nm.notify(777, builder.build())
+                nm.notify(888, builder.build())
                 
-                print("[MAS_ANDROID] Debug Notification Sent Successfully")
-                # renpy.log("[MAS_ANDROID] Debug Notification Sent Successfully")
+                print("[MAS_ANDROID] Display Notification Sent")
                 return True
                 
             except Exception as e:
-                print("[MAS_ANDROID] Debug Notif Error: " + str(e))
-                # renpy.log("[MAS_ANDROID] Debug Notif Error: " + str(e))
+                print("[MAS_ANDROID] Display Notif Error: " + str(e))
                 return False
 
-        # Overwrite Store Function
-        store.mas_android_send_test_notif = mas_android_send_test_notif
+        # Overwrite Store Functions
+        store.mas_android_schedule_notif = mas_android_schedule_notif
+        store.mas_android_cancel_all_notifs = mas_android_cancel_all_notifs
+        # New function name
+        store.mas_android_display_notif = mas_android_display_notif
 
     else:
         # Fallback for PC Simulation
-        def mas_android_send_test_notif(title, message):
-            title = renpy.substitute(title)
-            message = renpy.substitute(message)
-            print("[MAS_ANDROID] (Simulated) Notification: [{}] {}".format(title, message))
-            # renpy.log("[MAS_ANDROID] (Simulated) Notification: [{}] {}".format(title, message))
+        def mas_android_schedule_notif(title, message, delay_seconds):
+            print("[MAS_ANDROID] (Simulated) Scheduled in {}s: [{}] {}".format(delay_seconds, title, message))
         
-        store.mas_android_send_test_notif = mas_android_send_test_notif
+        def mas_android_cancel_all_notifs():
+            print("[MAS_ANDROID] (Simulated) All cancelled")
+            
+        def mas_android_display_notif(title, message):
+            print("[MAS_ANDROID] (Simulated) DISPLAY: [{}] {}".format(title, message))
+             
+        store.mas_android_schedule_notif = mas_android_schedule_notif
+        store.mas_android_cancel_all_notifs = mas_android_cancel_all_notifs
+        store.mas_android_display_notif = mas_android_display_notif

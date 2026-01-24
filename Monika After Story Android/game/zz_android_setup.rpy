@@ -792,3 +792,56 @@ init python:
             pass
 
 # Decompiled by unrpyc: https://github.com/CensoredUsername/unrpyc
+
+init 500 python:
+    """
+    [ANDROID] NOTIFICATION REWARD CHECKER
+    Checks if the game was launched via notification and awards affection.
+    Uses config.label_callback to run safely when the game loop starts (ch30_init).
+    """
+    mas_android_intent_checked = False
+
+    def mas_android_check_notif_launch(label, abnormal):
+        global mas_android_intent_checked
+        
+        # Only check once per session and only on main start
+        if mas_android_intent_checked:
+            return
+            
+        if label == "ch30_init":
+            mas_android_intent_checked = True
+            
+            if not renpy.android:
+                return
+
+            try:
+                # Import Activity
+                try: 
+                    PythonActivity = autoclass('org.renpy.android.PythonSDLActivity')
+                except: 
+                    PythonActivity = autoclass('org.renpy.android.PythonActivity')
+                    
+                activity = PythonActivity.mActivity
+                intent = activity.getIntent()
+                
+                # Check for Extra "launch_from_notif"
+                # Default to False
+                from_notif = intent.getBooleanExtra("launch_from_notif", False)
+                
+                if from_notif:
+                    print("[MAS_ANDROID] Launched from Notification! Attempting affection gain...")
+                    
+                    # Award Affection if MAS function exists
+                    if hasattr(store, "mas_gainAffection"):
+                        # Gain 1.0 affection, bypass daily limit checks if possible
+                        store.mas_gainAffection(1.0, bypass=True)
+                        print("[MAS_ANDROID] Affection granted.")
+                        
+                        # OPTIONAL: Play a sound or queue a greeting?
+                        # For now, we trust the affection log.
+                        
+            except Exception as e:
+                print("[MAS_ANDROID] Intent Check Error: " + str(e))
+
+    # Register the callback
+    config.label_callback = mas_android_check_notif_launch
