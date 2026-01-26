@@ -791,8 +791,6 @@ init python:
         except Exception as e:
             pass
 
-# Decompiled by unrpyc: https://github.com/CensoredUsername/unrpyc
-
 init 500 python:
     """
     [ANDROID] NOTIFICATION REWARD CHECKER
@@ -837,6 +835,11 @@ init 500 python:
                         store.mas_gainAffection(1.0, bypass=True)
                         print("[MAS_ANDROID] Affection granted.")
                         
+                        # CLEANUP: Cancel pending sticky notifications
+                        if hasattr(store, "mas_android_cancel_all_notifs"):
+                            store.mas_android_cancel_all_notifs()
+                            print("[MAS_ANDROID] Notifications cleared.")
+                        
                         # OPTIONAL: Play a sound or queue a greeting?
                         # For now, we trust the affection log.
                         
@@ -845,3 +848,60 @@ init 500 python:
 
     # Register the callback
     config.label_callback = mas_android_check_notif_launch
+
+
+init 50 python:
+    def mas_android_cancel_all_notifications():
+        """
+        NUCLEAR CLEANUP:
+        Cancels all WorkManager jobs and NotificationManager notifications.
+        This resolves the "Zombie" notification issue on game start.
+        """
+        if not renpy.android: 
+            return
+            
+        try:
+            from jnius import autoclass
+            
+            # 1. Resolve Activity
+            try:
+                PythonActivity = autoclass('org.renpy.android.PythonSDLActivity')
+            except:
+                PythonActivity = autoclass('org.renpy.android.PythonActivity')
+            
+            mActivity = PythonActivity.mActivity
+            
+            # 2. Cancel WorkManager (The "Sticky" Worker)
+            # This kills the Foreground Service loop in NotificationWorker
+            WorkManager = autoclass('androidx.work.WorkManager')
+            try:
+                WorkManager.getInstance(mActivity).cancelAllWork()
+            except Exception as e:
+                print("MAS_NOTIF: WorkManager cancel failed: " + str(e))
+            
+            # 3. Cancel Standard Notifications (Fallback)
+            try:
+                Context = autoclass('android.content.Context')
+                NotificationManager = mActivity.getSystemService(Context.NOTIFICATION_SERVICE)
+                NotificationManager.cancelAll()
+            except Exception as e:
+                print("MAS_NOTIF: NotificationManager cancel failed: " + str(e))
+                
+            # print("MAS_NOTIF: Cleanup executed successfully.")
+            
+        except Exception as e:
+            print("MAS_NOTIF: cleanup critical error: " + str(e))
+
+    # Alias for existing code if present
+    store.mas_android_cancel_all_notifs = mas_android_cancel_all_notifications
+
+# Auto-Run on Startup (Cold Boot) & Load Hook
+init 999 python:
+    if renpy.android:
+        # Run Immediate Cleanup
+        mas_android_cancel_all_notifications()
+        
+        # Register for Save Loads
+        config.after_load_callbacks.append(mas_android_cancel_all_notifications)
+
+# Decompiled by unrpyc: https://github.com/CensoredUsername/unrpyc

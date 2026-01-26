@@ -16,7 +16,7 @@ init python:
     # We define these HERE to guarantee they exist before any label is called.
     # This prevents NameError even if the init 5 block fails or conditions aren't met.
 
-    def mas_android_schedule_notif(title, message, delay_seconds=0):
+    def mas_android_schedule_notif(title, message, delay_seconds=0, actions=None):
         # Stub for logic
         pass
 
@@ -75,6 +75,7 @@ init 5 python:
                 Data = autoclass('androidx.work.Data$Builder')
                 TimeUnit = autoclass('java.util.concurrent.TimeUnit')
                 ExistingWorkPolicy = autoclass('androidx.work.ExistingWorkPolicy')
+                OutOfQuotaPolicy = autoclass('androidx.work.OutOfQuotaPolicy')
                 Collections = autoclass('java.util.Collections')
                 
                 # Worker Class
@@ -101,6 +102,10 @@ init 5 python:
                 work_request_builder = OneTimeWorkRequest(WorkerClass)
                 work_request_builder.setInitialDelay(delay_long, TimeUnit.SECONDS)
                 work_request_builder.setInputData(input_data)
+                
+                # [CRITICAL] Set Expedited ensures we can go Foreground on Android 12+
+                work_request_builder.setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                
                 work_request_builder.addTag("mas_notification")
                 
                 work_request = work_request_builder.build()
@@ -151,86 +156,32 @@ init 5 python:
                 message = renpy.substitute(message)
                 
                 # Imports
-                Context = autoclass('android.content.Context')
-                Notification = autoclass('android.app.Notification')
-                NotificationManager = autoclass('android.app.NotificationManager')
-                NotificationChannel = autoclass('android.app.NotificationChannel')
-                NotificationBuilder = autoclass('android.app.Notification$Builder')
-                BigTextStyle = autoclass('android.app.Notification$BigTextStyle') 
-                String = autoclass('java.lang.String')
-                Build = autoclass('android.os.Build$VERSION')
-                
                 try: 
                     PythonActivity = autoclass('org.renpy.android.PythonSDLActivity')
                 except: 
                     PythonActivity = autoclass('org.renpy.android.PythonActivity')
-
+                
+                NotificationHelper = autoclass('com.monikaafterstory.tec.es.NotificationHelper')
+                
                 context = PythonActivity.mActivity
-                nm = cast(NotificationManager, context.getSystemService(Context.NOTIFICATION_SERVICE))
                 
-                # FIXED: Changed Channel ID to V2 to ensure sound settings are refreshed
-                channel_id = "mas_test_channel_v2"
+                # Class A: In-Game Event
+                # ongoing=False (Swipeable), bodyTap=False (or True? User said "Aparece y desaparece"). 
+                # Usually standard heads-up. Let's set tap=True (Launch) for consistency or False.
+                # User Requirement: "Comportamiento: Informativa temporal."
+                # We'll stick to swipeable.
                 
-                # Resource Lookup (Dynamic)
-                res = context.getResources()
-                pkg = context.getPackageName()
-                # Corrected Resource Names
-                smallIconId = res.getIdentifier("ic_stat_smoll", "drawable", pkg)
-                soundId = res.getIdentifier("notif", "raw", pkg)
+                NotificationHelper.showNotification(
+                    context,
+                    888, # Different ID for in-game test
+                    title,
+                    message,
+                    None, # No Action 1
+                    None, # No Action 2
+                    2     # TYPE_INGAME_EVENT (2) -> Native Simple Style
+                )
                 
-                if smallIconId == 0:
-                    smallIconId = 17301628 # Fallback: visible system icon
-                    
-                # Create Channel (Android 8.0+)
-                if Build.SDK_INT >= 26:
-                    name = String("MAS Test Channel")
-                    description = String("Canal para pruebas de notificaciones")
-                    importance = NotificationManager.IMPORTANCE_HIGH
-                    
-                    channel = NotificationChannel(String(channel_id), name, importance)
-                    channel.setDescription(description)
-                    channel.enableVibration(True)
-                    
-                    # Sound Setup for Channel
-                    if soundId != 0:
-                        Uri = autoclass('android.net.Uri')
-                        AudioAttributes = autoclass('android.media.AudioAttributes$Builder')
-                        
-                        soundUri = Uri.parse("android.resource://" + pkg + "/" + str(soundId))
-                        audioAttr = AudioAttributes().setUsage(5).setContentType(4).build() # USAGE_NOTIFICATION, CONTENT_TYPE_SONIFICATION
-                        channel.setSound(soundUri, audioAttr)
-                        
-                    nm.createNotificationChannel(channel)
-                    
-                # Build Notification
-                if Build.SDK_INT >= 26:
-                    builder = NotificationBuilder(context, String(channel_id))
-                else:
-                    builder = NotificationBuilder(context)
-                
-                j_title = String(title)
-                j_message = String(message)
-                
-                builder.setContentTitle(j_title)
-                builder.setContentText(j_message)
-                builder.setSmallIcon(smallIconId)
-                
-                style = BigTextStyle()
-                style.bigText(j_message)
-                style.setBigContentTitle(j_title)
-                builder.setStyle(style)
-                
-                builder.setAutoCancel(True)
-                
-                if Build.SDK_INT >= 26:
-                    builder.setTimeoutAfter(9000)
-                
-                # Defaults for pre-Oreo
-                builder.setDefaults(Notification.DEFAULT_VIBRATE) 
-                
-                nm.notify(888, builder.build())
-                
-                print("[MAS_ANDROID] Display Notification Sent")
+                print("[MAS_ANDROID] Display Notification Sent via Helper")
                 return True
                 
             except Exception as e:
@@ -245,8 +196,10 @@ init 5 python:
 
     else:
         # Fallback for PC Simulation
-        def mas_android_schedule_notif(title, message, delay_seconds):
+        def mas_android_schedule_notif(title, message, delay_seconds, actions=None):
             print("[MAS_ANDROID] (Simulated) Scheduled in {}s: [{}] {}".format(delay_seconds, title, message))
+            if actions:
+                print("[MAS_ANDROID] (Simulated) With Actions: " + str(actions))
         
         def mas_android_cancel_all_notifs():
             print("[MAS_ANDROID] (Simulated) All cancelled")
