@@ -93,6 +93,14 @@ init 5 python:
                     data_builder.putString("action1_label", actions[0])
                 if actions and len(actions) >= 2:
                     data_builder.putString("action2_label", actions[1])
+
+                # Pass Sound/Vibration Preferences
+                # Default to True if None
+                snd = True if persistent.mas_android_notif_sound is None else persistent.mas_android_notif_sound
+                vib = True if persistent.mas_android_notif_vibration is None else persistent.mas_android_notif_vibration
+                
+                data_builder.putBoolean("sound_enabled", snd)
+                data_builder.putBoolean("vibration_enabled", vib)
                     
                 input_data = data_builder.build()
                 
@@ -104,7 +112,9 @@ init 5 python:
                 work_request_builder.setInputData(input_data)
                 
                 # [CRITICAL] Set Expedited ensures we can go Foreground on Android 12+
-                work_request_builder.setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                # ERROR: Cannot use Expedited with InitialDelay!
+                # Since we use foreground promotion in the Worker, Expedited is not strictly required.
+                # work_request_builder.setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 
                 work_request_builder.addTag("mas_notification")
                 
@@ -165,6 +175,10 @@ init 5 python:
                 
                 context = PythonActivity.mActivity
                 
+                # Preferences
+                snd = True if persistent.mas_android_notif_sound is None else persistent.mas_android_notif_sound
+                vib = True if persistent.mas_android_notif_vibration is None else persistent.mas_android_notif_vibration
+                
                 # Class A: In-Game Event
                 # ongoing=False (Swipeable), bodyTap=False (or True? User said "Aparece y desaparece"). 
                 # Usually standard heads-up. Let's set tap=True (Launch) for consistency or False.
@@ -178,7 +192,10 @@ init 5 python:
                     message,
                     None, # No Action 1
                     None, # No Action 2
-                    2     # TYPE_INGAME_EVENT (2) -> Native Simple Style
+                    2,    # TYPE_INGAME_EVENT (2) -> Native Simple Style
+                    snd,  # Sound Bool
+                    vib,  # Vibration Bool
+                    9000  # TIMEOUT: Auto-dismiss after 9 seconds
                 )
                 
                 print("[MAS_ANDROID] Display Notification Sent via Helper")

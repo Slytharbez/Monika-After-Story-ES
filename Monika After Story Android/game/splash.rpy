@@ -167,62 +167,60 @@ label splashscreen:
     if renpy.android:
         python:
             """
-            Verificación de Permisos
+            Permission Verification
 
-            Comprobamos si existen las funciones de utilidad importadas desde
-            zz_android_setup.rpy.
+            We check if the utility functions imported from zz_android_setup.rpy exist.
             """
             if "mas_android_has_permission" in globals():
                 
                 """
-                ESTADO: SIN PERMISOS
+                STATE: NO PERMISSIONS
                 
-                Entramos en el flujo de solicitud y espera.
+                We enter the request and wait flow.
                 """
                 if not mas_android_has_permission():
                     
                     """
-                    1. Solicitar Permisos
+                    1. Request Permissions
                     
-                    Dispara la solicitud JNI para notificaciones y almacenamiento.
-                    Esto genera el comportamiento visual superpuesto deseado.
+                    Launches the JNI request for notifications and storage.
+                    This generates the desired superimposed visual behavior.
                     """
                     if "mas_android_check_and_request_permissions" in globals():
                         mas_android_check_and_request_permissions()
                     
                     """
-                    2. Bucle de Espera (Wait Loop)
+                    2. Wait Loop
                     
-                    Mantiene el juego pausado mientras el usuario interactúa con
-                    los diálogos del sistema o la pantalla de configuración.
+                    Pauses the game while the user interacts with
+                    system dialogs or the settings screen.
                     """
                     while not mas_android_has_permission():
                         renpy.pause(0.1)
                         
                     """
-                    3. Crear Carpetas (Backpack)
+                    3. Create Folders
                     
-                    Una vez obtenidos los permisos, forzamos la creación inmediata
-                    de la estructura de directorios en el almacenamiento externo.
+                    Once permissions are obtained, we force the immediate creation
+                    of the directory structure in external storage.
                     """
-                    if "mas_android_setup_backpack" in globals():
-                        mas_android_setup_backpack()
+                    if "mas_android_setup_public_storage" in globals():
+                        mas_android_setup_public_storage()
                     
                     """
-                    4. REINICIO SACRIFICIAL
+                    4. Conditional Reset
                     
-                    Cierre controlado de la aplicación para obligar a Ren'Py a
-                    reiniciar y detectar el nuevo almacenamiento externo en la
-                    siguiente ejecución.
+                    Controlled closure of the application, depending on the Android version, to force a Ren'Py 
+                    reboot and detect the new external storage on the next run.
                     """
                     renpy.quit()
                 
                 else:
                     """
-                    ESTADO: CON PERMISOS
+                    STATE: PERMISSIONS OBTAINED
                     
-                    Verificación rutinaria de permisos secundarios (Notificaciones)
-                    de manera silenciosa.
+                    Routine secondary permission verification (Notifications)
+                    silently.
                     """
                     if "mas_android_check_and_request_permissions" in globals():
                         mas_android_check_and_request_permissions()
@@ -230,16 +228,17 @@ label splashscreen:
     python:
         if renpy.android:
             try:
-                if "mas_android_setup_backpack" in globals():
-                    mas_android_setup_backpack()
+                if "mas_android_setup_public_storage" in globals():
+                    mas_android_setup_public_storage()
                 if "mas_android_rescue_saves" in globals():
                     mas_android_rescue_saves()
+                pass
                 
                 """
-                [ANDROID] Override Final para Docking Station
+                Docking Station Override
                 
-                Asegura que la ruta de la "estación" apunte correctamente
-                al almacenamiento externo antes de iniciar la lógica del juego.
+                Ensures that the "station" path points correctly to
+                external storage before starting the game logic.
                 """
                 if hasattr(store, "mas_docking_station"):
                     store.mas_docking_station.station = "/storage/emulated/0/Monika After Story/characters/"
@@ -302,8 +301,8 @@ label splashscreen:
                 """
                 AGRESSIVE FOLDER CREATION - RUNTIME
                 
-                Relleno de seguridad de directorios. Garantiza que la estructura
-                exista incluso si el usuario acaba de otorgar permisos manualmente.
+                Directory security fill. Ensures the structure exists even if the user
+                manually grants permissions.
                 """
                 mas_root = "/storage/emulated/0/Monika After Story/"
                 dirs_to_force = [
@@ -332,17 +331,17 @@ label splashscreen:
                     if not os.path.exists(d):
                         try:
                             """
-                            Compatibilidad Python 2.7
+                            Python 2.7 compatibility
                             
-                            os.makedirs no tiene el argumento 'exist_ok' en esta versión,
-                            así que atrapamos la excepción si el directorio ya existe.
+                            os.makedirs does not have the 'exist_ok' argument in this version,
+                            so we catch the exception if the directory already exists.
                             """
                             os.makedirs(d)
                             """
-                            Detección de Primer Inicio con Permisos
+                            Detection of First Run with Permissions
                             
-                            Si creamos 'game/saves', marcamos la bandera para
-                            reiniciar y usar esta nueva ubicación.
+                            If we create 'game/saves', we mark the flag to
+                            restart and use this new location.
                             """
                             if d.endswith("game/saves/"):
                                 saves_created = True
@@ -350,24 +349,24 @@ label splashscreen:
                             pass
                 
                 """
-                Generación del archivo de versión (masrun)
+                Version file generation (masrun)
                 """
                 with open(mas_root + "masrun", "w") as versfile:
                     versfile.write(config.name + "|" + config.version + "\n")
                 
                 """
-                [ANDROID] FORCE PERSისტENT CREATION
+                Persistent creation
                 
-                Escritura manual de bajo nivel del archivo 'persistent'.
+                Manual low-level writing of the 'persistent' file.
                 
-                MOTIVO:
-                    Ren'Py cachea la ruta de guardado al inicio. Si cambiamos
-                    config.savedir en tiempo de ejecución, el guardado automático
-                    podría fallar o usar la ruta incorrecta.
+                REASON:
+                    Ren'Py caches the save path at startup. If we change
+                    config.savedir at runtime, the automatic saving
+                    could fail or use the wrong path.
                     
-                ACCION:
-                    Serializamos (pickle) y comprimimos (zlib) manualmente los
-                    datos persistentes y los escribimos directo al disco.
+                ACTION:
+                    Serializing (pickle) and compressing (zlib) manually the
+                    persistent data and writing it directly to disk.
                 """
                 try:
                     import pickle
@@ -376,14 +375,14 @@ label splashscreen:
                     ext_persistent_file = ext_saves + "persistent"
                     
                     """
-                    Verificamos si ya existe para no borrar backups
+                    Verification to avoid deleting backups
                     """
                     if not os.path.exists(ext_persistent_file):
                         with open(ext_persistent_file, "wb") as f:
                             """
-                            [CRITICAL] Ren'Py espera un pickle COMPRIMIDO con zlib.
-                            Si escribimos raw pickle, crashea al cargar (Error -3).
-                            Protocolo 2 es el estándar compatible.
+                            CRITICAL: Ren'Py expects a compressed pickle with zlib.
+                            If we write raw pickle, it crashes on load (Error -3).
+                            Protocol 2 is the standard compatible.
                             """
                             raw_data = pickle.dumps(persistent, protocol=2)
                             compressed_data = zlib.compress(raw_data)

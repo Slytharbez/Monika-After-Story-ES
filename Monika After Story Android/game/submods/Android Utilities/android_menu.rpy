@@ -1,14 +1,14 @@
 init -998 python:
     # [SAFETY] Variable Fallback Checks
     # Ensure ANDROID constants exist even if zz_android_setup was skipped or failed
-    if not hasattr(store, 'ANDROID_BACKPACK_PATH'):
-        store.ANDROID_BACKPACK_PATH = "/storage/emulated/0/Monika After Story/"
+    if not hasattr(store, 'ANDROID_PUBLIC_PATH'):
+        store.ANDROID_PUBLIC_PATH = "/storage/emulated/0/Monika After Story/"
     
     if not hasattr(store, 'ANDROID_CHARACTERS_PATH'):
-        store.ANDROID_CHARACTERS_PATH = os.path.join(store.ANDROID_BACKPACK_PATH, "characters/")
+        store.ANDROID_CHARACTERS_PATH = os.path.join(store.ANDROID_PUBLIC_PATH, "characters/")
 
     if not hasattr(store, 'ANDROID_CUSTOM_GIFTS_PATH'):
-        store.ANDROID_CUSTOM_GIFTS_PATH = os.path.join(store.ANDROID_BACKPACK_PATH, "custom_gifts/")
+        store.ANDROID_CUSTOM_GIFTS_PATH = os.path.join(store.ANDROID_PUBLIC_PATH, "custom_gifts/")
 
 # =============================================================================
 # SUBMOD SETTINGS PANE

@@ -2640,7 +2640,7 @@ init 189 python in mas_sprites_json:
             except Exception as e:
                 log.exception(e)
 
-        ext_base = os.path.join(store.ANDROID_BACKPACK_PATH, "game/mod_assets/monika")
+        ext_base = os.path.join(store.ANDROID_PUBLIC_PATH, "game/mod_assets/monika")
         
         if os.path.isdir(ext_base):
             for root, dirs, files in os.walk(ext_base):

@@ -990,6 +990,8 @@ screen main_menu():
 
 
     style_prefix "main_menu" tag menu
+    
+
 
 
 

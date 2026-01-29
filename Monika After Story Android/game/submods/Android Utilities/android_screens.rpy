@@ -10,16 +10,19 @@ init -1 python:
 
 init python:
     store.MAS_TT_ANDROID_NOTIF = _(
-        "Habilita el sistema de notificaciones de Android. Monika podrá enviarte mensajes cuando no estés en el juego."
+        "Activa o desactiva todo el sistema de notificaciones de Android."
     )
     store.MAS_TT_ANDROID_SOUND = _(
-        "Activa el sonido y vibración para las notificaciones de Monika."
+        "Permite que Monika te envíe notificaciones con sonido."
+    )
+    store.MAS_TT_ANDROID_VIBRATION = _(
+        "Habilita la vibración del dispositivo para las notificaciones."
     )
     store.MAS_TT_ANDROID_CALENDAR = _(
         "Habilita notificaciones especiales en fechas importantes y festividades."
     )
-    store.MAS_TT_ANDROID_WND_REACT = _(
-        "Añade botones interactivos a las notificaciones. Úsalos para responder a Monika y mejorar tu afecto."
+    store.MAS_TT_ANDROID_RETURN = _(
+        "Activa las notificaciones cada vez que te despidas de Monika."
     )
     store.MAS_TT_ANDROID_FREQ = _(
         "Ajusta cuánto tiempo debe esperar Monika antes de enviarte un mensaje si no la has visitado."
@@ -34,9 +37,23 @@ init python:
         5: _("Posesiva (15s)")
     }
 
-    # Safety check to fix corrupted persistent data (e.g., if it was set to 6 due to bug)
+    # Safety check to fix corrupted persistent data
     if persistent.mas_android_frequency_index > 5:
         persistent.mas_android_frequency_index = 5
+
+    # DEFAULT VALUES
+    # Ensure variables exist
+    if persistent.mas_android_notif_enabled is None:
+        persistent.mas_android_notif_enabled = True # Force Enable System by default
+        
+    if persistent.mas_android_notif_sound is None:
+        persistent.mas_android_notif_sound = True
+        
+    if persistent.mas_android_notif_vibration is None:
+        persistent.mas_android_notif_vibration = True
+
+    if persistent.mas_android_return_reminders is None:
+        persistent.mas_android_return_reminders = True
 
 """
 OVERRIDE: NAVIGATION SCREEN
@@ -77,9 +94,6 @@ screen navigation():
 
 
         textbutton _("Ajustes") action ShowMenu("preferences")
-
-        if not main_menu:
-            textbutton _("Atajos") action ShowMenu("hot_keys")
 
         if main_menu:
             textbutton _("Ayuda") action OpenURL("https://github.com/Monika-After-Story/MonikaModDev/wiki")
@@ -363,23 +377,23 @@ screen notif_settings():
             style_prefix "generic_fancy_check"
             hbox:
                 spacing 25
-                # REPLACEMENT: Use Notifications
-                # Original: _mas_enable_notifications
-                # New: mas_android_notif_enabled
-                textbutton _("Usar notificaciones"):
-                    action ToggleField(persistent, "mas_android_notif_enabled")
-                    selected persistent.mas_android_notif_enabled
-                    hovered tooltip.Action(store.MAS_TT_ANDROID_NOTIF)
-
-                # REPLACEMENT: Sounds
-                # Original: _mas_notification_sounds
-                # New: mas_android_notif_sound
-                textbutton _("Sonidos"):
+                # REPLACEMENT: Sound
+                # Original: Usar Notificaciones (mas_android_notif_enabled)
+                # New: Sonido (mas_android_notif_sound)
+                textbutton _("Sonido"):
                     action ToggleField(persistent, "mas_android_notif_sound")
                     selected persistent.mas_android_notif_sound
                     hovered tooltip.Action(store.MAS_TT_ANDROID_SOUND)
 
-            label _("Filtros de alerta")
+                # REPLACEMENT: Vibration
+                # Original: Sonidos (mas_android_notif_sound)
+                # New: Vibración (mas_android_notif_vibration)
+                textbutton _("Vibración"):
+                    action ToggleField(persistent, "mas_android_notif_vibration")
+                    selected persistent.mas_android_notif_vibration
+                    hovered tooltip.Action(store.MAS_TT_ANDROID_VIBRATION)
+
+            label _("Tipos de notificaciones")
 
         hbox:
             style_prefix "generic_fancy_check"
@@ -390,15 +404,16 @@ screen notif_settings():
             # Original: Topic Alerts / Window Reactions (from _android_valid_filters logic)
             # New: Calendar Events (Alertas temáticas) / Action Buttons (Reacciones de ventana)
             
-            textbutton _("Eventos del Calendario"):
+            textbutton _("Fechas Especiales"):
                 action ToggleField(persistent, "mas_android_calendar_events")
                 selected persistent.mas_android_calendar_events
                 hovered tooltip.Action(store.MAS_TT_ANDROID_CALENDAR)
 
-            textbutton _("Respuestas Rápidas"):
-                action ToggleField(persistent, "mas_android_action_buttons")
-                selected persistent.mas_android_action_buttons
-                hovered tooltip.Action(store.MAS_TT_ANDROID_WND_REACT)
+            textbutton _("Recordatorios de Regreso"):
+                action ToggleField(persistent, "mas_android_return_reminders")
+                selected persistent.mas_android_return_reminders
+                hovered tooltip.Action(store.MAS_TT_ANDROID_RETURN)
+
 
 
         
@@ -409,7 +424,7 @@ screen notif_settings():
             style_prefix "slider"
             hbox:
                 # Separated labels to prevent font jitter, with xmaximum overrides to prevent wrapping
-                label _("Frecuencia") xmaximum None
+                label _("Frecuencia  ") xmaximum None
                 label _("[[ " + store.mas_android_freq_map.get(persistent.mas_android_frequency_index, "Error") + " ]") xmaximum None
 
             bar value FieldValue(persistent, "mas_android_frequency_index", range=4, offset=1, style="slider") hovered tooltip.Action(store.MAS_TT_ANDROID_FREQ)

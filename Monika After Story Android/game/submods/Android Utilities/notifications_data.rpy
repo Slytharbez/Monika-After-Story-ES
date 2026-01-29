@@ -26,10 +26,10 @@ init python:
         persistent.mas_android_calendar_events = True
         
     """
-    Default: Action Buttons (Reply/Dismiss) = True
+    Default: Return Reminders (Farewells) = True
     """
-    if persistent.mas_android_action_buttons is None:
-        persistent.mas_android_action_buttons = True
+    if persistent.mas_android_return_reminders is None:
+        persistent.mas_android_return_reminders = True
 
     """
     Index for Notification Absence Frequency (Slider in UI)

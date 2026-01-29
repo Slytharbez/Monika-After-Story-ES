@@ -20,15 +20,25 @@ init python:
         Returns:
             str: The formatted notification body text, or None if no message found.
         """
-        # Determine affection key mostly based on database keys
-        # Fallback to 'normal' if affection level not explicitly handled or empty
+        # Determine affection key from Lowest to Highest (Overwriting)
+        # 1. Normal (Default)
         aff_key = "normal"
+        
+        # 2. Happy (and higher)
+        if store.mas_isMoniHappy(higher=True):
+            aff_key = "happy"
+            
+        # 3. Affectionate (and higher)
+        if store.mas_isMoniAff(higher=True):
+            aff_key = "affectionate"
+
+        # 4. Enamored (and higher)
         if store.mas_isMoniEnamored(higher=True):
             aff_key = "enamored"
-        elif store.mas_isMoniAff(higher=True):
-            aff_key = "affectionate"
-        elif store.mas_isMoniHappy(higher=True):
-            aff_key = "happy"
+
+        # 5. Love (and higher)
+        if store.mas_isMoniLove(higher=True):
+            aff_key = "love"
             
         # Access the dictionary
         # store.mas_android_notifs_data is the main dict
@@ -70,100 +80,127 @@ init python:
     def MAS_AndroidNotifs_CheckFarewell(farewell_label):
         """
         Determines the notification schedule based on the farewell label used.
-        
-        Args:
-            farewell_label (str): The label of the farewell prompt selected by the user.
+        Separates logic into NORMAL (Passive) and INTERACTIVE (Sticky) types.
         """
         
         if not persistent.mas_android_notif_enabled:
             return
 
-        # --- A. DO NOTHING GROUP ---
-        #restart, taking somewhere
-        if farewell_label in ["bye_restart", "bye_taking_somewhere"]:
+        # FILTER: Return Reminders (Farewells)
+        # If the user disabled "Recordatorios de Regreso", abort immediately.
+        # This prevents Type B/C notifications from being scheduled.
+        if not persistent.mas_android_return_reminders:
             return
 
-        delay_seconds = 0
-        category = "farewell_general"
+        # --- LIST DEFINITIONS ---
         
-        # --- B. SLEEP GROUP (7-9 hours) ---
-        if farewell_label in ["bye_prompt_sleep", "bye_going_to_sleep"]:
-            category = "farewell_sleep"
-            # Random delay between 7 and 9 hours (in seconds)
-            delay_seconds = random.randint(7 * 3600, 9 * 3600)
+        # 1. Normal Notifications (Passive - No Actions)
+        # "Voy a clases", "Voy a comer...", "Voy a dormir", "Voy a ir de compras", "Voy a trabajar"
+        NORMAL_FAREWELLS = [
+            "bye_prompt_to_class",
+            "bye_prompt_eat",
+            "bye_prompt_sleep", 
+            "bye_going_to_sleep", # Sleep variant
+            "bye_going_shopping",
+            "bye_prompt_to_work"
+        ]
 
-        # --- C. WORK/SCHOOL GROUP (6-8 hours) ---
-        elif farewell_label == "bye_prompt_to_work":
-            category = "farewell_work"
-            delay_seconds = random.randint(6 * 3600, 8 * 3600)
+        # 2. Interactive Notifications (Sticky - Has Actions)
+        # "Voy a hacer algunas tareas domésticas", "Voy a hacer ejercicio", "Voy a jugar otra cosa", 
+        # "Voy a salir con mis amigos", "Adiós"
+        INTERACTIVE_FAREWELLS = [
+            "bye_prompt_housework",
+            "bye_prompt_workout",
+            "bye_prompt_game",
+            "bye_prompt_hangout",
+            # Group "Adiós" (Generic Goodbyes)
+            "bye_goodbye",
+            "bye_sayanora",
+            "bye_farewellfornow", 
+            "bye_untilwemeetagain", 
+            "bye_take_care"
+        ]
+
+        # --- LOGIC ---
+
+        category = "farewell_general"
+        delay_seconds = 60 # Default delay
+        actions = None
+
+        # --- CALCULATE SLIDER DELAY ---
+        # Based on persistent.mas_android_frequency_index
+        # 1: 3m (180s), 2: 2m (120s), 3: 1m (60s), 4: 30s, 5: 15s
+        idx = persistent.mas_android_frequency_index
+        if idx == 1: interactive_delay = 180
+        elif idx == 2: interactive_delay = 120
+        elif idx == 3: interactive_delay = 60
+        elif idx == 4: interactive_delay = 30
+        else: interactive_delay = 15
+
+        if farewell_label in NORMAL_FAREWELLS:
+            # --- NORMAL (PASSIVE) LOGIC ---
             
-        elif farewell_label == "bye_prompt_to_class":
-            category = "farewell_class"
-            # FAST TRACK TEST: 30 seconds
-            delay_seconds = 30 
-            # Normal: random.randint(4 * 3600, 6 * 3600)
+            if farewell_label == "bye_prompt_to_class":
+                category = "farewell_class"
+                delay_seconds = 30 # Test duration (Normal: random 4-6h)
+            
+            elif farewell_label in ["bye_prompt_sleep", "bye_going_to_sleep"]:
+                category = "farewell_sleep"
+                delay_seconds = random.randint(7 * 3600, 9 * 3600)
+            
+            elif farewell_label == "bye_prompt_to_work":
+                category = "farewell_work"
+                delay_seconds = random.randint(6 * 3600, 8 * 3600)
+            
+            elif farewell_label == "bye_going_shopping":
+                category = "farewell_going_out" 
+                delay_seconds = 30 
+            
+            elif farewell_label == "bye_prompt_eat":
+                # Use general or specific if available
+                category = "farewell_general" 
+                delay_seconds = random.randint(1 * 3600, 2 * 3600)
 
-        # --- D. SHORT ERRANDS GROUP (2-4 hours) ---
-        # Mapping common short absence labels
-        # Note: Corrected labels for Shopping and Housework
-        elif farewell_label in [
-            "bye_prompt_eat", 
-            "bye_going_shopping",  # Corrected from bye_prompt_shopping
-            "bye_prompt_housework", # Corrected from bye_prompt_chores
-            "bye_prompt_workout", 
-            "bye_prompt_hangout", 
-            "bye_prompt_game"
-        ]:
-            if farewell_label == "bye_prompt_game":
-                # Use specific category if data exists, handled in GetMessage
-                category = "mas_farewell_playgame" 
-            else:
-                # 'farewell_short_errand' does not exist in notifications.rpy data
-                # Using 'farewell_going_out' instead which is defined.
+            # FORCE OFF ACTIONS for Normal types
+            actions = None 
+
+        elif farewell_label in INTERACTIVE_FAREWELLS:
+            # --- INTERACTIVE (STICKY) LOGIC ---
+            # ALL Interactive notifications now use the SLIDER variable
+            
+            delay_seconds = interactive_delay
+
+            if farewell_label == "bye_prompt_housework":
+                # Currently mapping to general/going_out in data, but we want the ACTIONS
+                category = "farewell_going_out" 
+            
+            elif farewell_label == "bye_prompt_workout":
+                category = "farewell_going_out" 
+
+            elif farewell_label == "bye_prompt_game":
+                category = "mas_farewell_playgame"
+
+            elif farewell_label == "bye_prompt_hangout":
                 category = "farewell_going_out"
-            
-            # FAST TRACK TEST: 30 seconds for specific errands
-            if farewell_label in ["bye_going_shopping", "bye_prompt_housework"]:
-                delay_seconds = 30
+
             else:
-                delay_seconds = random.randint(2 * 3600, 4 * 3600)
+                # Generic "Adiós" group
+                category = "absence_short"
 
-        # --- E. LONG ABSENCE GROUP (3 days) ---
-        elif farewell_label == "bye_long_absence":
-            category = "absence_long"
-            delay_seconds = 3 * 24 * 3600 # 3 days
-            # TODO: Attach specific interactive buttons for this case in backend
+            # FORCE ACTIONS for Interactive types
+            actions = (u"Ya voy", u"Después")
 
-        # --- F. GENERIC/DEFAULT GROUP ---
-        # Covers 'bye_goodbye', 'bye_sayanora', etc.
         else:
-            category = "absence_short"
-            # Delay based on persistent.mas_android_frequency_index
-            # 1: 3m, 2: 2m, 3: 1m, 4: 30s, 5: 15s
-            idx = persistent.mas_android_frequency_index
-            if idx == 1:
-                delay_seconds = 180
-            elif idx == 2:
-                delay_seconds = 120
-            elif idx == 3:
-                delay_seconds = 60
-            elif idx == 4:
-                delay_seconds = 30
-            else: # idx 5
-                delay_seconds = 15
+            # Farewell NOT in allowed lists -> IGNORE
+            # As per instruction: "aquellas que no estén en esta lista las deberás quitar"
+            return
+
 
         # --- EXECUTION ---
         message = MAS_AndroidNotifs_GetMessage(category)
-        
-        # Action Buttons Definition
-        # Format: (Action 1 Label [Launch], Action 2 Label [Dismiss])
-        actions = None
-        if farewell_label == "bye_prompt_housework": # ONLY for this test case
-            actions = (u"Ya voy", u"Después")
         
         if message:
             # Call backend to schedule
             # Check if backend function exists (to prevent PC errors)
             if hasattr(store, "mas_android_schedule_notif"):
                 store.mas_android_schedule_notif("[m_name]", message, delay_seconds, actions)
-

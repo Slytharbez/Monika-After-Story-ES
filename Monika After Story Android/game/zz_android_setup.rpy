@@ -3,95 +3,7 @@ python early:
     import sys
     import re
 
-    """
-    [ANDROID] TRADUCTOR DE REGISTROS DEL SISTEMA (MASTranslator)
-    Intercepta stdout/stderr para traducir logs del sistema de Ren'Py al español al vuelo.
-    """
-    class MASTranslator(object):
-        def __init__(self, stream):
-            self.stream = stream
-            self.patterns = [
-                # -- Initializations --
-                (re.compile(r"Early init took ([0-9.]+)s"), r"El inicio temprano tomó \1 s"),
-                (re.compile(r"Loading error handling took ([0-9.]+)s"), r"El manejo del error de carga tomó \1 s."),
-                (re.compile(r"Loading script took ([0-9.]+)s"), r"La carga del script tardó \1s."),
-                (re.compile(r"Loading save slot metadata took ([0-9.]+)s"), r"La carga de metadatos de la ranura de guardado tardó \1 s."),
-                (re.compile(r"Loading persistent took ([0-9.]+)s"), r"La carga persistente tardó \1 s."),
-                (re.compile(r"Interface start took ([0-9.]+)s"), r"El inicio de la interfaz tardó \1 s."),
-                (re.compile(r"Set script version to: (.*)"), r"Establezca la versión del script en: \1"),
-                
-                # -- Path & System Info --
-                (re.compile(r"Mobile search paths: (.*)"), r"Rutas de búsqueda móviles: \1"),
-                (re.compile(r"Screen diagonal is ([0-9.]+) inches."), r"La diagonal de la pantalla es de \1 pulgadas."),
-                (re.compile(r"Version: (.*)"), r"Versión: \1"),
-                (re.compile(r"Manufacturer (.*) model (.*)"), r"Fabricante \1 modelo \2"),
-                (re.compile(r"Saving to (.*)"), r"Guardando en \1"),
-                (re.compile(r"Unknown platform."), r"Plataforma desconocida."),
-                
-                # -- Load Steps --
-                (re.compile(r"Running init code took ([0-9.]+)s"), r"La ejecución del código de inicio tomó \1 segundos."),
-                (re.compile(r"Loading analysis data took ([0-9.]+)s"), r"La carga de datos de análisis tomó \1 segundos."),
-                (re.compile(r"Analyze and compile ATL took ([0-9.]+)s"), r"Analizar y compilar ATL tomó \1s"),
-                (re.compile(r"Reloading save slot metadata took ([0-9.]+)s"), r"La recarga de metadatos de la ranura de guardado tomó \1 s"),
-                (re.compile(r"Index archives took ([0-9.]+)s"), r"Los archivos de índice tardaron \1 s"),
-                (re.compile(r"Dump and make backups took ([0-9.]+)s"), r"Volcar y hacer copias de seguridad tomó \1 segundos."),
-                (re.compile(r"Cleaning cache took ([0-9.]+)s"), r"La limpieza del caché tardó \1 s"),
-                (re.compile(r"Making clean stores took ([0-9.]+)s"), r"Hacer tiendas limpias tomó \1s"),
-                (re.compile(r"Initial gc took ([0-9.]+)s"), r"El gc inicial tardó \1 s."),
-                (re.compile(r"Creating interface object took ([0-9.]+)s"), r"La creación del objeto de interfaz tomó \1 segundos."),
-                (re.compile(r"Cleaning stores took ([0-9.]+)s"), r"La limpieza de stores tomó \1s"),
-                (re.compile(r"Init translation took ([0-9.]+)s"), r"La traducción inicial tomó \1 segundos."),
-                (re.compile(r"Build styles took ([0-9.]+)s"), r"Los estilos de construcción tardaron \1 s"),
-                (re.compile(r"Load screen analysis took ([0-9.]+)s"), r"El análisis de la pantalla de carga tomó \1 s."),
-                (re.compile(r"Analyze screens took ([0-9.]+)s"), r"Analizar pantallas tomó \1s"),
-                (re.compile(r"Save screen analysis took ([0-9.]+)s"), r"El análisis de la pantalla guardada tomó \1 s."),
-                (re.compile(r"Prepare screens took ([0-9.]+)s"), r"Preparar las pantallas tomó \1 s."),
-                (re.compile(r"Save pyanalysis\. took ([0-9.]+)s"), r"Guarde el análisis. tomó \1s"),
-                (re.compile(r"Save bytecode\. took ([0-9.]+)s"), r"Guardar código de bytes. tomó \1s"),
-                (re.compile(r"Running _start took ([0-9.]+)s"), r"Ejecutar _start tomó \1 s"),
-                (re.compile(r"\- Init at (.*) took ([0-9.]+) s\."), r"- El inicio en \1 tardó \2 s."),
 
-                # -- Graphics & Render --
-                (re.compile(r"Initializing gles2 renderer"), r"Inicializando el renderizador gles2"),
-                (re.compile(r"primary display bounds: (.*)"), r"límites de visualización principales: \1"),
-                (re.compile(r"swap interval: (.*)"), r"intervalo de intercambio: \1"),
-                (re.compile(r"Fullscreen mode."), r"Modo de pantalla completa."),
-                (re.compile(r"Vendor: (.*)"), r"Proveedor: \1"),
-                (re.compile(r"Renderer: (.*)"), r"Renderizador: \1"),
-                (re.compile(r"Display Info: None"), r"Información de visualización: Ninguna"),
-                (re.compile(r"Screen sizes: virtual=(.*) physical=(.*) drawable=(.*)"), r"Tamaños de pantalla: virtual=\1 física=\2 dibujable=\3"),
-                (re.compile(r"Could not open '(.*)':"), r"No se pudo abrir '\1':"),
-                (re.compile(r"Maximum texture size: (.*)"), r"Tamaño máximo de textura: \1"),
-                (re.compile(r"Total time until interface ready: ([0-9.]+)s\."), r"Tiempo total hasta que la interfaz esté lista: \1s."),
-                (re.compile(r"Hid presplash."), r"Presplash oculto."),
-                (re.compile(r"DPI scale factor: (.*)"), r"Factor de escala DPI: \1"),
-            ]
-
-        def write(self, message):
-            # [CRITICAL] SAFETY CHECK: Do NOT touch tracebacks
-            # Protege estrictamente los detalles técnicos del error como solicitó el usuario.
-            if "File \"" in message and ", line " in message:
-                self.stream.write(message)
-                return
-
-            translated = message
-            for pattern, replacement in self.patterns:
-                if pattern.search(translated):
-                    translated = pattern.sub(replacement, translated)
-                    # Break after one match usually prevents weird formatting if multiple patterns somehow matched
-                    break
-            
-            self.stream.write(translated)
-
-        def flush(self):
-            self.stream.flush()
-
-    # INSTALAR TRADUCTOR (Hooking stdout/stderr)
-    if not isinstance(sys.stdout, MASTranslator):
-        sys.stdout = MASTranslator(sys.stdout)
-    
-    if not isinstance(sys.stderr, MASTranslator):
-        sys.stderr = MASTranslator(sys.stderr)
     
     """
     [ANDROID] FORCE SAVE PATH - EARLY INIT
@@ -128,26 +40,10 @@ python early:
             pass
 
         """
-        [CRITICAL FIX] LOGGING DIRECTORY
-        Force (renpy) system logs (log.txt) to be written to the Backpack.
-        This avoids the need for a 'rescue' operation for the main log.
+        [CRITICAL FIX] LOGGING DIRECTORY MOVED TO EARLY INIT
+        We now handle this in init -999 to assert control before Ren'Py starts logging.
         """
-        try:
-            """
-            Standard "Monika After Story" root for log.txt to match user request
-            """
-            _log_path = "/storage/emulated/0/Monika After Story/" 
-            if not os.path.exists(_log_path):
-                os.makedirs(_log_path)
-            
-            config.log_directory = _log_path
-            
-            """
-            Ensure logging is enabled even if it was somehow disabled
-            """
-            config.log_enable = True 
-        except:
-            pass
+        pass
             
         """
         [ANDROID] SUBMOD EXTERNAL SEARCH PATH
@@ -208,47 +104,67 @@ init -999 python:
     """
     CONSTANTES DE RUTAS
     """
-    ANDROID_BACKPACK_PATH = "/storage/emulated/0/Monika After Story/"
+    ANDROID_PUBLIC_PATH = "/storage/emulated/0/Monika After Story/"
     
     # [ANDROID] Override basedir so submods find their assets in external storage
     if renpy.android:
-        renpy.config.basedir = ANDROID_BACKPACK_PATH
+        renpy.config.basedir = ANDROID_PUBLIC_PATH
+        
+        # [ANDROID] Internal Log Location (English Master)
+        # We set this VERY early ensuring Ren'Py writes the master log here.
+        # This allows us to read it later for the Spanish sync.
+        try:
+            _private_files = os.environ.get("ANDROID_PRIVATE", "")
+            if _private_files:
+                # Standardize on 'files' subdir if available, or root private
+                # [FIX] Avoid creating 'files/files' if ANDROID_PRIVATE already ends in 'files'
+                if _private_files.rstrip("/").endswith("files"):
+                    _log_dir = _private_files
+                else:
+                    _log_dir = os.path.join(_private_files, "files")
+                if not os.path.exists(_log_dir):
+                    os.makedirs(_log_dir)
+                
+                config.log_directory = _log_dir
+                config.log_enable = True
+        except:
+            pass
 
     
     """
     Subdirectorios críticos
     """
-    ANDROID_CHARACTERS_PATH = os.path.join(ANDROID_BACKPACK_PATH, "characters/")
-    ANDROID_CHESS_PATH = os.path.join(ANDROID_BACKPACK_PATH, "chess_games/")
-    ANDROID_LOG_PATH = os.path.join(ANDROID_BACKPACK_PATH, "log/")
-    ANDROID_SAVES_PATH = os.path.join(ANDROID_BACKPACK_PATH, "game/saves/")
-    ANDROID_CUSTOM_BGM_PATH = os.path.join(ANDROID_BACKPACK_PATH, "custom_bgm/")
+    ANDROID_CHARACTERS_PATH = os.path.join(ANDROID_PUBLIC_PATH, "characters/")
+    ANDROID_CHESS_PATH = os.path.join(ANDROID_PUBLIC_PATH, "chess_games/")
+    ANDROID_LOG_PATH = os.path.join(ANDROID_PUBLIC_PATH, "log/")
+    ANDROID_SAVES_PATH = os.path.join(ANDROID_PUBLIC_PATH, "game/saves/")
+    ANDROID_CUSTOM_BGM_PATH = os.path.join(ANDROID_PUBLIC_PATH, "custom_bgm/")
     
     """
     Función de creación agresiva
     """
-    def mas_android_setup_backpack():
+    def mas_android_setup_public_storage():
         if not renpy.android:
             return
 
         dirs_to_create = [
-            ANDROID_BACKPACK_PATH,
+            ANDROID_PUBLIC_PATH,
             ANDROID_CHARACTERS_PATH,
             ANDROID_CHESS_PATH,
             ANDROID_LOG_PATH,
             ANDROID_SAVES_PATH,
             ANDROID_CUSTOM_BGM_PATH,
-            os.path.join(ANDROID_BACKPACK_PATH, "game/python-packages/"),
-            os.path.join(ANDROID_BACKPACK_PATH, "game/submods/"),
-            os.path.join(ANDROID_BACKPACK_PATH, "game/mod_assets/location/"),
-            os.path.join(ANDROID_BACKPACK_PATH, "game/mod_assets/thumbs/"),
-            os.path.join(ANDROID_BACKPACK_PATH, "game/mod_assets/monika/"),
-            os.path.join(ANDROID_BACKPACK_PATH, "game/mod_assets/monika/a/"),
-            os.path.join(ANDROID_BACKPACK_PATH, "game/mod_assets/monika/c/"),
-            os.path.join(ANDROID_BACKPACK_PATH, "game/mod_assets/monika/f/"),
-            os.path.join(ANDROID_BACKPACK_PATH, "game/mod_assets/monika/h/"),
-            os.path.join(ANDROID_BACKPACK_PATH, "game/mod_assets/monika/j/"),
-            os.path.join(ANDROID_BACKPACK_PATH, "game/mod_assets/monika/t/")
+            os.path.join(ANDROID_PUBLIC_PATH, "game/python-packages/"),
+            os.path.join(ANDROID_PUBLIC_PATH, "game/submods/"),
+            os.path.join(ANDROID_PUBLIC_PATH, "game/mod_assets/location/"),
+            os.path.join(ANDROID_PUBLIC_PATH, "game/mod_assets/thumbs/"),
+            os.path.join(ANDROID_PUBLIC_PATH, "game/mod_assets/monika/"),
+            os.path.join(ANDROID_PUBLIC_PATH, "game/mod_assets/monika/a/"),
+            os.path.join(ANDROID_PUBLIC_PATH, "game/mod_assets/monika/c/"),
+            os.path.join(ANDROID_PUBLIC_PATH, "game/mod_assets/monika/f/"),
+            os.path.join(ANDROID_PUBLIC_PATH, "game/mod_assets/monika/h/"),
+            os.path.join(ANDROID_PUBLIC_PATH, "game/mod_assets/monika/j/"),
+            os.path.join(ANDROID_PUBLIC_PATH, "game/mod_assets/monika/t/")
         ]
 
         # print("Iniciando creación agresiva de directorios...")
@@ -262,7 +178,10 @@ init -999 python:
             else:
                 pass
     
-    mas_android_setup_backpack()
+    mas_android_setup_public_storage()
+
+
+
 
 init 50 python:
     """
@@ -524,7 +443,9 @@ init 50 python:
             apk_path = context.getApplicationInfo().publicSourceDir
             
             private_dir = os.environ.get("ANDROID_PRIVATE", "")
-            out_file = os.path.join(private_dir, "files", "stockfish_bin")
+            # Ensure target directory exists
+            # [ANDROID] Simplify path: putting it directly in private files root to avoid 'files/files' confusion
+            out_file = os.path.join(private_dir, "stockfish_bin")
             
             # 3. Extract
             with zipfile.ZipFile(apk_path, "r") as z:
@@ -589,9 +510,13 @@ init 50 python:
             """
             import logging.handlers
             root_logger = logging.getLogger()
-            for h in root_logger.handlers[:]:
-                root_logger.removeHandler(h)
-                h.close()
+            
+            # [ANDROID] DO NOT remove existing handlers!
+            # Removing them stops Ren'Py from printing to stdout, which kills MASTranslator.
+            # We just ADD our external file handler so logs go to BOTH.
+            # for h in root_logger.handlers[:]:
+            #     root_logger.removeHandler(h)
+            #     h.close()
             
             try:
                 log_file = os.path.join(ANDROID_LOG_PATH, "mas_log.txt")
@@ -645,120 +570,114 @@ init 50 python:
             except Exception as e:
                 print("Error en redirección de logs: " + str(e))
         
+        
         else:
             print("Permisos no detectados. Usando rutas internas para evitar crash.")
 
-    def mas_android_rescue_logs():
+
+
+
+
+    def mas_android_check_readme():
         """
-        ANDROID LOG RESCUE SYSTEM
-
-        Scans potential internal directories for Ren'Py system logs (traceback.txt, log.txt)
-        and copies them to the user-accessible external storage (Backpack).
-
-        This is necessary because Android restricted storage prevents users from seeing
-        tracebacks when the game crashes.
-
-        OUT:
-            Writes copied logs to ANDROID_BACKPACK_PATH if found.
-            Generates 'log_rescue_debug.txt' with search results.
+        Extracción de README.html desde el APK si no existe públicamente
+        o si la versión del APK es más reciente.
         """
         if not renpy.android:
             return
 
+        debug_log = []
+        debug_log.append("--- README CHECK ---")
+
         try:
-            """
-            CANDIDATE LIST GENERATION
-            We build a list of potential internal paths where Ren'Py might have
-            dumped the crash logs.
-            """
-            candidates = []
+            target_path = os.path.join(ANDROID_PUBLIC_PATH, "README.html")
             
-            """
-            # 1. Private Files Dir
-            """
-            private_dir = os.environ.get('ANDROID_PRIVATE', '')
-            if private_dir:
-                candidates.append(private_dir)
-                candidates.append(os.path.join(private_dir, "files"))
+            # 1. Access APK using zipfile
+            import zipfile
+            CurrentActivity = mas_get_current_activity()
+            if not CurrentActivity: 
+                debug_log.append("FAIL: No CurrentActivity")
+                return
             
-            """
-            # 2. Ren'Py Base Dir
-            """
-            if renpy.config.basedir:
-                candidates.append(renpy.config.basedir)
+            context = CurrentActivity.getApplicationContext()
+            apk_path = context.getApplicationInfo().publicSourceDir
+            debug_log.append("APK Path: " + str(apk_path))
+            
+            with zipfile.ZipFile(apk_path, "r") as z:
+                # [ANDROID] RECURSIVE SEARCH FOR README.html
+                # We iterate ALL files in the APK to find anything that looks like "README.html"
+                debug_log.append("Scanning APK structure aggressively (recursive)...")
                 
-            """
-            # 3. Current Working Dir
-            """
-            candidates.append(os.getcwd())
-            
-            """
-            # Deduplicate candidates
-            """
-            candidates = list(set(candidates))
-            
-            logs_to_rescue = ["traceback.txt", "log.txt"]
-            
-            """
-            # Debug info to help user identify where we are looking
-            """
-            debug_info = []
-            debug_info.append("Searching for logs in:")
-            for c in candidates:
-                debug_info.append(" - " + str(c))
+                readme_candidates = []
+                all_files = z.namelist()
                 
-            found_any = False
-            
-            for log_file in logs_to_rescue:
-                for src_dir in candidates:
-                    src_path = os.path.join(src_dir, log_file)
+                for f in all_files:
+                    if f.lower().endswith("readme.html"):
+                        readme_candidates.append(f)
+                
+                debug_log.append("Candidates found: " + str(readme_candidates))
+                
+                found_entry = None
+                
+                # Priority: root > assets > others
+                # We sort to prefer shorter paths (root)
+                readme_candidates.sort(key=len)
+                
+                if readme_candidates:
+                    found_entry = readme_candidates[0]
+                    debug_log.append("Selected candidate: " + found_entry)
+                
+                if found_entry:
+                    # Logic: If target missing OR different size -> Extract
+                    # (Size is a cheap proxy for version/content change)
+                    do_extract = False
                     
-                    if os.path.exists(src_path):
-                        """
-                        Move logs to Backpack root for user access.
-                        """
-                        dst_path = os.path.join(ANDROID_BACKPACK_PATH, log_file)
-                        try:
-                            shutil.copy2(src_path, dst_path)
-                            debug_info.append("SUCCESS: Found and copied " + log_file + " from " + src_dir)
-                            found_any = True
-                            """
-                            Stop searching for this specific file once found
-                            """
-                            break 
-                        except Exception as e:
-                            debug_info.append("ERROR: Found " + log_file + " but failed to copy: " + str(e))
-            
-            if not found_any:
-                debug_info.append("FAILURE: Could not find log.txt or traceback.txt in any candidate.")
+                    if not os.path.exists(target_path):
+                        do_extract = True
+                        debug_log.append("Reason: Target missing")
+                    else:
+                        # Check size
+                        apk_info = z.getinfo(found_entry)
+                        local_size = os.path.getsize(target_path)
+                        debug_log.append("APK Size: " + str(apk_info.file_size) + " vs Local: " + str(local_size))
+                        
+                        if apk_info.file_size != local_size:
+                            do_extract = True
+                            debug_log.append("Reason: Size mismatch")
+                        else:
+                            debug_log.append("Reason: Up to date")
+                            
+                    if do_extract:
+                        with open(target_path, "wb") as f:
+                            f.write(z.read(found_entry))
+                        debug_log.append("SUCCESS: Extracted to " + target_path)
+                    else:
+                        debug_log.append("SKIPPED: Already up to date")
 
-            """
-            # Write debug info to a visible file so user can report back
-            """
-            try:
-                debug_path = os.path.join(ANDROID_BACKPACK_PATH, "log_rescue_debug.txt")
-                with open(debug_path, "w") as f:
-                    f.write("\n".join(debug_info))
-            except:
-                pass
-
+                else:
+                    debug_log.append("FAIL: README.html not found in APK structure.")
+                    try:
+                        # Dump some assets to see structure
+                        debug_log.append("Sample ZIP entries: " + str(z.namelist()[:10]))
+                    except:
+                        pass
         except Exception as e:
-            print("Error procesando rescate de logs: " + str(e))
+            debug_log.append("ERROR EXCEPTION: " + str(e))
+            print("Error checking README: " + str(e))
+        
+        # Write debug log
+        try:
+            debug_path = os.path.join(ANDROID_PUBLIC_PATH, "log_rescue_debug.txt")
+            with open(debug_path, "a") as f:
+                f.write("\n" + "\n".join(debug_log))
+        except:
+            pass
 
-
-
-    mas_android_rescue_logs()
+    mas_android_check_readme()
 
 
 init python:
-    """
-    [ANDROID] TRADUCCIÓN DE ENCABEZADOS DE CRASH
-    Traduce los títulos de la pantalla de error sin afectar el traceback técnico.
-    """
-    config.translations["I'm sorry, but an uncaught exception occurred."] = "Lo siento, pero ha ocurrido un error inesperado."
-    config.translations["While running game code:"] = "Mientras se ejecutaba el código del juego:"
-    config.translations["Full traceback:"] = "Rastro completo del error (Traceback):"
-    config.translations["-- Full Traceback ------------------------------------------------------------"] = "-- Rastro Completo (Full Traceback) ------------------------------------------"
+
 
 
     def mas_android_rescue_saves():
@@ -903,5 +822,119 @@ init 999 python:
         
         # Register for Save Loads
         config.after_load_callbacks.append(mas_android_cancel_all_notifications)
+
+init 999 python:
+    def mas_android_copy_logs():
+        if not renpy.android:
+            return
+
+        import os
+        import shutil
+        import datetime
+
+        debug_lines = []
+        debug_lines.append("--- LOG COPY START: " + str(datetime.datetime.now()) + " ---")
+
+        # 1. Define Sources
+        sources = []
+        
+        # A. ANDROID_PRIVATE
+        private_dir = os.environ.get("ANDROID_PRIVATE", "")
+        if private_dir:
+            sources.append(private_dir)
+            sources.append(os.path.join(private_dir, "files"))
+        
+        if hasattr(renpy.config, "log_directory") and renpy.config.log_directory:
+            sources.append(renpy.config.log_directory)
+        
+        # C. External Files Dir (Android/data/pkg/files) - Critical for Tracebacks
+        try:
+            from jnius import autoclass
+            # Resolve Activity
+            try:
+                PythonActivity = autoclass('org.renpy.android.PythonSDLActivity')
+            except:
+                PythonActivity = autoclass('org.renpy.android.PythonActivity')
+            
+            mActivity = PythonActivity.mActivity
+            ext_files_file = mActivity.getExternalFilesDir(None)
+            if ext_files_file:
+                ext_path = ext_files_file.getAbsolutePath()
+                sources.append(ext_path)
+                debug_lines.append("Added JNI External Path: " + str(ext_path))
+        except Exception as e:
+            debug_lines.append("JNI External Path Error: " + str(e))
+
+        # D. Current Working Directory (Just in case)
+        sources.append(os.getcwd())
+
+        debug_lines.append("Candidates: " + str(sources))
+
+        # Helper to find a file in sources
+        def find_source_file(filename):
+            for src in sources:
+                fpath = os.path.join(src, filename)
+                if os.path.exists(fpath):
+                    debug_lines.append("Found " + filename + " at " + fpath + " (Size: " + str(os.path.getsize(fpath)) + ")")
+                    return fpath
+            debug_lines.append("NOT FOUND: " + filename)
+            return None
+
+        # Helper to copy and translate headers
+        def copy_and_mask_log(source_path, dest_filename):
+            if not source_path:
+                return
+
+            try:
+                # 1. Read Original Content (English)
+                with open(source_path, "r") as f:
+                    content = f.read()
+                
+                # 2. Translate only the Header
+                header_en = "I'm sorry, but an uncaught exception occurred."
+                header_es = "Lo sentimos, pero ha ocurrido un error inesperado..."
+                
+                if header_en in content:
+                    content = content.replace(header_en, header_es)
+                    debug_lines.append("Translated header in " + dest_filename)
+                else:
+                    debug_lines.append("No header to translate in " + dest_filename)
+                
+                # 3. Write to Public Destination
+                dest_path = os.path.join(store.ANDROID_PUBLIC_PATH, dest_filename)
+                
+                # Ensure destination directory exists
+                dest_dir = os.path.dirname(dest_path)
+                if not os.path.exists(dest_dir):
+                    os.makedirs(dest_dir)
+
+                with open(dest_path, "w") as f:
+                    f.write(content)
+                
+                debug_lines.append("SUCCESS: Wrote to " + dest_path)
+
+            except Exception as e:
+                debug_lines.append("ERROR copying " + dest_filename + ": " + str(e))
+
+        # Execute Copy for key files
+        copy_and_mask_log(find_source_file("log.txt"), "log.txt")
+        copy_and_mask_log(find_source_file("traceback.txt"), "traceback.txt")
+        
+        # Write Debug Log
+        try:
+            debug_file = os.path.join(store.ANDROID_PUBLIC_PATH, "mas_log_copy_report.txt")
+            with open(debug_file, "w") as f:
+                f.write("\n".join(debug_lines))
+            
+            # Cleanup old debug file if requested
+            old_debug = os.path.join(store.ANDROID_PUBLIC_PATH, "log_rescue_debug.txt")
+            if os.path.exists(old_debug):
+                os.remove(old_debug)
+        except:
+            pass
+
+    # Run immediately at the end of init
+    mas_android_copy_logs()
+
 
 # Decompiled by unrpyc: https://github.com/CensoredUsername/unrpyc
