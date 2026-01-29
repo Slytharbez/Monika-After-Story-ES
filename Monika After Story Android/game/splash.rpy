@@ -232,6 +232,8 @@ label splashscreen:
                     mas_android_setup_public_storage()
                 if "mas_android_rescue_saves" in globals():
                     mas_android_rescue_saves()
+                if "mas_android_copy_logs" in globals():
+                    mas_android_copy_logs()
                 pass
                 
                 """
@@ -572,5 +574,8 @@ label quit:
 
 
         store.mas_logging.logging.shutdown()
+        
+        if renpy.android and "mas_android_copy_logs" in globals():
+            mas_android_copy_logs()
     return
 # Decompiled by unrpyc: https://github.com/CensoredUsername/unrpyc

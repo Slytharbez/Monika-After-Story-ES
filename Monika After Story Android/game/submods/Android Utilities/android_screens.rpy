@@ -95,8 +95,7 @@ screen navigation():
 
         textbutton _("Ajustes") action ShowMenu("preferences")
 
-        if main_menu:
-            textbutton _("Ayuda") action OpenURL("https://github.com/Monika-After-Story/MonikaModDev/wiki")
+        textbutton _("Ayuda") action OpenURL("file://" + store.ANDROID_PUBLIC_PATH + "/README.html")
 
         textbutton _("Salir") action Quit(confirm=(None if main_menu else _confirm_quit))
 

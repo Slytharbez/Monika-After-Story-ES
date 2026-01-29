@@ -831,9 +831,18 @@ init 999 python:
         import os
         import shutil
         import datetime
+        import sys
+        
+        # JNI / Flush Check: Force flush of stdout/stderr to ensure log.txt is up to date
+        try:
+            sys.stdout.flush()
+            sys.stderr.flush()
+        except:
+            pass
 
         debug_lines = []
-        debug_lines.append("--- LOG COPY START: " + str(datetime.datetime.now()) + " ---")
+        debug_lines.append("\n--- LOG COPY EXECUTION AT: " + str(datetime.datetime.now()) + " ---")
+        debug_lines.append("Stdout: " + str(sys.stdout))
 
         # 1. Define Sources
         sources = []
@@ -870,15 +879,30 @@ init 999 python:
 
         debug_lines.append("Candidates: " + str(sources))
 
-        # Helper to find a file in sources
-        def find_source_file(filename):
+        # Helper to find ALL source files for debug
+        def find_best_source(filename):
+            candidates = []
             for src in sources:
                 fpath = os.path.join(src, filename)
                 if os.path.exists(fpath):
-                    debug_lines.append("Found " + filename + " at " + fpath + " (Size: " + str(os.path.getsize(fpath)) + ")")
-                    return fpath
-            debug_lines.append("NOT FOUND: " + filename)
-            return None
+                    # Gather info
+                    size = os.path.getsize(fpath)
+                    try:
+                        mtime = os.path.getmtime(fpath)
+                        dt_mtime = datetime.datetime.fromtimestamp(mtime)
+                    except:
+                        dt_mtime = "Unknown"
+                    
+                    info = "Found " + fpath + " [Size: " + str(size) + " Time: " + str(dt_mtime) + "]"
+                    debug_lines.append(info)
+                    candidates.append(fpath)
+            
+            if not candidates:
+                debug_lines.append("NOT FOUND: " + filename)
+                return None
+            
+            # Return the first one
+            return candidates[0]
 
         # Helper to copy and translate headers
         def copy_and_mask_log(source_path, dest_filename):
@@ -890,15 +914,72 @@ init 999 python:
                 with open(source_path, "r") as f:
                     content = f.read()
                 
-                # 2. Translate only the Header
-                header_en = "I'm sorry, but an uncaught exception occurred."
-                header_es = "Lo sentimos, pero ha ocurrido un error inesperado..."
+                # Report Last Line to debug truncation
+                if content:
+                    lines = content.splitlines()
+                    last_line = lines[-1] if lines else "<empty>"
+                    debug_lines.append("Last line of " + dest_filename + ": " + repr(last_line))
+                    debug_lines.append("Total lines: " + str(len(lines)))
                 
-                if header_en in content:
-                    content = content.replace(header_en, header_es)
-                    debug_lines.append("Translated header in " + dest_filename)
-                else:
-                    debug_lines.append("No header to translate in " + dest_filename)
+                # 2. Translate Header and Content
+                # Dictionary of replacements
+                replacements = {
+                    "I'm sorry, but an uncaught exception occurred.": "Lo sentimos, pero ha ocurrido un error inesperado...",
+                    "Unknown platform.": "Plataforma desconocida.",
+                    "Manufacturer": "Fabricante",
+                    "Screen diagonal is": "La diagonal de la pantalla es",
+                    "Mobile search paths": "Rutas de búsqueda móvil",
+                    "Early init took": "La inicialización temprana tomó",
+                    "Loading error handling took": "Carga de manejo de errores tomó",
+                    "Saving to": "Guardando en",
+                    "Loading script took": "Carga del script tomó",
+                    "Loading save slot metadata took": "Carga de metadatos de guardado tomó",
+                    "Loading persistent took": "Carga del persistent tomó",
+                    "Set script version to": "Versión del script establecida en",
+                    "Running init code took": "Ejecución de código init tomó",
+                    "Loading analysis data took": "Carga de datos de análisis tomó",
+                    "Analyze and compile ATL took": "Análisis y compilación de ATL tomó",
+                    "Reloading save slot metadata took": "Recarga de metadatos de guardado tomó",
+                    "Index archives took": "Indexación de archivos tomó",
+                    "Dump and make backups took": "Volcado y backups tomó",
+                    "Cleaning cache took": "Limpieza de caché tomó",
+                    "Making clean stores took": "Creación de stores limpios tomó",
+                    "Initial gc took": "Recolección de basura inicial tomó",
+                    "DPI scale factor": "Factor de escala DPI",
+                    "Creating interface object took": "Creación de objeto de interfaz tomó",
+                    "Cleaning stores took": "Limpieza de stores tomó",
+                    "Init translation took": "Inicialización de traducción tomó",
+                    "Build styles took": "Construcción de estilos tomó",
+                    "Load screen analysis took": "Carga de análisis de pantalla tomó",
+                    "Analyze screens took": "Análisis de pantallas tomó",
+                    "Save screen analysis took": "Guardado de análisis de pantalla tomó",
+                    "Prepare screens took": "Preparación de pantallas tomó",
+                    "Save pyanalysis. took": "Guardado de pyanalysis tomó",
+                    "Save bytecode. took": "Guardado de bytecode tomó",
+                    "Running _start took": "Ejecución de _start tomó",
+                    "Interface start took": "Inicio de interfaz tomó",
+                    "Initializing gles2 renderer": "Inicializando renderizador gles2",
+                    "primary display bounds": "límites pantalla principal",
+                    "swap interval": "intervalo de intercambio",
+                    "Fullscreen mode": "Modo pantalla completa",
+                    "Display Info": "Info de Pantalla",
+                    "Screen sizes": "Tamaños de pantalla",
+                    "Could not open": "No se pudo abrir",
+                    "Maximum texture size": "Tamaño máximo de textura",
+                    "Total time until interface ready": "Tiempo total hasta interfaz lista",
+                    "Hid presplash": "Ocultó presplash",
+                    "While running game code:": "Mientras se ejecuta el código del juego:",
+                    "-- Full Traceback ------------------------------------------------------------": "-- Seguimiento completo ------------------------------------------------------------",
+                    "Full traceback:": "Seguimiento completo:"
+                }
+                
+                # Apply replacements
+                for en, es in replacements.items():
+                    if en in content:
+                        content = content.replace(en, es)
+                
+                # Debug message for translation
+                debug_lines.append("Applied translations to " + dest_filename)
                 
                 # 3. Write to Public Destination
                 dest_path = os.path.join(store.ANDROID_PUBLIC_PATH, dest_filename)
@@ -917,13 +998,14 @@ init 999 python:
                 debug_lines.append("ERROR copying " + dest_filename + ": " + str(e))
 
         # Execute Copy for key files
-        copy_and_mask_log(find_source_file("log.txt"), "log.txt")
-        copy_and_mask_log(find_source_file("traceback.txt"), "traceback.txt")
+        # Note: We now use find_best_source to log all duplicates
+        copy_and_mask_log(find_best_source("log.txt"), "log.txt")
+        copy_and_mask_log(find_best_source("traceback.txt"), "traceback.txt")
         
-        # Write Debug Log
+        # Write Debug Log (APPEND MODE)
         try:
             debug_file = os.path.join(store.ANDROID_PUBLIC_PATH, "mas_log_copy_report.txt")
-            with open(debug_file, "w") as f:
+            with open(debug_file, "a") as f:
                 f.write("\n".join(debug_lines))
             
             # Cleanup old debug file if requested
@@ -933,8 +1015,8 @@ init 999 python:
         except:
             pass
 
-    # Run immediately at the end of init
-    mas_android_copy_logs()
+    # Call moved to splash.rpy to ensure full log capture
+    # mas_android_copy_logs()
 
 
 # Decompiled by unrpyc: https://github.com/CensoredUsername/unrpyc

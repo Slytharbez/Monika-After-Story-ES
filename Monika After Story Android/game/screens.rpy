@@ -991,6 +991,9 @@ screen main_menu():
 
     style_prefix "main_menu" tag menu
     
+    if renpy.android:
+        timer 1.0 action Function(mas_android_copy_logs)
+    
 
 
 
