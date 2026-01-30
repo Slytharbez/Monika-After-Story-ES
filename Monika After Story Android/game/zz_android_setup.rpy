@@ -734,7 +734,7 @@ init 999 python:
 
 init -1 python:
     """
-    SECTION 11: CRASH SCREEN HELPERS
+    CRASH SCREEN HELPERS
     Provides functions and actions used by the localized crash screen.
     """
     
