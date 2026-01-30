@@ -1,45 +1,65 @@
 init python:
     """
-    Submod Notification Data
+    Submod Notification Data Initialization
     
-    This file initializes the directory of data used for the notification system.
-    Strictly follows the 'no hash comments' rule.
+    This script handles the initialization of persistent data required for the Android
+    Notification Submod. It ensures that all necessary configuration variables exist 
+    in the `persistent` store with safe default values before the game logic attempts 
+    to access them.
     """
 
     """
-    Register persistent variables
-    Default: Notifications Enabled = True
+    Master Switch Initialization
+    
+    Controls the global enabled/disabled state of the Android notification system.
+    Default: True (Enabled)
     """
     if persistent.mas_android_notif_enabled is None:
         persistent.mas_android_notif_enabled = True
 
     """
-    Default: Sound/Vibration Enabled = True
+    Sound Preference Initialization
+    
+    Determines whether notifications should play a sound upon arrival.
+    Default: True (Sound Enabled)
     """
     if persistent.mas_android_notif_sound is None:
         persistent.mas_android_notif_sound = True
 
     """
-    Default: Calendar Events (Birthdays, Holidays) = True
+    Calendar Events Feature Initialization
+    
+    Enables special notifications for specific calendar dates (holidays, birthdays).
+    Default: True (Enabled)
     """
     if persistent.mas_android_calendar_events is None:
         persistent.mas_android_calendar_events = True
         
     """
-    Default: Return Reminders (Farewells) = True
+    Return Reminder Feature Initialization
+    
+    Enables notifications triggered by the player saying goodbye (e.g., "I'm going to work").
+    Default: True (Enabled)
     """
     if persistent.mas_android_return_reminders is None:
         persistent.mas_android_return_reminders = True
 
     """
-    Index for Notification Absence Frequency (Slider in UI)
-    Range: 1 (Discreet) to 5 (Obsessive)
-    Default: 2 (Normal)
+    Frequency Index Initialization
+    
+    Stores the user's preference for notification frequency, corresponding to the slider
+    in the settings menu.
+    
+    Value Range: 1 (Passive) to 5 (Posessive)
+    Default: 2 (Normal - approx. 2 minutes delay)
     """
     if persistent.mas_android_frequency_index is None:
         persistent.mas_android_frequency_index = 2
 
     """
-    Sound path for Android notifications
+    Asset Path Definition
+    
+    Defines the relative path to the custom notification sound effect.
+    This path is referenced by the backend when building the notification channel.
     """
     store.mas_android_notif_sound_path = "mod_assets/sounds/effects/notif.wav"

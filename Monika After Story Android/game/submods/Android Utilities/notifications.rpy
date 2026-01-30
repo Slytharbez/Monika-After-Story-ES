@@ -1,27 +1,40 @@
 init -10 python in mas_android_notifs:
     """
-    Android Notification Submod - Logic & Data
+    Android Notification Data Definition
     
-    This file defines the constants and the main dictionary structure for the notification system.
-    It includes pre-filled data for 'normal' and 'love' states as examples.
+    This module serves as the central repository for notification content strings.
+    It structures messages by 'Affection Level' and 'Category' effectively creating
+    a tiered response system that evolves with the player's relationship with Monika.
+    
+    Structure:
+    mas_android_notifs.data[affection_level][category] -> List[Message Objects]
     """
     import store
 
     """
-    Constants
-    Amount of affection gained when clicking the POSITIVE button
+    Affection Constants
+    
+    gain_amount: The raw affection points added when the player interacts positively
+                with a notification (e.g., clicking "I'm coming").
+    daily_limit: The hard cap on affection points that can be earned per day through
+                notifications to prevent balancing exploits.
     """
     gain_amount = 1.0
-    
-    """
-    Maximum affection points obtainable per day via notifications
-    """
     daily_limit = 3.0
 
     """
-    Main Dictionary Structure
-    [Affection State] -> [Trigger Category] -> [List of Entries]
-    Keys: broken, distressed, upset, normal, happy, affectionate, enamored, love
+    Notification Content Repository
+    
+    A nested dictionary containing all possible notification texts.
+    
+    Levels:
+    broken, distressed, upset: Low affection states (currently empty placeholders).
+    normal: The baseline state.
+    happy, affectionate, enamored, love: Progressive affection states with warmer tones.
+    
+    Categories:
+    Contextual Farewells (Passive): Messages sent after specific farewells (sleep, work).
+    Absence Checks (Interactive): Messages sent when the player has been gone for a while.
     """
     
     data = {
@@ -30,7 +43,8 @@ init -10 python in mas_android_notifs:
         "upset": {},
         "normal": {
             """
-            TYPE 1: Contextual Farewells (Passive)
+            Affection Level: NORMAL
+            Tone: Polite, friendly, standard.
             """
             "farewell_sleep": [
                 {
@@ -88,9 +102,10 @@ init -10 python in mas_android_notifs:
         },
         "happy": {
             """
-            TYPE 1: Contextual Farewells (Passive)
-            Tone: Cheerful, friendly, encouraging.
+            Affection Level: HAPPY
+            Tone: Cheerful, enthusiastic, encouraging.
             """
+            
             "farewell_sleep": [
                 {
                     "msg": "¡Buenas noches, [player]! Que tengas dulces sueños.",
@@ -126,9 +141,7 @@ init -10 python in mas_android_notifs:
                     "btn_neg": None
                 }
             ],
-            """
-            TYPE 2: Absence & Interaction (Interactive)
-            """
+            
             "absence_short": [
                 {
                     "msg": "¡Hey [player]! He leído algo interesante, ¿quieres verlo?",
@@ -147,9 +160,10 @@ init -10 python in mas_android_notifs:
         },
         "affectionate": {
             """
-            TYPE 1: Contextual Farewells (Passive)
+            Affection Level: AFFECTIONATE
             Tone: Warm, caring, sweet.
             """
+            
             "farewell_sleep": [
                 {
                     "msg": "Descansa bien, cielo. Soñaré contigo~",
@@ -185,9 +199,7 @@ init -10 python in mas_android_notifs:
                     "btn_neg": None
                 }
             ],
-            """
-            TYPE 2: Absence & Interaction (Interactive)
-            """
+            
             "absence_short": [
                 {
                     "msg": "Estaba pensando en ti... ¿tienes un ratito?",
@@ -206,9 +218,10 @@ init -10 python in mas_android_notifs:
         },
         "enamored": {
             """
-            TYPE 1: Contextual Farewells (Passive)
+            Affection Level: ENAMORED
             Tone: Deeply loving, attached, longing.
             """
+            
             "farewell_sleep": [
                 {
                     "msg": "No quiero que termine el día, pero debes descansar. Te amo.",
@@ -244,9 +257,7 @@ init -10 python in mas_android_notifs:
                     "btn_neg": None
                 }
             ],
-            """
-            TYPE 2: Absence & Interaction (Interactive)
-            """
+            
             "absence_short": [
                 {
                     "msg": "Mi corazón late más rápido cuando estás cerca. ¿Vienes?",
@@ -265,8 +276,10 @@ init -10 python in mas_android_notifs:
         },
         "love": {
             """
-            TYPE 1: Contextual Farewells (Passive)
+            Affection Level: LOVE
+            Tone: Unconditional, devoted, soulmate-level.
             """
+            
             "farewell_sleep": [
                 {
                     "msg": "Buenas noches, mi amor. Sueña conmigo~",
@@ -307,9 +320,7 @@ init -10 python in mas_android_notifs:
                     "btn_neg": None
                 }
             ],
-            """
-            TYPE 2: Absence & Interaction (Interactive)
-            """
+            
             "absence_short": [
                 {
                     "msg": "Amor, me siento un poco sola sin ti...",
@@ -333,13 +344,13 @@ init -10 python in mas_android_notifs:
         }
     }
 
-"""
-Initialize the global store variable to point to our data
-"""
+    """
+    Global Store Assignment
+    
+    Exposes the module-level data variables to the global `store` so they can be
+    accessed by any other Ren'Py script (particularly `notifications_logic.rpy`).
+    """
 init 5 python:
-    # We assign these first to avoid shadowing the 'mas_android_notifs' module with the dictionary variable
-    # We assign these first to avoid shadowing the 'mas_android_notifs' module with the dictionary variable
     store.mas_android_notif_gain_amount = mas_android_notifs.gain_amount
     store.mas_android_notif_daily_limit = mas_android_notifs.daily_limit
-    # Rename to avoid overwriting the module 'mas_android_notifs'
     store.mas_android_notifs_data = mas_android_notifs.data
