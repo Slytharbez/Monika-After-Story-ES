@@ -740,24 +740,32 @@ init -1 python:
     
     store.mas_crash_info_str = "Versión: Cargando..."
 
+    mas_CRASH_MAP = {
+        "Parsing the script failed.": "Fallo al analizar el script.",
+        "Ren'Py has detected that...": "Ren'Py ha detectado que...",
+        "After initialization, but before game start.": "Tras la inicialización, pero antes de iniciar el juego:",
+        "I'm sorry, but an uncaught exception occurred.": "Lo sentimos, pero ha ocurrido un error inesperado.",
+        "An exception has occurred.": "Ha ocurrido un error.",
+    }
+
     def mas_format_traceback_spanish(s):
         """
-        Translates standard Ren'Py traceback strings into Spanish.
-
+        Translates the standard Ren'Py traceback to Spanish.
+        
         IN:
             s - Original traceback string
-
+        
         RETURNS:
             Translated string
         """
         if not s: return s
+
+        for en, es in mas_CRASH_MAP.items():
+            if en in s:
+                s = s.replace(en, es)
+
         s = s.replace("While running game code:", "Mientras se ejecutaba el código del juego:")
         s = s.replace("Full traceback:", "Rastreo completo:")
-        s = s.replace("I'm sorry, but an uncaught exception occurred.", "Lo sentimos, pero ha ocurrido un error inesperado.")
-        s = s.replace("An exception has occurred.", "Ha ocurrido un error.")
-        s = s.replace("Parsing the script failed.", "Fallo al analizar el script.")
-        s = s.replace("Ren'Py has detected that...", "Ren'Py ha detectado que...")
-        s = s.replace("After initialization, but before game start.", "Tras la inicialización, pero antes de iniciar el juego:")
         s = s.replace("The full traceback has been saved in a file named:", "El reporte completo se ha guardado en el archivo:")
         s = s.replace("The full traceback has been saved to:", "El reporte completo se ha guardado en:")
         s = s.replace("Mon ", "Lun ").replace("Tue ", "Mar ").replace("Wed ", "Mié ").replace("Thu ", "Jue ").replace("Fri ", "Vie ").replace("Sat ", "Sáb ").replace("Sun ", "Dom ")
@@ -807,8 +815,27 @@ init -1 python:
                 i = re.sub(r'(File "(.*)", line (\d+))', r'{a=edit:\3:\2}\1{/a}', i)
                 rv.append("  " + i)
             return "\n".join(rv)
+            return s
         except Exception as e:
             return s
+
+    def mas_get_exception_title(s):
+        """
+        Parses the exception string to return a localized Spanish title based on the error header.
+
+        IN:
+            s - Short exception string
+
+        RETURNS:
+            Localized title
+        """
+        if not s: return "Ha ocurrido un error."
+
+        for en, es in mas_CRASH_MAP.items():
+            if en in s:
+                return es
+
+        return "Ha ocurrido un error."
 
     class MasErrorQuit(Action):
         def __call__(self): renpy.quit(status=1)
@@ -873,7 +900,9 @@ screen _exception:
     default _rewrite_trigger = mas_rewrite_traceback_file(traceback_fn)
     default tt = MasTooltip("")
     default fmt_short = mas_get_formatted_traceback(short)
+
     default fmt_full = mas_get_formatted_traceback(full)
+    default failure_title = mas_get_exception_title(short)
 
     frame:
         style_group ""
@@ -885,7 +914,7 @@ screen _exception:
             ysize gui._scale(60) 
             
 
-            text "Ha ocurrido un error." size gui._scale(40) align (0.0, 0.0)
+            text failure_title size gui._scale(40) align (0.0, 0.0)
             
 
             vbox:
