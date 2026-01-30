@@ -95,7 +95,10 @@ screen navigation():
 
         textbutton _("Ajustes") action ShowMenu("preferences")
 
-        textbutton _("Ayuda") action OpenURL("file://" + store.ANDROID_PUBLIC_PATH + "/README.html")
+        textbutton _("Ayuda") action Function(mas_android_open_help)
+        
+        # [DEBUG] Botón temporal para verificar traducción de errores
+        textbutton "Test Crash" action Function(mas_android_crash_test)
 
         textbutton _("Salir") action Quit(confirm=(None if main_menu else _confirm_quit))
 
