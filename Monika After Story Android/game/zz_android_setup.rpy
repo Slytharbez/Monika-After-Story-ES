@@ -19,7 +19,7 @@ python early:
         config.save_directory = None
         
         """
-        Forces the save directory to the external storage path (the "Backpack").
+        Forces the save directory to the external storage path.
         """
         config.savedir = "/storage/emulated/0/Monika After Story/game/saves"
         
