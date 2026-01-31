@@ -67,7 +67,8 @@ init python:
         messages = cat_dict.get(category)
         
         if not messages:
-            if category in ["farewell_short_errand", "mas_farewell_playgame"]:
+            # Fallback for specific sub-categories to their generic parents if data is missing
+            if category in ["shopping", "chores", "workout", "friends", "play_game", "morning_food", "noon_food", "evening_food"]:
                 messages = cat_dict.get("farewell_general")
         
         if not messages:
@@ -92,6 +93,13 @@ init python:
         
         if isinstance(final_text, dict):
             final_text = final_text.get("msg", "Te estaré esperando...")
+        
+        # NICKNAME SUBSTITUTION
+        # Manually substitute [mas_get_player_nickname()] since normal renpy.substitute might not catch it
+        # or if it's called outside of the standard dialogue context.
+        if "[mas_get_player_nickname()]" in final_text:
+            nickname = store.mas_get_player_nickname()
+            final_text = final_text.replace("[mas_get_player_nickname()]", nickname)
 
         final_text = renpy.substitute(final_text)
         
@@ -163,6 +171,15 @@ init python:
         actions = None
 
         """
+        Holiday Check
+        Override logic for special dates like Valentine's Day.
+        """
+        is_valentines = False
+        today = datetime.date.today()
+        if today.month == 2 and today.day == 14:
+            is_valentines = True
+
+        """
         Delay Calculation
         Determines the wait time based on the user's 'Frequency' slider setting.
         
@@ -188,24 +205,38 @@ init python:
             """
             
             if farewell_label == "bye_prompt_to_class":
-                category = "farewell_class"
+                category = "school"
                 delay_seconds = 30 # Placeholder for testing (real logic would be ~hours)
             
             elif farewell_label in ["bye_prompt_sleep", "bye_going_to_sleep"]:
-                category = "farewell_sleep"
+                category = "sleep"
                 delay_seconds = random.randint(7 * 3600, 9 * 3600)
+                # Sleep overrides holidays typically as sleep is physiological need
+                is_valentines = False 
             
             elif farewell_label == "bye_prompt_to_work":
-                category = "farewell_work"
+                category = "work"
                 delay_seconds = random.randint(6 * 3600, 8 * 3600)
             
             elif farewell_label == "bye_going_shopping":
-                category = "farewell_going_out" 
+                category = "shopping" 
                 delay_seconds = 30 
             
             elif farewell_label == "bye_prompt_eat":
-                category = "farewell_general" 
-                delay_seconds = random.randint(1 * 3600, 2 * 3600)
+                # Time-based food logic
+                current_hour = datetime.datetime.now().hour
+                
+                # Breakfast: 5 AM - 10 AM
+                if 5 <= current_hour < 11:
+                    category = "morning_food"
+                # Lunch: 11 AM - 3 PM
+                elif 11 <= current_hour < 16:
+                    category = "noon_food"
+                # Dinner: 4 PM onwards
+                else: 
+                    category = "evening_food"
+                    
+                delay_seconds = random.randint(20 * 60, 50 * 60) # 20m to 50m meal
 
             # Explicitly disable actions for passive notifications
             actions = None 
@@ -220,20 +251,21 @@ init python:
             delay_seconds = interactive_delay
 
             if farewell_label == "bye_prompt_housework":
-                category = "farewell_going_out" 
+                category = "chores" 
             
             elif farewell_label == "bye_prompt_workout":
-                category = "farewell_going_out" 
+                category = "workout" 
 
             elif farewell_label == "bye_prompt_game":
-                category = "mas_farewell_playgame"
+                # 'mas_farewell_playgame' seems to be the old key, mapped to 'play_game' now
+                category = "play_game"
 
             elif farewell_label == "bye_prompt_hangout":
-                category = "farewell_going_out"
+                category = "friends"
 
             else:
                 # Default for generic goodbyes
-                category = "absence_short"
+                category = "generic_quit"
 
             # Assign interactive buttons
             actions = (u"Ya voy", u"Después")
@@ -245,6 +277,10 @@ init python:
             This prevents spamming for unknown or trivial events.
             """
             return
+
+        # HOLIDAY OVERRIDE
+        if is_valentines:
+            category = "calendar_event"
 
 
         """
