@@ -452,37 +452,41 @@ init 50 python:
             pass
 
 
+init 10 python:
     """
-    NOTIFICATION CLEANUP
+    NOTIFICATION CLEANUP - STARTUP EXECUTION
+    This logic is placed here to group it with the Notification Cleanup section,
+    but it runs at Priority 10 to ensure the backend functions (init -5) are fully loaded first.
     """
-    def mas_android_cancel_all_notifications():
-        """
-        Cancels all pending notifications and WorkManager jobs to prevent
-        'zombie' notifications from persisting after the game closes.
-        """
-        if not renpy.android: return
-        try:
-            from jnius import autoclass
-            try: PythonActivity = autoclass('org.renpy.android.PythonSDLActivity')
-            except: PythonActivity = autoclass('org.renpy.android.PythonActivity')
-            mActivity = PythonActivity.mActivity
-            
-            WorkManager = autoclass('androidx.work.WorkManager')
-            try: WorkManager.getInstance(mActivity).cancelAllWork()
-            except: pass
-            
-            try:
-                Context = autoclass('android.content.Context')
-                NotificationManager = mActivity.getSystemService(Context.NOTIFICATION_SERVICE)
-                NotificationManager.cancelAll()
-            except: pass
-        except: pass
 
-    store.mas_android_cancel_all_notifs = mas_android_cancel_all_notifications
+    
+    if store.mas_android_cancel_standard_only:
+        try:
+            store.mas_android_cancel_standard_only()
+        except:
+            pass
+
+
+    if store.mas_android_cancel_type_sleep:
+        try:
+            store.mas_android_cancel_type_sleep()
+        except:
+            pass
+
+    
+    if store.mas_android_cancel_valentine:
+        try:
+            import datetime
+            today = datetime.date.today()
+            if today.month == 2 and today.day == 14:
+                store.mas_android_cancel_valentine()
+        except:
+            pass
+
 
 
 init python:
-
+    
     def mas_android_check_readme():
         """
         Checks if the README file exists in public storage.
@@ -971,3 +975,4 @@ screen _exception:
                         hovered tt.action("Salir del juego.")
 
             text tt.value
+

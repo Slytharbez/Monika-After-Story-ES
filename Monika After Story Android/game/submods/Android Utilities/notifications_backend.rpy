@@ -9,6 +9,31 @@ Architecture:
 - On PC: Provides simulated console output for debugging purposes.
 """
 
+
+init python:
+    """
+    Submod Notification Data Initialization (Merged)
+    Ensures that all necessary configuration variables exist in the `persistent` store.
+    """
+    if persistent.mas_android_notif_enabled is None:
+        persistent.mas_android_notif_enabled = True
+
+    if persistent.mas_android_notif_sound is None:
+        persistent.mas_android_notif_sound = True
+
+    if persistent.mas_android_calendar_events is None:
+        persistent.mas_android_calendar_events = True
+        
+    if persistent.mas_android_return_reminders is None:
+        persistent.mas_android_return_reminders = True
+
+    if persistent.mas_android_frequency_index is None:
+        persistent.mas_android_frequency_index = 2
+
+    # Asset Path Definition
+    store.mas_android_notif_sound_path = "mod_assets/sounds/effects/notif.wav"
+
+
 init -5 python:
     """
     Dependency Check: Pyjnius
@@ -53,6 +78,12 @@ init python:
         print("[MAS_ANDROID] WARNING: Backend not loaded/available. Test call stubbed.")
         if renpy.substitute(title) and renpy.substitute(message):
             pass 
+
+    def mas_android_schedule_valentine(delay_seconds, title, message):
+        pass
+
+    def mas_android_cancel_valentine():
+        pass
         
 
     """
@@ -61,7 +92,10 @@ init python:
     """
     store.mas_android_schedule_notif = mas_android_schedule_notif
     store.mas_android_cancel_all_notifs = mas_android_cancel_all_notifs
+    store.mas_android_cancel_standard_only = mas_android_cancel_standard_only
     store.mas_android_send_test_notif = mas_android_send_test_notif
+    store.mas_android_schedule_valentine = mas_android_schedule_valentine
+    store.mas_android_cancel_valentine = mas_android_cancel_valentine
     
     """
     Default Configuration
@@ -179,27 +213,116 @@ init 5 python:
                 Tagging
                 Adds a tag to identifying this work request types.
                 """
-                work_request_builder.addTag("mas_notification")
+                tag = "mas_notification"
+                unique_work_name = "mas_notification_job"
+                
+                if special_category == "sleep":
+                    tag = "mas_sleep_notification"
+                    unique_work_name = "mas_sleep_notification_job"
+                elif special_category == "TYPE_SLEEP":
+                    tag = "TYPE_SLEEP"
+                    unique_work_name = "mas_sleep_notification_job"
+
+                work_request_builder.addTag(tag)
                 
                 work_request = work_request_builder.build()
                 
-                """
-                Work Enqueuing
-                Queues the work with a UNIQUE policy ("mas_notification_job").
-                REPLACE policy ensures that any previously scheduled notification is overwritten
-                by this new one.
-                """
                 work_list = Collections.singletonList(work_request)
                 
                 wm = WorkManager.getInstance(context)
-                wm.enqueueUniqueWork("mas_notification_job", ExistingWorkPolicy.REPLACE, work_list)
+                wm.enqueueUniqueWork(unique_work_name, ExistingWorkPolicy.REPLACE, work_list)
                 
-                print("[MAS_ANDROID] Notification Scheduled: {}s - {}".format(delay_seconds, title))
+                print("[MAS_ANDROID] Notification Scheduled (Category: " + str(special_category) + "): {}s".format(delay_seconds))
                 return True
                 
             except Exception as e:
-                print("[MAS_ANDROID] Schedule Notif Error: " + str(e))
+                print("[MAS_ANDROID] Error scheduling notification: " + str(e))
                 return False
+
+        def mas_android_schedule_valentine(delay_seconds, title, message):
+            """
+            Specialized scheduler for Valentine's Day event.
+            Uses a distinct UNIQUE_WORK_NAME and TAG to avoid conflicts with standard notifications.
+            """
+            try:
+                if isinstance(message, dict):
+                    message = message.get("msg", "Feliz San Valentin...")
+                
+                title = renpy.substitute(title)
+                message = renpy.substitute(message)
+                
+                # Pyjnius Imports (Re-using strictly what's needed for safety)
+                try: 
+                    PythonActivity = autoclass('org.renpy.android.PythonSDLActivity')
+                except: 
+                    PythonActivity = autoclass('org.renpy.android.PythonActivity')
+                    
+                WorkManager = autoclass('androidx.work.WorkManager')
+                OneTimeWorkRequest = autoclass('androidx.work.OneTimeWorkRequest$Builder')
+                Data = autoclass('androidx.work.Data$Builder')
+                TimeUnit = autoclass('java.util.concurrent.TimeUnit')
+                ExistingWorkPolicy = autoclass('androidx.work.ExistingWorkPolicy')
+                Collections = autoclass('java.util.Collections')
+                WorkerClass = autoclass('com.monikaafterstory.tec.es.NotificationWorker')
+                
+                context = PythonActivity.mActivity
+                
+                # Data Builder
+                data_builder = Data()
+                data_builder.putString("title", title)
+                data_builder.putString("message", message)
+                # Valentine's is likely interactive-worthy, but let's keep it simple or make it Type 0 (Reminder)
+                # To make it distinct, we won't add actions, just a heartfelt message.
+                
+                data_builder.putBoolean("sound_enabled", True)
+                data_builder.putBoolean("vibration_enabled", True)
+                
+                input_data = data_builder.build()
+                
+                # Request Builder
+                delay_long = long(delay_seconds)
+                work_request_builder = OneTimeWorkRequest(WorkerClass)
+                work_request_builder.setInitialDelay(delay_long, TimeUnit.SECONDS)
+                work_request_builder.setInputData(input_data)
+                
+                # IMPORTANT: Unique Tag
+                work_request_builder.addTag("EVENT_VALENTINE")
+                
+                work_request = work_request_builder.build()
+                
+                work_list = Collections.singletonList(work_request)
+                
+                wm = WorkManager.getInstance(context)
+                # Use a UNIQUE name specific to Valentine's to allow independent management
+                wm.enqueueUniqueWork("mas_valentine_sniper_job", ExistingWorkPolicy.REPLACE, work_list)
+                
+                print("[MAS_ANDROID_SNIPER] Valentine Notification Scheduled. Delta: " + str(delay_seconds))
+                return True
+                
+            except Exception as e:
+                print("[MAS_ANDROID_SNIPER] Error: " + str(e))
+                return False
+
+        def mas_android_cancel_valentine():
+            """
+            Cancels the Valentine's Day sniper notification specifically.
+            """
+            try:
+                try: 
+                    PythonActivity = autoclass('org.renpy.android.PythonSDLActivity')
+                except: 
+                    PythonActivity = autoclass('org.renpy.android.PythonActivity')
+
+                WorkManager = autoclass('androidx.work.WorkManager')
+                context = PythonActivity.mActivity
+                wm = WorkManager.getInstance(context)
+                
+                # Cancel by Unique Work Name or Tag. Unique Name is safer for "Replacement" policy logic.
+                wm.cancelUniqueWork("mas_valentine_sniper_job")
+                
+                print("[MAS_ANDROID_SNIPER] Valentine Notification Cancelled.")
+            except Exception as e:
+                print("[MAS_ANDROID_SNIPER] Cancel Error: " + str(e))
 
         def mas_android_cancel_all_notifs():
             """
@@ -222,6 +345,44 @@ init 5 python:
                 
             except Exception as e:
                 print("[MAS_ANDROID] Cancel Error: " + str(e))
+
+        def mas_android_cancel_standard_only():
+            """
+            Cancels only standard notifications (tag 'mas_notification'),
+            leaving 'Sleep' and 'Valentine' notifications active.
+            """
+            try:
+                try: 
+                    PythonActivity = autoclass('org.renpy.android.PythonSDLActivity')
+                except: 
+                    PythonActivity = autoclass('org.renpy.android.PythonActivity')
+                    
+                WorkManager = autoclass('androidx.work.WorkManager')
+                context = PythonActivity.mActivity
+                wm = WorkManager.getInstance(context)
+                
+                wm.cancelUniqueWork("mas_notification_job")
+            except:
+                pass
+
+        def mas_android_cancel_type_sleep():
+            """
+            Cancels only notifications with tag 'TYPE_SLEEP'.
+            Used on startup to prevent 'Good morning' messages if the user is already here.
+            """
+            try:
+                try: 
+                    PythonActivity = autoclass('org.renpy.android.PythonSDLActivity')
+                except: 
+                    PythonActivity = autoclass('org.renpy.android.PythonActivity')
+                    
+                WorkManager = autoclass('androidx.work.WorkManager')
+                context = PythonActivity.mActivity
+                wm = WorkManager.getInstance(context)
+                
+                wm.cancelAllWorkByTag("TYPE_SLEEP")
+            except:
+                pass
 
         """
         2. IMMEDIATE NOTIFICATIONS (Direct JNI)
@@ -288,6 +449,8 @@ init 5 python:
         store.mas_android_schedule_notif = mas_android_schedule_notif
         store.mas_android_cancel_all_notifs = mas_android_cancel_all_notifs
         store.mas_android_display_notif = mas_android_display_notif
+        store.mas_android_cancel_standard_only = mas_android_cancel_standard_only
+        store.mas_android_cancel_type_sleep = mas_android_cancel_type_sleep
 
     else:
         """
@@ -310,3 +473,5 @@ init 5 python:
         store.mas_android_schedule_notif = mas_android_schedule_notif
         store.mas_android_cancel_all_notifs = mas_android_cancel_all_notifs
         store.mas_android_display_notif = mas_android_display_notif
+        store.mas_android_cancel_standard_only = mas_android_cancel_all_notifs
+        store.mas_android_cancel_type_sleep = mas_android_cancel_all_notifs

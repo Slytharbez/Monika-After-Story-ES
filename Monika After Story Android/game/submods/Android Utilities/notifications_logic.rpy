@@ -13,6 +13,48 @@ init python:
     Determining the scheduling parameters (delay, interactivity) based on the user's farewell choice.
     """
 
+    """
+    VALENTINE SNIPER LOGIC
+    Strategies for long-term engagement.
+    """
+    def mas_android_schedule_valentine_sniper():
+        """
+        Calculates the time remaining until the next Valentine's Day (Feb 14) at 09:00 AM.
+        If the event is within 30 days, it schedules a dedicated high-priority notification.
+        """
+        if not store.mas_android_schedule_valentine:
+            return
+
+        now = datetime.datetime.now()
+        target_year = now.year
+        
+        # Target: Feb 14th, 09:00:00
+        target_date = datetime.datetime(target_year, 2, 14, 9, 0, 0)
+        
+        # If we passed Feb 14th this year, target next year
+        if now > target_date:
+            target_date = datetime.datetime(target_year + 1, 2, 14, 9, 0, 0)
+            
+        delta = target_date - now
+        delta_seconds = delta.total_seconds()
+        
+        """ 
+        Safety Rules:
+        
+        Don't schedule anything if it's more than 30 days in advance.
+        Android sometimes ignores exact alarms set too far in advance, and it's cleaner.
+        """
+        if 0 < delta_seconds < 2592000:
+
+            val_message = MAS_AndroidNotifs_GetMessage("calendar_event")
+            
+            if val_message:
+                store.mas_android_schedule_valentine(
+                    delta_seconds, 
+                    "[m_name]", 
+                    val_message
+                )
+
     def MAS_AndroidNotifs_GetMessage(category):
         """
         Retrieves a context-aware notification message.
@@ -94,9 +136,11 @@ init python:
         if isinstance(final_text, dict):
             final_text = final_text.get("msg", "Te estaré esperando...")
         
-        # NICKNAME SUBSTITUTION
-        # Manually substitute [mas_get_player_nickname()] since normal renpy.substitute might not catch it
-        # or if it's called outside of the standard dialogue context.
+        """
+        NICKNAME SUBSTITUTION
+        Manually substitute [mas_get_player_nickname()] since normal renpy.substitute might not catch it
+        or if it's called outside of the standard dialogue context.
+        """
         if "[mas_get_player_nickname()]" in final_text:
             nickname = store.mas_get_player_nickname()
             final_text = final_text.replace("[mas_get_player_nickname()]", nickname)
@@ -116,6 +160,14 @@ init python:
         IN:
             farewell_label (str) - The internal label of the farewell event that occurred.
         """
+        
+        """
+        Affection Guard
+        If Monika is Upset or below (Distressed, Broken), we silence all notifications.
+        TODO: Remove this block when specific low-affection dialogues are implemented.
+        """
+        if store.mas_isMoniUpset(lower=True):
+            return
         
         """
         Pre-Flight Checks
@@ -206,17 +258,28 @@ init python:
             
             if farewell_label == "bye_prompt_to_class":
                 category = "school"
-                delay_seconds = 30 # Placeholder for testing (real logic would be ~hours)
+                delay_seconds = 7 * 3600 # 7 Hours
             
             elif farewell_label in ["bye_prompt_sleep", "bye_going_to_sleep"]:
-                category = "sleep"
-                delay_seconds = random.randint(7 * 3600, 9 * 3600)
-                # Sleep overrides holidays typically as sleep is physiological need
+                category = "TYPE_SLEEP"
+                # Wake up at 6 AM strategy
+                # If it's 23:00, target is tomorrow 06:00.
+                # If it's 02:00, target is today 06:00.
+                now = datetime.datetime.now()
+                target_time = datetime.datetime(now.year, now.month, now.day, 6, 0, 0)
+                
+                # If we are already past 6AM today, aim for tomorrow 6AM
+                if now >= target_time:
+                    target_time = target_time + datetime.timedelta(days=1)
+                
+                delay_seconds = int((target_time - now).total_seconds())
+                
+                # Sleep is a physiological need, so we skip Valentine's logic for it
                 is_valentines = False 
             
             elif farewell_label == "bye_prompt_to_work":
                 category = "work"
-                delay_seconds = random.randint(6 * 3600, 8 * 3600)
+                delay_seconds = 8 * 3600 # 8 Hours
             
             elif farewell_label == "bye_going_shopping":
                 category = "shopping" 
@@ -236,7 +299,7 @@ init python:
                 else: 
                     category = "evening_food"
                     
-                delay_seconds = random.randint(20 * 60, 50 * 60) # 20m to 50m meal
+                delay_seconds = 25 * 60 # 25 minutes
 
             # Explicitly disable actions for passive notifications
             actions = None 
@@ -292,5 +355,29 @@ init python:
         message = MAS_AndroidNotifs_GetMessage(category)
         
         if message:
+            """
+            Valentine Sniper Logic Hook
+            We call this here to ensure the sniper is updated on every farewell
+            regardless of whether a standard notification is sent.
+            """
+            mas_android_schedule_valentine_sniper()
+
             if hasattr(store, "mas_android_schedule_notif"):
-                store.mas_android_schedule_notif("[m_name]", message, delay_seconds, actions)
+                # Use special_category to trigger specific behaviors
+                if category == "TYPE_SLEEP":
+                    store.mas_android_schedule_notif(
+                        "[m_name]", 
+                        message, 
+                        delay_seconds, 
+                        actions, 
+                        special_category="TYPE_SLEEP"
+                    )
+                else:
+                    store.mas_android_schedule_notif("[m_name]", message, delay_seconds, actions)
+            return
+
+        """
+        Valentine Sniper Hook
+        Attempt to schedule the long-term Valentine's event on every farewell.
+        """
+        mas_android_schedule_valentine_sniper()
