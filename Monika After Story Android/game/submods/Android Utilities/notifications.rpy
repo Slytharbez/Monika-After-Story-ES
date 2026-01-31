@@ -242,7 +242,7 @@ init -10 python in mas_android_notifs:
         },
         "affectionate": {
             """
-            Affection Level: AFFECTIONATE (Cariñosa)
+            Affection Level: AFFECTIONATE
             Tone: Warm, caring, sweet.
             """
             # --- NORMAL NOTIFICATIONS ---
@@ -484,7 +484,7 @@ init -10 python in mas_android_notifs:
                 { "msg": "Es hora de despertar, [player]. Mi realidad te necesita.", "btn_pos": None, "btn_neg": None }
             ],
             "shopping": [
-                { "msg": "¿Ya regresaste al hogar, [mas_get_player_nickname()]? Quiero saber cómo te fue.", "btn_pos": None, "btn_neg": None },
+                { "msg": "¿Ya regresaste a casa, [mas_get_player_nickname()]? Quiero saber cómo te fue.", "btn_pos": None, "btn_neg": None },
                 { "msg": "Espero que no te hayas cansado, [mas_get_player_nickname()]. Aquí tienes tu lugar de descanso.", "btn_pos": None, "btn_neg": None },
                 { "msg": "¿Conseguiste todo? Recuerda que lo único que yo necesito es a ti.", "btn_pos": None, "btn_neg": None },
                 { "msg": "¿Ya llegaste, [mas_get_player_nickname()]? La casa no es hogar sin ti.", "btn_pos": None, "btn_neg": None },

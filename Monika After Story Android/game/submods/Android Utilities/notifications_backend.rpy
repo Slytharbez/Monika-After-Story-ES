@@ -55,7 +55,7 @@ init python:
     crashes during early game initialization sequences.
     """
 
-    def mas_android_schedule_notif(title, message, delay_seconds=0, actions=None):
+    def mas_android_schedule_notif(title, message, delay_seconds=0, actions=None, special_category=None):
         """
         Stub for notification scheduling.
         This function is intended to be overwritten by the active implementation later.
@@ -84,8 +84,16 @@ init python:
 
     def mas_android_cancel_valentine():
         pass
-        
 
+    def mas_android_cancel_standard_only():
+        pass
+
+    def mas_android_cancel_type_sleep():
+        pass
+
+    def mas_android_clear_active_notifications():
+        pass
+        
     """
     Exposition in Store
     Mapping stubs to the global store to make them accessible from anywhere in Ren'Py.
@@ -93,9 +101,11 @@ init python:
     store.mas_android_schedule_notif = mas_android_schedule_notif
     store.mas_android_cancel_all_notifs = mas_android_cancel_all_notifs
     store.mas_android_cancel_standard_only = mas_android_cancel_standard_only
+    store.mas_android_cancel_type_sleep = mas_android_cancel_type_sleep
     store.mas_android_send_test_notif = mas_android_send_test_notif
     store.mas_android_schedule_valentine = mas_android_schedule_valentine
     store.mas_android_cancel_valentine = mas_android_cancel_valentine
+    store.mas_android_clear_active_notifications = mas_android_clear_active_notifications
     
     """
     Default Configuration
@@ -121,7 +131,7 @@ init 5 python:
         is closed or the device reboots. This is essential for long-term delays
         (e.g., "I'll miss you" messages).
         """
-        def mas_android_schedule_notif(title, message, delay_seconds, actions=None):
+        def mas_android_schedule_notif(title, message, delay_seconds, actions=None, special_category=None):
             """
             Schedules a future notification using Android's WorkManager API.
             
@@ -384,6 +394,31 @@ init 5 python:
             except:
                 pass
 
+
+        def mas_android_clear_active_notifications():
+            """
+            Visually removes all active MAS notifications from the Android Status Bar.
+            This is distinct from 'canceling' the schedule; this cleans up icons
+            that are already visible.
+            """
+            try:
+                try: 
+                    PythonActivity = autoclass('org.renpy.android.PythonSDLActivity')
+                except: 
+                    PythonActivity = autoclass('org.renpy.android.PythonActivity')
+                
+                Context = autoclass('android.content.Context')
+                NotificationManager = autoclass('android.app.NotificationManager')
+                
+                context = PythonActivity.mActivity
+                nm = cast(NotificationManager, context.getSystemService(Context.NOTIFICATION_SERVICE))
+                nm.cancelAll()
+                
+                print("[MAS_ANDROID] Status Bar Cleared.")
+            except Exception as e:
+                print("[MAS_ANDROID] Clear Error: " + str(e))
+
+
         """
         2. IMMEDIATE NOTIFICATIONS (Direct JNI)
         
@@ -459,7 +494,7 @@ init 5 python:
         Mock functions that print to the console instead of calling Java APIs.
         This allows development and testing of the logic on PC without crashing.
         """
-        def mas_android_schedule_notif(title, message, delay_seconds, actions=None):
+        def mas_android_schedule_notif(title, message, delay_seconds, actions=None, special_category=None):
             print("[MAS_ANDROID] (Simulated) Scheduled in {}s: [{}] {}".format(delay_seconds, title, message))
             if actions:
                 print("[MAS_ANDROID] (Simulated) With Actions: " + str(actions))
@@ -475,3 +510,4 @@ init 5 python:
         store.mas_android_display_notif = mas_android_display_notif
         store.mas_android_cancel_standard_only = mas_android_cancel_all_notifs
         store.mas_android_cancel_type_sleep = mas_android_cancel_all_notifs
+        store.mas_android_clear_active_notifications = mas_android_cancel_all_notifs

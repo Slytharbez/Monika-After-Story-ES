@@ -418,12 +418,13 @@ init 50 python:
             Redirects Python logging to the external storage folder.
             This ensures logs are accessible without root access.
             """
-            import logging.handlers
+            from store.mas_logging import loghandlers
+            import logging
             root_logger = logging.getLogger()
             
             try:
                 log_file = os.path.join(ANDROID_LOG_PATH, "mas_log.txt")
-                hdlr = logging.handlers.RotatingFileHandler(
+                hdlr = loghandlers.RotatingFileHandler(
                     log_file, 
                     maxBytes=5242880, 
                     backupCount=5
@@ -441,7 +442,7 @@ init 50 python:
                             h.close()
                         
                         l_file = os.path.join(ANDROID_LOG_PATH, log_name + ".txt")
-                        l_hdlr = logging.handlers.RotatingFileHandler(
+                        l_hdlr = loghandlers.RotatingFileHandler(
                             l_file, maxBytes=5242880, backupCount=5
                         )
                         l_hdlr.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
@@ -720,30 +721,15 @@ init 999 python:
     LATE ANDROID CLEANUP & CRASH VERSION CALCULATION
     """
     if renpy.android:
-        mas_android_cancel_all_notifications()
-        config.after_load_callbacks.append(mas_android_cancel_all_notifications)
+        store.mas_android_cancel_all_notifs()
+        if hasattr(store, "mas_android_clear_active_notifications"):
+            store.mas_android_clear_active_notifications()
+        config.after_load_callbacks.append(store.mas_android_cancel_all_notifs)
     
     """
     Calculates the crash version string safely at the end of initialization
     to ensure all config variables are loaded.
     """
-    try:
-        _v1 = str(config.version) if config.version else "Unknown"
-        _v2 = str(renpy.version_string).replace("Ren'Py ", "") if renpy.version_string else "Unknown"
-        _v3 = str(renpy.platform) if renpy.platform else "Unknown"
-        store.mas_crash_info_str = "{}\n{}\n{}".format(_v1, _v2, _v3)
-    except Exception as e:
-        store.mas_crash_info_str = "Error Versión"
-
-
-init -1 python:
-    """
-    CRASH SCREEN HELPERS
-    Provides functions and actions used by the localized crash screen.
-    """
-    
-    store.mas_crash_info_str = "Versión: Cargando..."
-
     mas_CRASH_MAP = {
         "Parsing the script failed.": "Fallo al analizar el script.",
         "Ren'Py has detected that...": "Ren'Py ha detectado que...",
@@ -751,6 +737,19 @@ init -1 python:
         "I'm sorry, but an uncaught exception occurred.": "Lo sentimos, pero ha ocurrido un error inesperado.",
         "An exception has occurred.": "Ha ocurrido un error.",
     }
+
+    def mas_get_version_info():
+        """
+        Dynamically calculates the version info string for the crash screen.
+        Safe to call at any point in the init process.
+        """
+        try:
+            _v1 = str(config.version) if config.version else "Unknown"
+            _v2 = str(renpy.version_string).replace("Ren'Py ", "") if renpy.version_string else "Unknown"
+            _v3 = str(renpy.platform) if renpy.platform else "Unknown"
+            return "{}\n{}\n{}".format(_v1, _v2, _v3)
+        except:
+            return "Versión: Error"
 
     def mas_format_traceback_spanish(s):
         """
@@ -921,9 +920,9 @@ screen _exception:
             text failure_title size gui._scale(40) align (0.0, 0.0)
             
 
-            vbox:
-                align (1.0, 0.0)
-                text mas_crash_info_str text_align 1.0 size gui._scale(14) bold False
+        vbox:
+            align (1.0, 0.0)
+            text mas_get_version_info() text_align 1.0 size gui._scale(14) bold False
 
         viewport:
             id "viewport"
@@ -971,7 +970,7 @@ screen _exception:
                     xfill True
                     textbutton "Salir":
                         xalign 1.0
-                        action MasErrorQuit()
+                        action Quit(confirm=False)
                         hovered tt.action("Salir del juego.")
 
             text tt.value

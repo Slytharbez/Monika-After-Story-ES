@@ -1,16 +1,3 @@
-init -1 python:
-    """
-    Android Notification Submod - UI Configuration Screens
-    
-    This module manages the user interface integration for the Android Notification system.
-    It utilizes a "Ghost Replacement" technique to override standard Ren'Py screens
-    without destructive editing of the core game files.
-    
-    Key Responsibilities:
-    Injecting notification settings into the main game menu.
-    Providing user controls for notification frequency, sound, and vibration.
-    Serving standard tooltips for describing notification behaviors.
-    """
 
 init python:
     store.MAS_TT_ANDROID_NOTIF = _(
@@ -32,11 +19,7 @@ init python:
         "Ajusta cuánto tiempo debe esperar Monika antes de enviarte un mensaje si no la has visitado."
     )
 
-    """
-    Notification Frequency Mapping
-    Maps integer index values (1-5) to human-readable strings displayed in the settings UI.
-    Used by the slider control in 'notif_settings'.
-    """
+
     store.mas_android_freq_map = {
         1: _("Pasiva (3 min)"),
         2: _("Normal (2 min)"),
@@ -45,19 +28,10 @@ init python:
         5: _("Posesiva (15s)")
     }
 
-    """
-    Data Integrity Check
-    Ensures the frequency index does not exceed valid bounds (1-5).
-    This prevents crashes if the persistent data file becomes corrupted.
-    """
+
     if persistent.mas_android_frequency_index > 5:
         persistent.mas_android_frequency_index = 5
 
-    """
-    Persistent Variable Initialization
-    Sets default values for notification settings if they have not been initialized.
-    Default state: All notification features ENABLED.
-    """
     if persistent.mas_android_notif_enabled is None:
         persistent.mas_android_notif_enabled = True 
         
@@ -70,13 +44,7 @@ init python:
     if persistent.mas_android_return_reminders is None:
         persistent.mas_android_return_reminders = True
 
-    """
-    Screen Override: Navigation
-    
-    Replaces the standard 'navigation' screen to substitute the 'Alertas' button functionality.
-    Instead of the default behavior, the 'Alertas' button now directs to 'notif_settings',
-    allowing users to configure Android-specific notification preferences.
-    """
+
 screen navigation():
     vbox:
         style_prefix "navigation"
@@ -121,12 +89,6 @@ screen navigation():
             textbutton _("Regresar") action Return()
 
 
-    """
-    Screen Override: Preferences
-    
-    Replaces the standard 'preferences' screen to inject the 'Notificaciones' toggle button.
-    This allows global enabling/disabling of the Android notification system directly from the main settings.
-    """
 screen preferences():
     tag menu
 
@@ -207,11 +169,6 @@ screen preferences():
                         style_prefix "generic_fancy_check"
                         label _(" ")
 
-                        """
-                        Global Notification Toggle
-                        Controls the master switch for all Android notifications.
-                        Linked to: persistent.mas_android_notif_enabled
-                        """
                         textbutton _("Notificaciones"):
                             action ToggleField(persistent, "mas_android_notif_enabled", True, False)
                             hovered tooltip.Action(store.MAS_TT_ANDROID_NOTIF)
@@ -383,17 +340,6 @@ screen preferences():
         style "main_menu_version"
 
 
-    """
-    Screen Override: Notification Settings (Alertas)
-    
-    Replaces the content of the 'Alertas' menu to display Android-specific controls.
-    This screen provides granular control over the notification experience.
-    
-    Controls:
-    Sound & Vibration Toggles: Manage sensory feedback.
-    Category Filters: Toggle 'Calendar Events' and 'Return Reminders'.
-    Frequency Slider: Adjust how often Monika attempts to contact the player.
-    """
 screen notif_settings():
     tag menu
 
@@ -405,19 +351,12 @@ screen notif_settings():
             style_prefix "generic_fancy_check"
             hbox:
                 spacing 25
-                """
-                Sound Preference
-                Enables/Disables audio cues for incoming notifications.
-                """
+
                 textbutton _("Sonido"):
                     action ToggleField(persistent, "mas_android_notif_sound")
                     selected persistent.mas_android_notif_sound
                     hovered tooltip.Action(store.MAS_TT_ANDROID_SOUND)
 
-                """
-                Vibration Preference
-                Enables/Disables haptic feedback for incoming notifications.
-                """
                 textbutton _("Vibración"):
                     action ToggleField(persistent, "mas_android_notif_vibration")
                     selected persistent.mas_android_notif_vibration
@@ -429,12 +368,6 @@ screen notif_settings():
             style_prefix "generic_fancy_check"
             box_wrap True
             spacing 25
-
-            """
-            Category Filters
-            - Calendar Events: Notifications for special dates (birthdays, holidays).
-            - Return Reminders: Notifications triggered after saying goodbye.
-            """
             
             textbutton _("Fechas Especiales"):
                 action ToggleField(persistent, "mas_android_calendar_events")
@@ -451,12 +384,6 @@ screen notif_settings():
         
         null height gui.pref_spacing
 
-        """
-        Frequency Control
-        
-        A slider that allows the user to select the intensity of notifications.
-        The slider value (1-5) corresponds to the delay mapping in 'mas_android_freq_map'.
-        """
         vbox:
             style_prefix "slider"
             hbox:
