@@ -191,8 +191,23 @@ init 5 python:
                 data_builder.putString("title", title)
                 data_builder.putString("message", message)
                 
+               
+                Build = autoclass("android.os.Build")
+                VERSION = autoclass("android.os.Build$VERSION")
+                
                 if actions and len(actions) >= 1:
                     data_builder.putString("action1_label", actions[0])
+                    
+                    if VERSION.SDK_INT < 31:
+                        """
+                        On Android < 12, Foreground Services for notifications behave poorly if the worker finishes fast.
+                        We try to force the worker to use standard 'notify()' instead of startForeground().
+                        We inject multiple potential keys to catch the backend's logic.
+                        """
+                        data_builder.putInt("style_type", 2) 
+                        data_builder.putInt("type", 2)       
+                        data_builder.putBoolean("use_foreground", False) 
+
                 if actions and len(actions) >= 2:
                     data_builder.putString("action2_label", actions[1])
 
@@ -207,18 +222,6 @@ init 5 python:
                 data_builder.putBoolean("sound_enabled", snd)
                 data_builder.putBoolean("vibration_enabled", vib)
                     
-                input_data = data_builder.build()
-                
-                """
-                Work Request Construction
-                Creates a OneTimeWorkRequest with the calculated delay.
-                """
-                delay_long = long(delay_seconds)
-                
-                work_request_builder = OneTimeWorkRequest(WorkerClass)
-                work_request_builder.setInitialDelay(delay_long, TimeUnit.SECONDS)
-                work_request_builder.setInputData(input_data)
-                
                 """
                 Tagging
                 Adds a tag to identifying this work request types.
@@ -233,6 +236,20 @@ init 5 python:
                     tag = "TYPE_SLEEP"
                     unique_work_name = "mas_sleep_notification_job"
 
+                data_builder.putString("job_tag", tag)
+
+                input_data = data_builder.build()
+                
+                """
+                Work Request Construction
+                Creates a OneTimeWorkRequest with the calculated delay.
+                """
+                delay_long = long(delay_seconds)
+                
+                work_request_builder = OneTimeWorkRequest(WorkerClass)
+                work_request_builder.setInitialDelay(delay_long, TimeUnit.SECONDS)
+                work_request_builder.setInputData(input_data)
+                
                 work_request_builder.addTag(tag)
                 
                 work_request = work_request_builder.build()
@@ -242,7 +259,7 @@ init 5 python:
                 wm = WorkManager.getInstance(context)
                 wm.enqueueUniqueWork(unique_work_name, ExistingWorkPolicy.REPLACE, work_list)
                 
-                print("[MAS_ANDROID] Notification Scheduled (Category: " + str(special_category) + "): {}s".format(delay_seconds))
+                # print("[MAS_ANDROID] Notification Scheduled (Category: " + str(special_category) + "): {}s".format(delay_seconds))
                 return True
                 
             except Exception as e:
@@ -306,7 +323,7 @@ init 5 python:
                 # Use a UNIQUE name specific to Valentine's to allow independent management
                 wm.enqueueUniqueWork("mas_valentine_sniper_job", ExistingWorkPolicy.REPLACE, work_list)
                 
-                print("[MAS_ANDROID_SNIPER] Valentine Notification Scheduled. Delta: " + str(delay_seconds))
+                # print("[MAS_ANDROID_SNIPER] Valentine Notification Scheduled. Delta: " + str(delay_seconds))
                 return True
                 
             except Exception as e:
@@ -351,7 +368,7 @@ init 5 python:
                 wm = WorkManager.getInstance(context)
                 wm.cancelUniqueWork("mas_notification_job")
                 
-                print("[MAS_ANDROID] All Notifications Cancelled")
+                # print("[MAS_ANDROID] All Notifications Cancelled")
                 
             except Exception as e:
                 print("[MAS_ANDROID] Cancel Error: " + str(e))
@@ -412,9 +429,17 @@ init 5 python:
                 
                 context = PythonActivity.mActivity
                 nm = cast(NotificationManager, context.getSystemService(Context.NOTIFICATION_SERVICE))
+                
+                # 1. KILL WORKER FIRST
+                # Stop the background process so it doesn't revive the notification
+                if "mas_android_cancel_all_notifs" in globals():
+                    mas_android_cancel_all_notifs()
+                
+                # 2. VISUAL CLEAR
+                # Remove the icon from status bar
                 nm.cancelAll()
                 
-                print("[MAS_ANDROID] Status Bar Cleared.")
+                # print("[MAS_ANDROID] Status Bar Cleared + Worker Cancelled.")
             except Exception as e:
                 print("[MAS_ANDROID] Clear Error: " + str(e))
 

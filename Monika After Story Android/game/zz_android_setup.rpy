@@ -711,6 +711,8 @@ init 500 python:
                         store.mas_gainAffection(1.0, bypass=True)
                         if hasattr(store, "mas_android_cancel_all_notifs"):
                             store.mas_android_cancel_all_notifs()
+                        if hasattr(store, "mas_android_clear_active_notifications"):
+                            store.mas_android_clear_active_notifications()
             except: pass
     
     config.label_callback = mas_android_check_notif_launch

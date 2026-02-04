@@ -2113,7 +2113,9 @@ init python:
             self.board = None
             
             self.undo_count = 0
+            self.undo_count = 0
             self.move_history = list()
+            self.last_mouse_pos = None
             
             
             if pgn_game:
@@ -2511,7 +2513,10 @@ init python:
             highlight_magenta = renpy.render(MASChessDisplayableBase.PIECE_HIGHLIGHT_MAGENTA_IMAGE, 1280, 720, st, at)
             
             
-            mx, my = mas_getMousePos()
+            if self.last_mouse_pos:
+                mx, my = self.last_mouse_pos
+            else:
+                mx, my = mas_getMousePos()
             
             
             visible_buttons = list()
@@ -2659,7 +2664,10 @@ init python:
                 
                 piece = self.get_piece_at(self.selected_piece[0], self.selected_piece[1])
                 
-                px, py = mas_getMousePos()
+                if self.last_mouse_pos:
+                    px, py = self.last_mouse_pos
+                else:
+                    px, py = mas_getMousePos()
                 px -= MASChessDisplayableBase.PIECE_WIDTH / 2
                 py -= MASChessDisplayableBase.PIECE_HEIGHT / 2
                 piece.render(width, height, st, at, px, py, renderer)
@@ -2673,7 +2681,9 @@ init python:
         
         def event(self, ev, x, y, st):
             
-            
+            if ev.type in self.MOUSE_EVENTS:
+                self.last_mouse_pos = (x, y)
+
             if ev.type in self.MOUSE_EVENTS:
                 ret_value = None
                 
@@ -2701,7 +2711,7 @@ init python:
                     and not self.is_game_over
                 ):
                     
-                    px, py = self.get_piece_pos()
+                    px, py = self.get_piece_pos(x, y)
                     test_piece = self.get_piece_at(px, py)
                     if (
                         self.is_player_turn()
@@ -2722,7 +2732,7 @@ init python:
                     ev.type == pygame.MOUSEBUTTONUP
                     and ev.button == 1
                 ):
-                    self.handle_player_move()
+                    self.handle_player_move(x, y)
                     
                     self.selected_piece = None
                     self.possible_moves = set([])
@@ -2730,14 +2740,17 @@ init python:
             
             return None
         
-        def get_piece_pos(self):
+        def get_piece_pos(self, mx=None, my=None):
             """
             Gets the piece position of the current piece held by the mouse
+            IN:
+                mx, my - optional mouse coordinates. If None, uses global poll.
 
             OUT:
                 Tuple of coordinates (x, y) marking where the piece is
             """
-            mx, my = mas_getMousePos()
+            if mx is None or my is None:
+                mx, my = mas_getMousePos()
             mx -= MASChessDisplayableBase.BASE_PIECE_X
             my -= MASChessDisplayableBase.BASE_PIECE_Y
             px = mx / MASChessDisplayableBase.PIECE_WIDTH
@@ -3612,7 +3625,7 @@ init python:
             self.set_button_states()
             return None
         
-        def handle_player_move(self):
+        def handle_player_move(self, mx=None, my=None):
             """
             Manages player move
             """
@@ -3621,7 +3634,7 @@ init python:
                 self.set_button_states()
                 return
             
-            px, py = self.get_piece_pos()
+            px, py = self.get_piece_pos(mx, my)
             
             move_str = None
             

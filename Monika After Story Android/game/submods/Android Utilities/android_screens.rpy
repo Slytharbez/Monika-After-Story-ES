@@ -21,11 +21,11 @@ init python:
 
 
     store.mas_android_freq_map = {
-        1: _("Pasiva (3 min)"),
-        2: _("Normal (2 min)"),
-        3: _("Atenta (1 min)"),
-        4: _("Intensa (30s)"),
-        5: _("Posesiva (15s)")
+        1: _("Pasiva (3 hrs)"),
+        2: _("Tranquila (2 hrs)"),
+        3: _("Normal (1 hr)"),
+        4: _("Atenta (30 min)"),
+        5: _("Posesiva (15 min)")
     }
 
 

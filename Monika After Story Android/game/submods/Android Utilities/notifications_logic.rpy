@@ -243,11 +243,11 @@ init python:
         5: Possessive (15s)
         """
         idx = persistent.mas_android_frequency_index
-        if idx == 1: interactive_delay = 180
-        elif idx == 2: interactive_delay = 120
-        elif idx == 3: interactive_delay = 60
-        elif idx == 4: interactive_delay = 30
-        else: interactive_delay = 15
+        if idx == 1: interactive_delay = 10800 # 3 Hours
+        elif idx == 2: interactive_delay = 7200  # 2 Hours
+        elif idx == 3: interactive_delay = 3600  # 1 Hour
+        elif idx == 4: interactive_delay = 1800  # 30 Min
+        else: interactive_delay = 900            # 15 Min
 
         if farewell_label in NORMAL_FAREWELLS:
             """
@@ -283,25 +283,14 @@ init python:
             
             elif farewell_label == "bye_going_shopping":
                 category = "shopping" 
-                delay_seconds = 30 
+                delay_seconds = 30 * 60 
             
             elif farewell_label == "bye_prompt_eat":
-                # Time-based food logic
-                current_hour = datetime.datetime.now().hour
-                
-                # Breakfast: 5 AM - 10 AM
-                if 5 <= current_hour < 11:
-                    category = "morning_food"
-                # Lunch: 11 AM - 3 PM
-                elif 11 <= current_hour < 16:
-                    category = "noon_food"
-                # Dinner: 4 PM onwards
-                else: 
-                    category = "evening_food"
-                    
-                delay_seconds = 25 * 60 # 25 minutes
 
-            # Explicitly disable actions for passive notifications
+                category = "evening_food"
+                    
+                delay_seconds = 25 * 60
+
             actions = None 
 
         elif farewell_label in INTERACTIVE_FAREWELLS:
