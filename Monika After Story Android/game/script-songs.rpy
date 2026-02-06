@@ -201,9 +201,9 @@ init -5 python in mas_songs:
             - ev.category contains only one type
         """
         prompt_suffix_map = {
-            TYPE_SHORT: " (Short)",
-            TYPE_LONG: " (Long)",
-            TYPE_ANALYSIS: " (Analysis)"
+            TYPE_SHORT: " (Corta)",
+            TYPE_LONG: " (Larga)",
+            TYPE_ANALYSIS: " (Análisis)"
         }
         return prompt_suffix_map.get(ev.category[0], "")
 
