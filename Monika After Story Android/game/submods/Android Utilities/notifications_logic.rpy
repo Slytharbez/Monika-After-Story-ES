@@ -28,10 +28,9 @@ init python:
         now = datetime.datetime.now()
         target_year = now.year
         
-        # Target: Feb 14th, 09:00:00
+
         target_date = datetime.datetime(target_year, 2, 14, 9, 0, 0)
         
-        # If we passed Feb 14th this year, target next year
         if now > target_date:
             target_date = datetime.datetime(target_year + 1, 2, 14, 9, 0, 0)
             
@@ -109,7 +108,7 @@ init python:
         messages = cat_dict.get(category)
         
         if not messages:
-            # Fallback for specific sub-categories to their generic parents if data is missing
+
             if category in ["shopping", "chores", "workout", "friends", "play_game", "morning_food", "noon_food", "evening_food"]:
                 messages = cat_dict.get("farewell_general")
         
@@ -243,11 +242,11 @@ init python:
         5: Possessive (15s)
         """
         idx = persistent.mas_android_frequency_index
-        if idx == 1: interactive_delay = 10800 # 3 Hours
-        elif idx == 2: interactive_delay = 7200  # 2 Hours
-        elif idx == 3: interactive_delay = 3600  # 1 Hour
-        elif idx == 4: interactive_delay = 1800  # 30 Min
-        else: interactive_delay = 900            # 15 Min
+        if idx == 1: interactive_delay = 10800 
+        elif idx == 2: interactive_delay = 7200  
+        elif idx == 3: interactive_delay = 3600  
+        elif idx == 4: interactive_delay = 1800  
+        else: interactive_delay = 900            
 
         if farewell_label in NORMAL_FAREWELLS:
             """
@@ -258,28 +257,24 @@ init python:
             
             if farewell_label == "bye_prompt_to_class":
                 category = "school"
-                delay_seconds = 7 * 3600 # 7 Hours
+                delay_seconds = 7 * 3600
             
             elif farewell_label in ["bye_prompt_sleep", "bye_going_to_sleep"]:
                 category = "TYPE_SLEEP"
-                # Wake up at 6 AM strategy
-                # If it's 23:00, target is tomorrow 06:00.
-                # If it's 02:00, target is today 06:00.
+                
                 now = datetime.datetime.now()
                 target_time = datetime.datetime(now.year, now.month, now.day, 6, 0, 0)
                 
-                # If we are already past 6AM today, aim for tomorrow 6AM
                 if now >= target_time:
                     target_time = target_time + datetime.timedelta(days=1)
                 
                 delay_seconds = int((target_time - now).total_seconds())
                 
-                # Sleep is a physiological need, so we skip Valentine's logic for it
                 is_valentines = False 
             
             elif farewell_label == "bye_prompt_to_work":
                 category = "work"
-                delay_seconds = 8 * 3600 # 8 Hours
+                delay_seconds = 8 * 3600
             
             elif farewell_label == "bye_going_shopping":
                 category = "shopping" 
@@ -309,17 +304,16 @@ init python:
                 category = "workout" 
 
             elif farewell_label == "bye_prompt_game":
-                # 'mas_farewell_playgame' seems to be the old key, mapped to 'play_game' now
+               
                 category = "play_game"
 
             elif farewell_label == "bye_prompt_hangout":
                 category = "friends"
 
             else:
-                # Default for generic goodbyes
+
                 category = "generic_quit"
 
-            # Assign interactive buttons
             actions = (u"Ya voy", u"Después")
 
         else:
@@ -330,7 +324,6 @@ init python:
             """
             return
 
-        # HOLIDAY OVERRIDE
         if is_valentines:
             category = "calendar_event"
 
@@ -352,7 +345,7 @@ init python:
             mas_android_schedule_valentine_sniper()
 
             if hasattr(store, "mas_android_schedule_notif"):
-                # Use special_category to trigger specific behaviors
+               
                 if category == "TYPE_SLEEP":
                     store.mas_android_schedule_notif(
                         "[m_name]", 
