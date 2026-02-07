@@ -3,454 +3,362 @@ init -999 python:
     import os
     import datetime
     import shutil
+    import store
 
-    # Define the bridge file path
-    # config.savedir on Windows typically points to %APPDATA%/RenPy/Monika After Story
-    MAS_BRIDGE_FILE = os.path.join(config.savedir, "monika_bridge.json").replace("\\", "/")
-    # MAS_BRIDGE_LOG = os.path.join(config.savedir, "bridge_log.txt").replace("\\", "/")
+    """
+    Paths - User requested specifically C:/Users/Admin/AppData/Roaming/RenPy/Monika After Story
+    This maps to config.savedir in Ren'Py on PC.
+    """
+    MAS_BRIDGE_FILE = os.path.join(config.savedir, "memories.json").replace("\\", "/")
+    
+    """
+    Fallbacks just in case
+    """
+    MAS_BRIDGE_FILE_ALT = os.path.join(config.basedir, "memories.json").replace("\\", "/")
+    MAS_BRIDGE_FILE_ALT2 = os.path.join(config.gamedir, "memories.json").replace("\\", "/")
+
+    MO_LOG_FILE = os.path.join(config.basedir, "bridge_import_log.txt").replace("\\", "/")
 
     def mas_bridge_log(msg):
-        pass
-        # try:
-        #     with open(MAS_BRIDGE_LOG, "a") as f:
-        #         f.write(str(msg) + "\n")
-        #         f.flush()
-        #         os.fsync(f.fileno())
-        # except:
-        #     pass
-    # ... (keep mas_bridge_reconstruct_key and mas_bridge_reconstruct as is) ...
+        try:
+    """
+    LOGGING UTILITY :: mas_bridge_log
+    Safely writes debug messages to a log file or console.
 
-    def mas_bridge_reconstruct_key(k):
-        """
-        Reconstructs a key from its string representation.
-        """
-        if not isinstance(k, basestring):
-            return k
-            
-        if k.startswith("__bridge_k_T__"):
-            val = k.replace("__bridge_k_T__", "")
-            try:
-                if "." in val:
-                    return datetime.datetime.strptime(val, "%Y-%m-%dT%H:%M:%S.%f")
-                else:
-                    return datetime.datetime.strptime(val, "%Y-%m-%dT%H:%M:%S")
-            except:
-                return val
-        elif k.startswith("__bridge_k_D__"):
-            val = k.replace("__bridge_k_D__", "")
-            try:
-                return datetime.datetime.strptime(val, "%Y-%m-%d").date()
-            except:
-                return val
-        return k
+    NOTE: File logging is currently disabled by user request to maintain
+    a 'dormant' state. Messages are printed to the console for debugging
+    purposes only.
 
-    def mas_bridge_reconstruct(data, depth=0):
+    IN:
+        msg - The message string or object to log.
+    """
+            print("MAS_BRIDGE_IMPORT: " + str(msg))
+        except:
+            pass
+
+    def mas_safe_decode(s):
         """
-        Recursively reconstructs data from JSON-safe format.
-        Restores datetime and date objects from their tagged representation.
-        Also restores KEYS.
+        Safely attempts to decode a byte string into unicode.
+        Tries UTF-8 first, then Latin-1 (ISO-8859-1) / Windows-1252 as fallback.
+        If it's already unicode, returns it as is.
         """
-        if isinstance(data, dict):
-            # Robust Bridge Object Detection
-            # We iterate keys to handle potential unicode/str mismatches in Python 2
-            b_type = None
-            val = None
-            
-            # Helper to find key irrespective of encoding
-            for k in data.keys():
-                sk = str(k)
-                if sk == "__bridge_type__":
-                    b_type = data[k]
-                elif sk == "value":
-                    val = data[k]
-            
-            if b_type:
-                # Log detection of bridge object (only first few to avoid spam)
-                if depth < 2:
-                    mas_bridge_log("Found bridge object type: " + str(b_type))
-                
-                # Normalize types
-                b_type = str(b_type)
-                
-                if val is None:
-                    mas_bridge_log("ERROR: Object " + b_type + " has no value.")
-                    return None
-                
-                if b_type == "datetime":
+        if isinstance(s, unicode):
+            return s
+        
+        if isinstance(s, str):
+            try:
+                return s.decode("utf-8")
+            except:
+                try:
+                    return s.decode("latin-1")
+                except:
                     try:
-                        # Try full format with microseconds
-                        if "." in val:
-                            return datetime.datetime.strptime(val, "%Y-%m-%dT%H:%M:%S.%f")
-                        # Try seconds only
-                        else:
-                            return datetime.datetime.strptime(val, "%Y-%m-%dT%H:%M:%S")
+                        return s.encode("string_escape")
                     except:
-                        # Fallback suite
+                        return "<binary_data>"
+        return str(s)
+
+    def mas_bridge_restore_val(v):
+        """
+        Recursively restores values from JSON-safe format to Python objects.
+        Handles:
+        - {"__bridge_type__": "datetime", ...} -> datetime.datetime
+        - {"__bridge_type__": "date", ...} -> datetime.date
+        - {"year": Y, "month": M, ...} -> datetime.datetime (Repair for raw dicts)
+        - Lists -> Lists
+        - Dicts -> Dicts (with key restoration)
+        """
+        try:
+            if isinstance(v, dict):
+                """
+                STRATEGY 1: TAGGED TYPE RECONSTRUCTION
+                Identifies dictionaries explicitly tagged with '__bridge_type__' and reconstructs
+                the corresponding Python object. This is the primary method for handling complex
+                types such as datetimes and dates generated by the Android exporter.
+                """
+                if "__bridge_type__" in v:
+                    val_type = v.get("__bridge_type__")
+                    val_str = v.get("value")
+                    
+                    if val_type == "datetime":
                         try:
-                            return datetime.datetime.strptime(val, "%Y-%m-%d %H:%M:%S.%f")
+                  
+                            return datetime.datetime.strptime(val_str, "%Y-%m-%dT%H:%M:%S.%f")
                         except:
                             try:
-                                return datetime.datetime.strptime(val, "%Y-%m-%d %H:%M:%S")
-                            except Exception as e:
-                                mas_bridge_log("ERROR parsing datetime '" + str(val) + "': " + str(e))
+                                return datetime.datetime.strptime(val_str, "%Y-%m-%dT%H:%M:%S")
+                            except:
+                                mas_bridge_log("Failed to parse datetime: " + str(val_str))
                                 return None
 
-                elif b_type == "date":
+                    elif val_type == "date":
+                        try:
+                            return datetime.datetime.strptime(val_str, "%Y-%m-%d").date()
+                        except:
+                            mas_bridge_log("Failed to parse date: " + str(val_str))
+                            return None
+
+                """
+                STRATEGY 2: HEURISTIC DATE REPAIR
+                Detects dictionary representations of dates that lack the explicit bridge tag.
+                This acts as a fallback mechanism for legacy or malformed data where a datetime
+                object was serialized as a raw dictionary containing 'year', 'month', and 'day' keys.
+                """
+                if "year" in v and "month" in v and "day" in v:
                     try:
-                        return datetime.datetime.strptime(val, "%Y-%m-%d").date()
-                    except Exception as e:
-                        mas_bridge_log("ERROR parsing date '" + str(val) + "': " + str(e))
-                        return None
-                
-                else:
-                    # Unknown type, log warning but don't crash, return None
-                    mas_bridge_log("WARNING: Unknown bridge type: " + str(b_type))
-                    return None
+                        yr = v.get("year")
+                        mo = v.get("month")
+                        dy = v.get("day")
+                        if yr is not None and mo is not None and dy is not None:
+                            hr = v.get("hour", 0)
+                            mn = v.get("minute", 0)
+                            sc = v.get("second", 0)
+                            ms = v.get("microsecond", 0)
+                            return datetime.datetime(yr, mo, dy, hr, mn, sc, ms)
+                    except:
+                        pass """ Valid dict that just happens to have year/month/day keys? Unlikely but possible. """
 
-            # Normal Dict: Recursive with key reconstruction
-            new_dict = {}
-            for k, v in data.items():
-                new_key = mas_bridge_reconstruct_key(k)
-                new_dict[new_key] = mas_bridge_reconstruct(v, depth+1)
-            return new_dict
-            
-        elif isinstance(data, list):
-            return [mas_bridge_reconstruct(v, depth+1) for v in data]
-        
-        return data
-    def mas_bridge_restore():
-        """
-        Checks for bridge file and restores data.
-        """
-        mas_bridge_log("--------------------------------------------------")
-        mas_bridge_log("Bridge Init Started. Path: " + MAS_BRIDGE_FILE)
+                """
+                STRATEGY 3: RECURSIVE DESCENT
+                Traverses into nested dictionaries to ensure deep restoration of all values.
+                It also handles special key encoding tags (e.g., __bridge_k_D__) to restore
+                non-string dictionary keys.
+                """
+                new_dict = {}
+                for k, sub_v in v.items():
+                    """
+                    Check for and decode special key prefixes indicating non-string types.
+                    """
+                    new_key = k
+                    if isinstance(k, basestring):
+                        if k.startswith("__bridge_k_T__"):
+                            try:
+                                t_str = k.replace("__bridge_k_T__", "")
+                                new_key = datetime.datetime.strptime(t_str, "%Y-%m-%dT%H:%M:%S.%f")
+                            except:
+                                new_key = k
+                        elif k.startswith("__bridge_k_D__"):
+                            try:
+                                d_str = k.replace("__bridge_k_D__", "")
+                                new_key = datetime.datetime.strptime(d_str, "%Y-%m-%d").date()
+                            except:
+                                new_key = k
+                        else:
 
-        # DIAGNOSTIC: Check persistent.sessions BEFORE import
-        if hasattr(persistent, "sessions"):
-            mas_bridge_log("PRE-IMPORT: persistent.sessions exists.")
-        else:
-            mas_bridge_log("PRE-IMPORT: persistent.sessions does NOT exist.")
-
-        # SANITIZATION: NUCLEAR OPTION
-        # Unconditionally delete history saved data cache to prevent dictionary-datetime crashes.
-        # This data is just internal scheduling triggers and will be safely regenerated by MAS.
-        if hasattr(persistent, "_mas_history_mhs_data"):
-            mas_bridge_log("SANITIZATION: Found _mas_history_mhs_data. Attempting delete...")
-            try:
-                del persistent._mas_history_mhs_data
-                mas_bridge_log("SANITIZATION: Delete successful.")
-            except Exception as e:
-                mas_bridge_log("SANITIZATION: Delete failed (" + str(e) + "). Forcing to empty dict.")
-                persistent._mas_history_mhs_data = {}
-        else:
-            mas_bridge_log("SANITIZATION: _mas_history_mhs_data not found (Clean).")
-
-        # SANITIZATION PHASE 2: Deep Clean of Corrupt Datetimes
-        # Scans for lingering corrupt data from previous failed imports (ghosts)
-        # Specifically targets variables ending in _dt that are dicts (should be datetime)
-        mas_bridge_log("SANITIZATION PHASE 2: Scanning for corrupt time variables...")
-        keys_to_purge = []
-        if persistent.__dict__:
-            mas_bridge_log("Scanning " + str(len(persistent.__dict__)) + " persistent variables...")
-            for k, v in persistent.__dict__.items():
-                if isinstance(v, dict):
-                    # CHECK 1: Naming Convention (Legacy corruptions)
-                    if k.endswith("_dt") or k.endswith("_date") or k == "_mas_last_hold_dt" or k == "_mas_first_kiss":
-                        mas_bridge_log("Found suspicious variable name: " + k + ". Marking for purge.")
-                        keys_to_purge.append(k)
+                            new_key = mas_safe_decode(k)
                     
-                    # CHECK 2: Content Inspection (Universal Bridge Cleaner)
-                    # If it has __bridge_type__, it's a raw bridge object that wasn't reconstructed.
-                    elif "__bridge_type__" in v:
-                        mas_bridge_log("Found unconstructed bridge object: " + k + ". Marking for purge.")
-                        keys_to_purge.append(k)
+                    new_dict[new_key] = mas_bridge_restore_val(sub_v)
+                return new_dict
+
+            elif isinstance(v, list):
+                return [mas_bridge_restore_val(x) for x in v]
+            
+            elif isinstance(v, basestring):
+                return mas_safe_decode(v)
+            
+            else:
+                return v
+        except Exception as e:
+            mas_bridge_log("Error restoring value: " + str(e))
+            return v
+
+    def mas_run_bridge_import():
+            """
+            MAIN IMPORT ROUTINE :: mas_run_bridge_import
+            Orchestrates the entire import process.
+
+            WORKFLOW:
+            1. Locates the 'memories.json' bridge file (checking alternate paths).
+            2. Loads and parses the JSON content.
+            3. Unifies data from 'persistent' wrapper and root level to handle structural variations.
+            4. Recursively restores all persistent data, applying type reconstruction.
+            5. Executes a targeted 'Hard Fix' on the 'sessions' key to prevent known crashes.
+            6. Restores the calendar database.
+            7. Renames the bridge file to '.bak' to prevent re-execution/loops.
+            """
+            target_file = None
+        if os.path.exists(MAS_BRIDGE_FILE_ALT2): 
+            target_file = MAS_BRIDGE_FILE_ALT2
+        elif os.path.exists(MAS_BRIDGE_FILE_ALT):
+            target_file = MAS_BRIDGE_FILE_ALT
+        elif os.path.exists(MAS_BRIDGE_FILE):
+            target_file = MAS_BRIDGE_FILE
         
-        # TARGETED CHECKS for known crashers
-        # These variable are prone to "ghost" corruption (appearing as dicts instead of dates)
-        # We explicitly purge them if found as dicts.
-        known_crashers = [
-            "_mas_last_hold_dt", 
-            "_mas_first_kiss", 
-            "_mas_last_monika_ily", 
-            "_mas_last_kiss",
-            "_mas_monika_lovecountertime"
-        ]
-        
-        for target in known_crashers:
-            if hasattr(persistent, target):
-                v = getattr(persistent, target)
-                # STRICTER CHECK: If it's NOT a datetime (and not None), kill it.
-                # This catches dicts, strings, lists, or even wrong object types.
-                # We specifically want these to be dates/datetimes.
-                if v is not None and not isinstance(v, datetime.datetime) and not isinstance(v, datetime.date):
-                    mas_bridge_log("TARGET CHECK: " + target + " is corrupted (Type: " + str(type(v)) + "). Force purging.")
-                    keys_to_purge.append(target)
-
-        # Deduplicate keys
-        keys_to_purge = list(set(keys_to_purge))
-
-        for k in keys_to_purge:
-            try:
-                delattr(persistent, k)
-                mas_bridge_log("Purged corrupt variable: " + k)
-            except Exception as e:
-                mas_bridge_log("Failed to purge " + k + ": " + str(e))
-
-        if not os.path.exists(MAS_BRIDGE_FILE):
-            mas_bridge_log("Bridge file not found at: " + MAS_BRIDGE_FILE)
+        if not target_file:
+            """
+            No bridge file found. Abort operation efficiently.
+            """
             return
 
+        mas_bridge_log("Found bridge file: " + target_file)
+        
         try:
-            with open(MAS_BRIDGE_FILE, "r") as f:
-                import_data = json.load(f)
+            with open(target_file, "r") as f:
+                raw_data = json.load(f)
             
-            mas_bridge_log("JSON loaded successfully.")
-
-            count = 0
+            mas_bridge_log("JSON loaded via json.load()")
             
-            # 1. Restore Persistent Data
-            if "persistent" in import_data:
+            data_source = None
+
+            """
+            PHASE 1: DATA UNIFICATION
+            Merges the 'persistent' wrapper dict (if present) with the root level data.
+            This ensures comprehensive data capture regardless of the source file's structure
+            (Nested vs Flat), preventing data loss during import.
+            """
+            combined_data = {}
+            if "persistent" in raw_data and isinstance(raw_data["persistent"], dict):
+                mas_bridge_log("Merging 'persistent' wrapper data.")
+                combined_data.update(raw_data["persistent"])
+            
+            """
+            Include root-level keys that may have been omitted from the 'persistent' block.
+            """
+            for k, v in raw_data.items():
+                if k not in ["persistent", "calendar"] and k not in combined_data:
+                    combined_data[k] = v
+            
+            if combined_data:
+                data_source = combined_data
+                mas_bridge_log("Unified data source created with " + str(len(data_source)) + " keys.")
+
+            """
+            PHASE 2: PERSISTENT RESTORATION
+            Iterates through the unified data source and restores values to the 'persistent' store.
+            """
+            if data_source:
+                mas_bridge_log("Restoring persistent data...")
+                count = 0
                 
-                p_data = mas_bridge_reconstruct(import_data["persistent"])
-                
-                # CRITICAL SAFETY: Validate 'sessions' before applying
-                if "sessions" in p_data:
-                    new_sessions = p_data["sessions"]
-                    is_safe = True
+                """
+                Initialize 'repeatable_events' to an empty list if absent.
+                This variable is critical for event logic and must not be None.
+                """
+                if "repeatable_events" not in data_source:
+                    if not hasattr(persistent, "repeatable_events") or persistent.repeatable_events is None:
+                        persistent.repeatable_events = []
+                        mas_bridge_log("Initialized missing repeatable_events to []")
+
+                for k, v in data_source.items():
+                    """
+                    Safeguard: Explicitly skip and reset corruption flags to prevent
+                    the 'Corrupt Memories' event from triggering post-import.
+                    """
+                    if k in ["_mas_corrupted_persistent", "mas_corrupted_persistent"]:
+                        persistent.mas_corrupted_persistent = False
+                        continue
                     
-                    if not isinstance(new_sessions, dict):
-                        mas_bridge_log("WARNING: Imported sessions is NOT a dict. Ignoring.")
-                        is_safe = False
-                    else:
-                        fs = new_sessions.get("first_session")
-                        if fs and isinstance(fs, dict) and not isinstance(fs, datetime.datetime):
-                            # Double check it's not a datetime subclass (unlikely but possible)
-                            mas_bridge_log("WARNING: Imported first_session is a raw DICT (Bridge Fail). Ignoring sessions update.")
-                            mas_bridge_log("Bad first_session val: " + str(fs))
-                            is_safe = False
+                    restored_v = mas_bridge_restore_val(v)
                     
-                    if not is_safe:
-                        # Remove bad sessions from data so it doesn't get set
-                        del p_data["sessions"]
-                        mas_bridge_log("Skipped updating persistent.sessions to prevent crash.")
-                    else:
-                        mas_bridge_log("Imported sessions valid. Allowing update.")
-
-                # Filter out variables that are known to cause crashes or are problematic
-                # These are either corrupt, or Ren'Py internal variables that shouldn't be overwritten
-                skip_keys = [
-                    "_mas_history_saved_data", # Corrupt history data
-                    "_mas_history_mhs_data",   # Corrupt history data
-                    "_seen_ever",              # RESTORED via custom logic below
-                    "_mas_player_bday",        # Handled by specific logic, avoid direct overwrite
-                    "_seen_translates",        # Internal Ren'Py variable
-                    "_seen_images",            # Internal Ren'Py variable
-                    "_seen_audio",             # Internal Ren'Py variable
-                    "sessions",                # Corrupt sessions data
-                    "_mas_affection_backups",  # Corrupt date data
-                    "_mas_absence_time",       # Corrupt timedelta data
-                    "_mas_last_hold_dt",       # Corrupt datetime data
-                    "_mas_first_kiss",         # Corrupt datetime data
-                    "_mas_last_monika_ily",    # Corrupt datetime data
-                    "_mas_last_kiss",          # Corrupt datetime data
-                    "_mas_monika_lovecountertime", # Corrupt datetime data
-                    "event_database"           # PROTECT: Don't overwrite local DB with potentially empty/bad export
-                ]
-
-                for k, v in p_data.items():
-                    # RESTORE: _seen_ever (Seen Events)
-                    # Critical for preventing repeated topics.
-                    # Needs specific handling to merge safely as a set.
-                    if k == "_seen_ever":
-                        if v is not None:
-                            try:
-                                if not hasattr(persistent, "_seen_ever") or persistent._seen_ever is None:
-                                    persistent._seen_ever = set()
+                    """
+                    CRITICAL INTEGRITY CHECK :: SESSIONS
+                    Inspects the 'sessions' dictionary to verify the integrity of 'first_session'.
+                    This specific field is prone to import errors (dict vs datetime) which cause crashes.
+                    """
+                    if k == "sessions":
+                        mas_bridge_log("Processing 'sessions' key...")
+                        if isinstance(restored_v, dict):
+                            if "first_session" in restored_v:
+                                fs = restored_v["first_session"]
+                            """
+                            Detection: 'first_session' is a dictionary.
+                            This indicates a failure in automatic restoration and requires a targeted fix.
+                            """
+                            if isinstance(fs, dict):
+                                mas_bridge_log("CRITICAL: first_session is still a dict after restore. Attempting hard fix.")
                                 
-                                # Case 1: List (JSON default for set)
-                                if isinstance(v, list):
-                                    persistent._seen_ever.update(v)
-                                    mas_bridge_log("Restored _seen_ever from LIST (Merged " + str(len(v)) + " items).")
-                                
-                                # Case 2: Dict (Possible corruption or set->dict JSONify)
-                                elif isinstance(v, dict):
-                                    persistent._seen_ever.update(v.keys())
-                                    mas_bridge_log("Restored _seen_ever from DICT keys (Merged " + str(len(v)) + " items).")
-                                
-                                else:
-                                    mas_bridge_log("Skipping _seen_ever: Unknown type " + str(type(v)))
-                            except Exception as e:
-                                mas_bridge_log("Error restoring _seen_ever: " + str(e))
-                        continue
+                                """
+                                RECOVERY STRATEGY: HARD FIX
+                                Attempts to manually parse the dictionary into a datetime object.
+                                """
+                                try:
+                                    fixed_dt = None
+                                    """
+                                    Attempt 1: Parse from bridge tag value (ISO Format).
+                                    """
+                                    if "__bridge_type__" in fs and "value" in fs:
+                                        ts = fs["value"]
+                                        try:
+                                            fixed_dt = datetime.datetime.strptime(ts, "%Y-%m-%dT%H:%M:%S.%f")
+                                        except:
+                                            try:
+                                                fixed_dt = datetime.datetime.strptime(ts, "%Y-%m-%dT%H:%M:%S")
+                                            except:
+                                                pass
+                                            
+                                    """
+                                    Attempt 2: reconstruct from raw 'year', 'month', 'day' keys.
+                                    """
+                                    elif "year" in fs and "month" in fs and "day" in fs:
+                                        yr = fs.get("year")
+                                        mo = fs.get("month")
+                                        dy = fs.get("day")
+                                        hr = fs.get("hour", 0)
+                                        mn = fs.get("minute", 0)
+                                        sc = fs.get("second", 0)
+                                        ms = fs.get("microsecond", 0)
+                                        fixed_dt = datetime.datetime(yr, mo, dy, hr, mn, sc, ms)
 
-                    # FILTER: Skip problematic keys
-                    if k in skip_keys:
-                        mas_bridge_log("Skipping " + k + " due to skip list.")
-                        continue
-                
-                    # --- POST-UPDATE SYNCHRONIZATION ---
-                    # Now that valid variables are restored and garbage is skipped,
-                    # we must sync _seen_ever with event_database.
-                    # Since we skipped importing event_database (to avoid corruption),
-                    # we use _seen_ever to tell the local event_database what we've already seen.
-                    if hasattr(persistent, "event_database") and hasattr(persistent, "_seen_ever"):
-                        mas_bridge_log("SYNC: Synchronizing 'Seen' status from _seen_ever to event_database...")
-                        sync_count = 0
-                        if persistent.event_database:
-                            for ev_label, ev_obj in persistent.event_database.items():
-                                if ev_label in persistent._seen_ever:
-                                    # It's seen, so make sure shown_count reflects that
-                                    if hasattr(ev_obj, "shown_count") and ev_obj.shown_count == 0:
-                                        ev_obj.shown_count = 1
-                                        sync_count += 1
-                        mas_bridge_log("SYNC: Updated " + str(sync_count) + " events to 'seen' status.")
+                                    if fixed_dt:
+                                        restored_v["first_session"] = fixed_dt
+                                        mas_bridge_log("HARD FIX SUCCESS: Parsed first_session.")
+                                    else:
+                                        """
+                                        Parsing failed. Fallback to current time to prevent crash.
+                                        """
+                                        restored_v["first_session"] = datetime.datetime.now()
+                                        mas_bridge_log("HARD FIX FAILED to parse. Fallback to NOW.")
 
-                    # FILTER: Player birthday. If this is a dict, it breaks poem unlocking logic.
-                    if k == "_mas_player_bday":
-                        mas_bridge_log("Skipping _mas_player_bday to prevent crash. (Will use existing or prompt).")
-                        continue
+                                except Exception as e:
+                                    mas_bridge_log("HARD FIX EXCEPTION: " + str(e))
+                                    """
+                                    Exception during recovery. Fallback to current time to prevent crash.
+                                    """
+                                    restored_v["first_session"] = datetime.datetime.now()
+                                    mas_bridge_log("FALLBACK: Reset first_session to NOW to prevent crash.")
 
-                    # FILTER: RenPy internal sets.
-                    if k in ["_seen_translates", "_seen_images", "_seen_audio"]:
-                        mas_bridge_log("Skipping " + k + " to prevent crash.")
-                        continue
+                            elif isinstance(fs, datetime.datetime):
+                                pass """ Good! """
 
-                    # FILTER: Affection Backups and Absence Time. corrupted dates here crash the Affection Log.
-                    if k in ["_mas_affection_backups", "_mas_absence_time"]:
-                        mas_bridge_log("Skipping " + k + " to prevent crash.")
-                        continue
-
-                    # FILTER: Explicit check for known crashers to prevent re-infection
-                    if k in ["_mas_last_hold_dt", "_mas_first_kiss", "_mas_last_monika_ily", "_mas_last_kiss"]:
-                        mas_bridge_log("Skipping " + k + " to prevent crash.")
-                        continue
-
-                    # FILTER: Generic Corrupt Datetime Protector
-                    # If key suggests it's a date/time, but value is a raw dict, SKIP IT.
-                    # This handles any other variable we might have missed.
-                    if isinstance(v, dict) and (k.endswith("_dt") or k.endswith("_date")):
-                        mas_bridge_log("Skipping corrupt time variable " + k + " (value is dict).")
-                        continue
-
-                    setattr(persistent, k, v)
+                    setattr(persistent, k, restored_v)
                     count += 1
                 
-                # Post-Import Check for sessions
-                if hasattr(persistent, "sessions") and persistent.sessions:
-                    fs = persistent.sessions.get("first_session")
-                    mas_bridge_log("POST-IMPORT fs type: " + str(type(fs)))
+                mas_bridge_log("Restored " + str(count) + " persistent keys.")
                 
-                # SAFETY: Ensure _seen_ever is not None
-                if not hasattr(persistent, "_seen_ever") or persistent._seen_ever is None:
-                    mas_bridge_log("WARNING: persistent._seen_ever is missing or None. Initializing to empty dict.")
-                    persistent._seen_ever = {}
+                """
+                Redundant Safety: Enforce False status for corruption flags one final time.
+                """
+                persistent.mas_corrupted_persistent = False
+                """
+                Legacy Support: Check and clear internal corruption flag if present.
+                """
+                if hasattr(persistent, "_mas_corrupted_persistent"):
+                    persistent._mas_corrupted_persistent = False
+                mas_bridge_log("Safeguard: Forced mas_corrupted_persistent to False.")
 
-                # SAFETY: Ensure _seen_translates is not None (Fixes 'NoneType not iterable' crash)
-                if not hasattr(persistent, "_seen_translates") or persistent._seen_translates is None:
-                    mas_bridge_log("WARNING: persistent._seen_translates is missing. Initializing to empty set.")
-                    persistent._seen_translates = set()
-                
-                # SAFETY: Proactive checks for other sets
-                if not hasattr(persistent, "_seen_images") or persistent._seen_images is None:
-                    persistent._seen_images = dict()
-                if not hasattr(persistent, "_seen_audio") or persistent._seen_audio is None:
-                    persistent._seen_audio = dict()
+            """
+            PHASE 3: CALENDAR RESTORATION
+            Locates the 'calendar' key (typically in the root) and restores the calendar database.
+            """
+            if "calendar" in raw_data and hasattr(store, "mas_calendar") and hasattr(store.mas_calendar, "calendar_database"):
+                mas_bridge_log("Restoring calendar (db replacement)...")
+                restored_cal = mas_bridge_restore_val(raw_data["calendar"])
+                store.mas_calendar.calendar_database = restored_cal
+                mas_bridge_log("Calendar restored.")
 
-                # REPAIR: Fix integer keys for _mas_current_consumable
-                # JSON converts dict keys to strings ("0", "1"), but MAS expects integers (0, 1).
-                if hasattr(persistent, "_mas_current_consumable"):
-                    pc = persistent._mas_current_consumable
-                    mas_bridge_log("DEBUG: _mas_current_consumable type: " + str(type(pc)))
-                     
-                    if isinstance(pc, dict):
-                        mas_bridge_log("DEBUG: Keys found: " + str(pc.keys()))
-                         
-                        fixed_consumables = {}
-                        was_fixed = False
-                         
-                        for k, v in pc.items():
-                            # Log key type
-                            mas_bridge_log("DEBUG: Key " + str(k) + " type: " + str(type(k)))
-                             
-                            if isinstance(k, basestring) and k.isdigit():
-                                try:
-                                    new_k = int(k)
-                                    fixed_consumables[new_k] = v
-                                    was_fixed = True
-                                    mas_bridge_log("DEBUG: Converted " + str(k) + " -> " + str(new_k))
-                                except:
-                                    fixed_consumables[k] = v
-                            else:
-                                fixed_consumables[k] = v
-                         
-                        # Force Ensure existence of 0 and 1 (Drink/Food)
-                        if 0 not in fixed_consumables:
-                            mas_bridge_log("DEBUG: Key 0 missing. Initializing default.")
-                            fixed_consumables[0] = {"prep_time": None, "consume_time": None, "id": None}
-                            was_fixed = True
-                             
-                        if 1 not in fixed_consumables:
-                            mas_bridge_log("DEBUG: Key 1 missing. Initializing default.")
-                            fixed_consumables[1] = {"prep_time": None, "consume_time": None, "id": None}
-                            was_fixed = True
-
-                        if was_fixed:
-                            persistent._mas_current_consumable = fixed_consumables
-                            mas_bridge_log("REPAIR: Fixed _mas_current_consumable keys/structure.")
-                     
-                    else:
-                        # It's not a dict? Re-init
-                        mas_bridge_log("ERROR: _mas_current_consumable is NOT a dict. Resetting.")
-                        persistent._mas_current_consumable = {
-                            0: {"prep_time": None, "consume_time": None, "id": None},
-                            1: {"prep_time": None, "consume_time": None, "id": None}
-                        }
-
-            # 2. Restore Calendar Data
-            if "calendar" in import_data:
-                mas_bridge_log("Restoring calendar data...")
-                cal_data = mas_bridge_reconstruct(import_data["calendar"])
-                store.mas_bridge_calendar_backup = cal_data
-
-            mas_bridge_log("Bridge Data Loaded: {} persistent variables updated.".format(count))
-            
-            # Delete file to prevent re-import and keep directory clean
+            """
+            PHASE 4: CLEANUP
+            Renames the processed bridge file to '.bak' to disable it for future runs.
+            """
             try:
-                os.remove(MAS_BRIDGE_FILE)
-                mas_bridge_log("Bridge file deleted successfully.")
-            except Exception as e:
-                mas_bridge_log("Error deleting bridge file: " + str(e))
+                os.rename(target_file, target_file + ".bak")
+                mas_bridge_log("Renamed bridge file to .bak")
+            except:
+                mas_bridge_log("Could not rename bridge file (permission?)")
 
         except Exception as e:
-            mas_bridge_log("Bridge Import CRITICAL ERROR: " + str(e))
+            mas_bridge_log("FATAL IMPORT ERROR: " + str(e))
+            import traceback
+            mas_bridge_log(traceback.format_exc())
 
-    # Run the restore
-    mas_bridge_restore()
-
-init 10 python:
-    try:
-        if hasattr(store, "mas_bridge_calendar_backup"):
-            if hasattr(store, "mas_calendar"):
-                # We overwrite the database
-                db = store.mas_bridge_calendar_backup
-                
-                new_db = {}
-                for month, days in db.items():
-                    try:
-                        m_int = int(month)
-                        new_days = {}
-                        for day, events in days.items():
-                            try:
-                                d_int = int(day)
-                                new_days[d_int] = events
-                            except:
-                                new_days[day] = events
-                        new_db[m_int] = new_days
-                    except:
-                        new_db[month] = days
-                 
-                store.mas_calendar.calendar_database = new_db
-                del store.mas_bridge_calendar_backup
-                print("Bridge Calendar Data Injected.")
-    except Exception as e:
-        print("Bridge Calendar Injection Error: " + str(e))
+    mas_run_bridge_import()

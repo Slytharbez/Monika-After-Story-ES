@@ -990,7 +990,7 @@ init 5 python:
         We define the path here to ensure it is scoped primarily to Android logic 
         and does not pollute the global namespace on PC.
         """
-        MAS_BRIDGE_FILE = os.path.join(config.savedir, "monika_bridge.json").replace("\\", "/")
+        MAS_BRIDGE_FILE = os.path.join(config.savedir, "memories.json").replace("\\", "/")
 
         def mas_bridge_sanitize_key(k):
             """
@@ -1025,6 +1025,45 @@ init 5 python:
             """
 
             if isinstance(data, dict) or (hasattr(data, "items") and hasattr(data, "get")):
+                
+                """
+                DETECTOR DE "FECHAS DISFRAZADAS" (ROOT CAUSE FIX)
+                Si un diccionario tiene llaves de fecha ('year', 'month', 'day'),
+                lo convertimos a un objeto datetime REAL para el puente.
+                """
+                if "year" in data and "month" in data and "day" in data:
+                    try:
+                        """
+                        Extraemos valores con seguridad
+                        """
+                        yr = data.get("year")
+                        mo = data.get("month")
+                        dy = data.get("day")
+                        
+                        """
+                        Si alguno es None, fallamos y tratamos como dict normal
+                        """
+                        if yr is not None and mo is not None and dy is not None:
+                            hr = data.get("hour", 0)
+                            mn = data.get("minute", 0)
+                            sc = data.get("second", 0)
+                            ms = data.get("microsecond", 0)
+                            
+                            """
+                            Creamos la fecha temporalmente
+                            """
+                            dt_obj = datetime.datetime(yr, mo, dy, hr, mn, sc, ms)
+                            
+                            """
+                            Y la devolvemos con la etiqueta CORRECTA
+                            """
+                            return {
+                                "__bridge_type__": "datetime",
+                                "value": dt_obj.isoformat()
+                            }
+                    except:
+                        pass """ Si falla, seguimos como si fuera un diccionario normal """
+
                 new_dict = {}
                 for k, v in data.items():
 
