@@ -368,6 +368,26 @@ init 50 python:
         except:
             pass
 
+        """
+        Resyncs module-level database references that may have been
+        overwritten by renpy.load_string(). When a submod has blocks like
+        'init python in mas_compliments:', Ren'Py executes them and the
+        module's dict reference gets replaced with a new empty dict. But
+        mas_all_ev_db_map (built at init 4) still holds the ORIGINAL
+        dicts where addEvent() stored all events.
+        """
+        try:
+            store.evhand.event_database = store.mas_all_ev_db_map["EVE"]
+            store.evhand.farewell_database = store.mas_all_ev_db_map["BYE"]
+            store.evhand.greeting_database = store.mas_all_ev_db_map["GRE"]
+            store.mas_compliments.compliment_database = store.mas_all_ev_db_map["CMP"]
+            store.mas_moods.mood_db = store.mas_all_ev_db_map["MOO"]
+            store.mas_stories.story_database = store.mas_all_ev_db_map["STY"]
+            store.mas_songs.song_db = store.mas_all_ev_db_map["SNG"]
+            store.mas_games.game_db = store.mas_all_ev_db_map["GME"]
+        except:
+            pass
+
 
     """
     FEATURE OVERRIDES

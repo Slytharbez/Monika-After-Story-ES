@@ -88,16 +88,18 @@ label monika_compliments:
 
         Event.checkEvents(mas_compliments.compliment_database)
 
-
-        compliments_menu_items = [
-            (ev.prompt, ev_label, not seen_event(ev_label), False)
-            for ev_label, ev in mas_compliments.compliment_database.iteritems()
-            if (
-                Event._filterEvent(ev, unlocked=True, aff=mas_curr_affection, flag_ban=EV_FLAG_HFM)
-                and ev.checkConditional()
-            )
-        ]
-
+        compliments_menu_items = []
+        for ev_label, ev in mas_compliments.compliment_database.iteritems():
+            try:
+                if (
+                    Event._filterEvent(ev, unlocked=True, aff=mas_curr_affection, flag_ban=EV_FLAG_HFM)
+                    and ev.checkConditional()
+                ):
+                    compliments_menu_items.append(
+                        (ev.prompt, ev_label, not seen_event(ev_label), False)
+                    )
+            except Exception:
+                pass
 
         compliments_menu_items.sort()
 
