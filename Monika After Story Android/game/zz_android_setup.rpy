@@ -356,6 +356,18 @@ init 50 python:
             except:
                 pass
 
+        """
+        Rebuilds the aggregate event database to include events from
+        externally loaded submods, which were added after the initial
+        build at init 6.
+        """
+        try:
+            store.mas_all_ev_db = {}
+            for code, ev_db in store.mas_all_ev_db_map.iteritems():
+                store.mas_all_ev_db.update(ev_db)
+        except:
+            pass
+
 
     """
     FEATURE OVERRIDES
@@ -1062,7 +1074,8 @@ init 5 python:
                                 "value": dt_obj.isoformat()
                             }
                     except:
-                        pass """ Si falla, seguimos como si fuera un diccionario normal """
+
+                        pass
 
                 new_dict = {}
                 for k, v in data.items():
