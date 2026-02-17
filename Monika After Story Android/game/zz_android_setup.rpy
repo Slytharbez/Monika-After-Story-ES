@@ -3,7 +3,97 @@ python early:
     import os
     import sys
     import re
-    
+
+    """
+    PERSISTENT COMPATIBILITY - BINARY FIXUP
+    Ren'Py 7.8.4 saves RevertableDict/List/Set as 'renpy.revertable.*' in pickle.
+    Ren'Py 6.99.12 (PC) expects 'renpy.python.*'.
+    This post-processes the persistent file: decompress -> binary replace -> recompress.
+    """
+    import zlib
+
+    _COMPAT_SAVE_DIR = "/storage/emulated/0/Monika After Story/game/saves"
+    _COMPAT_LOG_PATH = os.path.join(_COMPAT_SAVE_DIR, "compat_patch_log.txt")
+
+    def _compat_fixup_persistent():
+        """
+        Post-processes the persistent file to replace renpy.revertable
+        references with renpy.python in the pickle stream.
+        The pickle GLOBAL opcode format is: c<module>\\n<name>\\n
+        So 'crenpy.revertable\\n' -> 'crenpy.python\\n' is valid.
+        """
+        log = []
+        try:
+            per_path = os.path.join(_COMPAT_SAVE_DIR, "persistent")
+
+            if not os.path.exists(per_path):
+                log.append("No persistent file found")
+                return log
+
+            with open(per_path, "rb") as f:
+                raw = f.read()
+            log.append("File size: " + str(len(raw)))
+
+            dec = zlib.decompress(raw)
+            log.append("Decompressed: " + str(len(dec)))
+
+            rv_before = dec.count(b"renpy.revertable")
+            rp_before = dec.count(b"renpy.python")
+            log.append("BEFORE - 'renpy.revertable': " + str(rv_before))
+            log.append("BEFORE - 'renpy.python': " + str(rp_before))
+
+            if rv_before == 0:
+                log.append("SKIP: No incompatible references found")
+                return log
+
+            dec = dec.replace(b"renpy.revertable\n", b"renpy.python\n")
+
+            rv_after = dec.count(b"renpy.revertable")
+            rp_after = dec.count(b"renpy.python")
+            log.append("AFTER  - 'renpy.revertable': " + str(rv_after))
+            log.append("AFTER  - 'renpy.python': " + str(rp_after))
+
+            compressed = zlib.compress(dec)
+            with open(per_path, "wb") as f:
+                f.write(compressed)
+            log.append("FIXED: Wrote " + str(len(compressed)) + " bytes")
+            log.append("STATUS: COMPATIBLE with 6.99.12")
+
+        except Exception as e:
+            log.append("ERROR: " + str(type(e).__name__) + ": " + str(e))
+
+        return log
+
+    def _compat_write_log(header, log_lines):
+        try:
+            with open(_COMPAT_LOG_PATH, "a") as f:
+                f.write("\n=== " + header + " ===\n")
+                f.write("\n".join(log_lines) + "\n")
+        except:
+            pass
+
+    # Clear old log and run fixup at startup
+    try:
+        with open(_COMPAT_LOG_PATH, "w") as f:
+            f.write("Compat Patch v2 - Binary Fixup\n")
+    except:
+        pass
+
+    _startup_log = _compat_fixup_persistent()
+    _compat_write_log("STARTUP FIXUP", _startup_log)
+
+
+
+    # Also register to run on game exit (after final persistent save)
+    try:
+        if hasattr(config, "python_exit_callbacks"):
+            config.python_exit_callbacks.append(_compat_fixup_persistent)
+            _compat_write_log("EXIT CALLBACK", ["Registered to python_exit_callbacks"])
+        else:
+            _compat_write_log("EXIT CALLBACK", ["config.python_exit_callbacks not available"])
+    except:
+        pass
+
     """
     ANDROID FORCE SAVE PATH - EARLY INIT
     Executes before ANY init block to override Ren'Py's default save location detection.
@@ -1008,198 +1098,3 @@ screen _exception:
                         hovered tt.action("Salir del juego.")
 
             text tt.value
-
-
-init 5 python:
-    import json
-    import os
-    import datetime
-    import shutil
-
-    if renpy.android:
-        """
-        BRIDGE FILE PATH DEFINITION
-        We define the path here to ensure it is scoped primarily to Android logic 
-        and does not pollute the global namespace on PC.
-        """
-        MAS_BRIDGE_FILE = os.path.join(config.savedir, "memories.json").replace("\\", "/")
-
-        def mas_bridge_sanitize_key(k):
-            """
-            Sanitizes dictionary keys to strings, adding necessary prefixes 
-            to reconstruct complex types (like datetime) during import.
-
-            IN:
-                k - The dictionary key to sanitize (can be datetime, date, or other hashables)
-
-            RETURNS:
-                String representation of the key, strictly prefixed if it was a datetime object.
-            """
-            if isinstance(k, datetime.datetime):
-                return "__bridge_k_T__" + k.isoformat()
-            elif isinstance(k, datetime.date):
-                return "__bridge_k_D__" + k.isoformat()
-            else:
-                return str(k)
-
-        def mas_bridge_sanitize(data):
-            """
-            Recursively sanitizes arbitrary data structures into a JSON-safe format.
-            Handles MAS specific types, Ren'Py Revertables, sets, and datetimes.
-
-            IN:
-                data - Any Python object (Dict, List, Set, Datetime, etc.)
-
-            RETURNS:
-                A JSON-serializable version of the data. 
-                Datetimes are converted to special dictionaries {"__bridge_type__": ..., "value": ...}.
-                Unknown objects are returned as None or their string representation.
-            """
-
-            if isinstance(data, dict) or (hasattr(data, "items") and hasattr(data, "get")):
-                
-                """
-                DETECTOR DE "FECHAS DISFRAZADAS" (ROOT CAUSE FIX)
-                Si un diccionario tiene llaves de fecha ('year', 'month', 'day'),
-                lo convertimos a un objeto datetime REAL para el puente.
-                """
-                if "year" in data and "month" in data and "day" in data:
-                    try:
-                        """
-                        Extraemos valores con seguridad
-                        """
-                        yr = data.get("year")
-                        mo = data.get("month")
-                        dy = data.get("day")
-                        
-                        """
-                        Si alguno es None, fallamos y tratamos como dict normal
-                        """
-                        if yr is not None and mo is not None and dy is not None:
-                            hr = data.get("hour", 0)
-                            mn = data.get("minute", 0)
-                            sc = data.get("second", 0)
-                            ms = data.get("microsecond", 0)
-                            
-                            """
-                            Creamos la fecha temporalmente
-                            """
-                            dt_obj = datetime.datetime(yr, mo, dy, hr, mn, sc, ms)
-                            
-                            """
-                            Y la devolvemos con la etiqueta CORRECTA
-                            """
-                            return {
-                                "__bridge_type__": "datetime",
-                                "value": dt_obj.isoformat()
-                            }
-                    except:
-
-                        pass
-
-                new_dict = {}
-                for k, v in data.items():
-
-                    if k in ["_mas_history_mhs_data", "_mas_history_saved_data", "_seen_translates", "_seen_images", "_seen_audio", "_mas_player_bday"]:
-                        continue
-
-                    new_key = mas_bridge_sanitize_key(k)
-                    new_dict[new_key] = mas_bridge_sanitize(v)
-                return new_dict
-            
-
-            elif isinstance(data, (list, tuple)) or hasattr(data, "__iter__") and not isinstance(data, basestring):
-                if hasattr(data, "add") and not hasattr(data, "append"):
-                    return [mas_bridge_sanitize(v) for v in data]
-                return [mas_bridge_sanitize(v) for v in data]
-
-
-            elif isinstance(data, set):
-                return [mas_bridge_sanitize(v) for v in data]
-
-
-            elif isinstance(data, (datetime.datetime, datetime.date)):
-                return {
-                    "__bridge_type__": "datetime" if isinstance(data, datetime.datetime) else "date",
-                    "value": data.isoformat()
-                }
-
-            elif isinstance(data, (int, float, bool, basestring, type(None))):
-                return data
-                
-            else:
-                return None
-
-        def mas_bridge_export():
-            """
-            BRIDGE EXPORTER MAIN ROUTINE
-            Collects relevant data from `persistent` and specific `store` variables (like calendar),
-            sanitizes them, and writes them to the JSON bridge file.
-
-            This function is fail-safe; it catches exceptions silently to prevent 
-            interrupting the user's gameplay experience or closing flow.
-            """
-            try:
-                export_data = {}
-
-                p_dict = {}
-                if persistent.__dict__:
-                    for k, v in persistent.__dict__.items():
-                        if k.startswith("_renpy") or k.startswith("_preference"):
-                            continue
-                        p_dict[k] = v
-                
-                export_data["persistent"] = mas_bridge_sanitize(p_dict)
-
-
-                if hasattr(store, "mas_calendar") and hasattr(store.mas_calendar, "calendar_database"):
-                    export_data["calendar"] = mas_bridge_sanitize(store.mas_calendar.calendar_database)
-                
-
-                with open(MAS_BRIDGE_FILE, "w") as f:
-                    json.dump(export_data, f, indent=4)
-                
-            except Exception as e:
-
-                try:
-                    with open(os.path.join(config.basedir, "bridge_error.txt"), "w") as f:
-                        f.write(str(e))
-                except:
-                    pass
-
-        """
-        LIFECYCLE HOOK: ON EXIT
-        Registers the export function to run automatically when the application closes.
-        This ensures the latest data is always captured at the end of a session.
-        """
-        if "python_exit_callbacks" in config.__dict__:
-            config.python_exit_callbacks.append(mas_bridge_export)
-        
-        """
-        LIFECYCLE HOOK: STARTUP CHECK
-        Runs a single export attempt immediately upon game launch.
-        
-        CONDITIONS:
-            Only runs if the `persistent` file exists.
-            
-        PURPOSE:
-            Ensures a Bridge file is available immediately for returning users.
-            Prevents crashes on fresh installs (First Run) by avoiding write attempts
-            before storage permissions are granted.
-        """
-        try:
-            if os.path.exists(os.path.join(config.savedir, "persistent").replace("\\", "/")):
-                mas_bridge_export()
-        except:
-            pass
-
-"""
-DEBUG / MANUAL TRIGGER
-Label allowing developers or advanced users to manually force a bridge export.
-"""
-label mas_force_bridge_export:
-    python:
-        if renpy.android:
-            mas_bridge_export()
-    return
-
