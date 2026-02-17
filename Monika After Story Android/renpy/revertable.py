@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 COMPATIBILITY SHIM: renpy.revertable
 
