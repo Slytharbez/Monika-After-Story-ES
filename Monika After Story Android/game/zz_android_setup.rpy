@@ -1,9 +1,4 @@
-
-python early:
-    import os
-    import sys
-    import re
-
+init -100 python:
     """
     PERSISTENT COMPATIBILITY - BINARY FIXUP
     Ren'Py 7.8.4 saves RevertableDict/List/Set as 'renpy.revertable.*' in pickle.
@@ -11,16 +6,17 @@ python early:
     This post-processes the persistent file: decompress -> binary replace -> recompress.
     """
     import zlib
+    import os
 
     _COMPAT_SAVE_DIR = "/storage/emulated/0/Monika After Story/game/saves"
-    _COMPAT_LOG_PATH = os.path.join(_COMPAT_SAVE_DIR, "compat_patch_log.txt")
+
 
     def _compat_fixup_persistent():
         """
         Post-processes the persistent file to replace renpy.revertable
         references with renpy.python in the pickle stream.
-        The pickle GLOBAL opcode format is: c<module>\\n<name>\\n
-        So 'crenpy.revertable\\n' -> 'crenpy.python\\n' is valid.
+        The pickle GLOBAL opcode format is: c<module>\n<name>\n
+        So 'crenpy.revertable\n' -> 'crenpy.python\n' is valid.
         """
         log = []
         try:
@@ -64,33 +60,17 @@ python early:
 
         return log
 
-    def _compat_write_log(header, log_lines):
-        try:
-            with open(_COMPAT_LOG_PATH, "a") as f:
-                f.write("\n=== " + header + " ===\n")
-                f.write("\n".join(log_lines) + "\n")
-        except:
-            pass
-
-    try:
-        with open(_COMPAT_LOG_PATH, "w") as f:
-            f.write("Compat Patch v2 - Binary Fixup\n")
-    except:
-        pass
-
-    _startup_log = _compat_fixup_persistent()
-    _compat_write_log("STARTUP FIXUP", _startup_log)
-
-
-
     try:
         if hasattr(config, "python_exit_callbacks"):
             config.python_exit_callbacks.append(_compat_fixup_persistent)
-            _compat_write_log("EXIT CALLBACK", ["Registered to python_exit_callbacks"])
-        else:
-            _compat_write_log("EXIT CALLBACK", ["config.python_exit_callbacks not available"])
     except:
         pass
+
+
+python early:
+    import os
+    import sys
+    import re
 
     """
     ANDROID FORCE SAVE PATH - EARLY INIT
@@ -869,7 +849,7 @@ init 999 python:
             _v1 = str(config.version) if config.version else "Unknown"
             _v2 = str(renpy.version_string).replace("Ren'Py ", "") if renpy.version_string else "Unknown"
             _v3 = str(renpy.platform) if renpy.platform else "Unknown"
-            return "{}\n{}\n{}".format(_v1, _v2, _v3)
+            return "{}\\n{}\\n{}".format(_v1, _v2, _v3)
         except:
             return "Versión: Error"
 
@@ -930,7 +910,7 @@ init 999 python:
         """
         try:
             s = mas_format_traceback_spanish(s)
-            lines = [ i.replace("{", "{{") for i in s.split("\n") ]
+            lines = [ i.replace("{", "{{") for i in s.split("\\n") ]
             import re
             rv = []
             if lines:
@@ -939,7 +919,7 @@ init 999 python:
             for i in lines[1:]:
                 i = re.sub(r'(File "(.*)", line (\d+))', r'{a=edit:\3:\2}\1{/a}', i)
                 rv.append("  " + i)
-            return "\n".join(rv)
+            return "\\n".join(rv)
             return s
         except Exception as e:
             return s
@@ -982,8 +962,8 @@ init 999 python:
             try:
                 with open(self.filename, "rb") as f:
                     f.read(3) 
-                    s = u"[code]\n{}[/code]\n".format(f.read().decode("utf-8"))
-                s = s.replace("\n", "\r\n").replace("\r\r", "\r")
+                    s = u"[code]\\n{}[/code]\\n".format(f.read().decode("utf-8"))
+                s = s.replace("\\n", "\\r\\n").replace("\\r\\r", "\\r")
                 pygame.scrap.put(pygame.SCRAP_TEXT, s.encode("utf-8"))
                 renpy.notify("Copiado al portapapeles.")
             except: renpy.notify("Error al copiar.")
@@ -995,8 +975,8 @@ init 999 python:
             try:
                 with open(self.filename, "rb") as f:
                     f.read(3)
-                    s = u"```\n{}\n```\n".format(f.read().decode("utf-8"))
-                s = s.replace("\n", "\r\n").replace("\r\r", "\r")
+                    s = u"```\\n{}\\n```\\n".format(f.read().decode("utf-8"))
+                s = s.replace("\\n", "\\r\\n").replace("\\r\\r", "\\r")
                 pygame.scrap.put(pygame.SCRAP_TEXT, s.encode("utf-8"))
                 renpy.notify("Copiado Markdown al portapapeles.")
             except: renpy.notify("Error al copiar.")

@@ -234,6 +234,9 @@ label splashscreen:
                     mas_android_rescue_saves()
                 if "mas_android_copy_logs" in globals():
                     mas_android_copy_logs()
+                if "_compat_fixup_persistent" in globals():
+                    _compat_fixup_persistent()
+
                 pass
                 
                 """
