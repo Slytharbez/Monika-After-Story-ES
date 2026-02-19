@@ -1197,11 +1197,16 @@ init python in mas_dockstat:
         IN:
             tdelta - timedelta to use
         """
-        
-        hours = (tdelta.days * 24) + (tdelta.seconds / 3600.0)
-        
-        mbs = math.sqrt(hours*MONI_SIZE_FACTOR)
-        
+        try:
+            hours = (tdelta.days * 24) + (tdelta.seconds / 3600.0)
+        except (TypeError, AttributeError):
+            hours = 0.0
+
+        if hours < 0:
+            hours = 0.0
+
+        mbs = math.sqrt(hours * MONI_SIZE_FACTOR)
+
         store.persistent._mas_dockstat_moni_size = int(mbs * (1024**2))
 
 
