@@ -72,7 +72,6 @@ python early:
         except:
             pass
 
-    # Clear old log and run fixup at startup
     try:
         with open(_COMPAT_LOG_PATH, "w") as f:
             f.write("Compat Patch v2 - Binary Fixup\n")
@@ -84,7 +83,6 @@ python early:
 
 
 
-    # Also register to run on game exit (after final persistent save)
     try:
         if hasattr(config, "python_exit_callbacks"):
             config.python_exit_callbacks.append(_compat_fixup_persistent)
