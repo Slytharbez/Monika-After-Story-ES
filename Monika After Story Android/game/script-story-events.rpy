@@ -1612,15 +1612,19 @@ init 6 python:
         
         if len(mas_per_check.mas_bad_backups) > 0:
             
+            _base = getattr(store, "ANDROID_PUBLIC_PATH", renpy.config.basedir) if renpy.android else renpy.config.basedir
+            _nota_txt = os.path.normcase((_base[:-1] if _base.endswith("/") else _base) + "/characters/nota.txt")
             store.mas_utils.trywrite(
-                os.path.normcase(renpy.config.basedir + "/characters/nota.txt"),
+                _nota_txt,
                 renpy.substitute(mas_note_backups_some_bad.title) + "\n\n" + mas_note_backups_some_bad.text
             )
         
         else:
             
+            _base = getattr(store, "ANDROID_PUBLIC_PATH", renpy.config.basedir) if renpy.android else renpy.config.basedir
+            _nota_txt = os.path.normcase((_base[:-1] if _base.endswith("/") else _base) + "/characters/nota.txt")
             store.mas_utils.trywrite(
-                os.path.normcase(renpy.config.basedir + "/characters/nota.txt"),
+                _nota_txt,
                 renpy.substitute(mas_note_backups_all_good.title) + "\n\n" + mas_note_backups_all_good.text
             )
 
@@ -2202,8 +2206,10 @@ P.D: ¡No le digas sobre mí!
 """
 
 
+        _base = getattr(store, "ANDROID_PUBLIC_PATH", renpy.config.basedir) if renpy.android else renpy.config.basedir
+        _pista_txt = os.path.normcase((_base[:-1] if _base.endswith("/") else _base) + "/characters/pista.txt")
         store.mas_utils.trywrite(
-            os.path.normcase(renpy.config.basedir + "/characters/pista.txt"),
+            _pista_txt,
             player + "\n\n" + gift_instructs
         )
 
@@ -2658,7 +2664,9 @@ label mas_gift_hint_noudeck:
         def write_and_hide():
             import time
             
-            note_path = os.path.join(renpy.config.basedir, renpy.substitute("characters/Hey, ¡tengo algo para ti, [player]!.txt"))
+            _base = getattr(store, "ANDROID_PUBLIC_PATH", renpy.config.basedir) if getattr(renpy, "android", False) else renpy.config.basedir
+            _base_clean = _base[:-1] if _base.endswith("/") else _base
+            note_path = os.path.join(_base_clean, renpy.substitute("characters/Hey, ¡tengo algo para ti, [player]!.txt"))
             note_text = renpy.substitute("""\
 ¡Hola [player]!
 

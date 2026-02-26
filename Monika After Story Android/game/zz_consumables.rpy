@@ -1152,7 +1152,9 @@ init python:
         
         MID_TEXT += "\n"
         
-        with open(renpy.config.basedir + "/characters/lista_de_compras.txt", "w") as shopping_list:
+        _base = getattr(store, "ANDROID_PUBLIC_PATH", renpy.config.basedir) if renpy.android else renpy.config.basedir
+        _lista_txt = os.path.normcase((_base[:-1] if _base.endswith("/") else _base) + "/characters/lista_de_compras.txt")
+        with open(_lista_txt, "w") as shopping_list:
             shopping_list.write(
                 renpy.substitute(START_TEXT + MID_TEXT + END_TEXT)
             )

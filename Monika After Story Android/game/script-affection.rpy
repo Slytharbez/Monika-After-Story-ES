@@ -3492,8 +3492,25 @@ init python:
         ASSUMES:
             basedir
         """
-        filepath = basedir + path
-        if update or not renpy.exists(filepath):
+        if renpy.android and hasattr(store, "ANDROID_PUBLIC_PATH"):
+            _base = store.ANDROID_PUBLIC_PATH
+            if _base.endswith("/") and path.startswith("/"):
+                filepath = _base[:-1] + path
+            else:
+                filepath = _base + path
+        else:
+            filepath = basedir + path
+            
+        if update or not os.path.exists(filepath):
+            import os
+            
+            _dir = os.path.dirname(filepath)
+            if not os.path.exists(_dir):
+                try:
+                    os.makedirs(_dir)
+                except:
+                    pass
+                    
             with open(filepath, "w") as note:
                 note.write(renpy.substitute(text))
 

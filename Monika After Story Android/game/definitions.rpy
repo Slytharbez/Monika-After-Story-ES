@@ -4739,6 +4739,16 @@ init -995 python in mas_utils:
         filepath = renpy.config.basedir + filename
         
         try:
+            if renpy.android and hasattr(store, "ANDROID_PUBLIC_PATH"):
+                _base = store.ANDROID_PUBLIC_PATH
+                if _base.endswith("/") and filename.startswith("/"):
+                    android_filepath = _base[:-1] + filename
+                else:
+                    android_filepath = _base + filename
+                    
+                if os.access(os.path.normcase(android_filepath), os.F_OK):
+                    return True
+                    
             return os.access(os.path.normcase(filepath), os.F_OK)
         except:
             return False
