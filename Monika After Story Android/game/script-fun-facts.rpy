@@ -592,8 +592,8 @@ init python:
 
 label mas_fun_fact_getting_older:
     m 3eua "¿Sabías que la forma en que percibes el tiempo cambia a medida que envejeces?"
-    m "Por ejemplo, cuando tienes un año, ves un año como el 100% de tu vida."
-    m 1euc "Pero cuando tienes 18 años, ves un año como solo el 5.6% de tu vida."
+    m "Por ejemplo, cuando tienes un año, ves un año como el 100%% de tu vida."
+    m 1euc "Pero cuando tienes 18 años, ves un año como solo el 5.6%% de tu vida."
     m 3eud "A medida que envejeces, la proporción de un año en comparación con toda tu vida útil disminuye, y a su vez el tiempo {i}parece{/i} que avanza más rápido a medida que creces."
     m 1eka "Así que siempre apreciaré nuestros momentos juntos, sin importar cuán largos o cortos sean."
     m 1lkbsa "Aunque a veces parece que el tiempo se detiene cuando estoy contigo."

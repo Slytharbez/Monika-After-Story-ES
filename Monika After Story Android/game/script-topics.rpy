@@ -12723,7 +12723,7 @@ label monika_player_appearance_eye_color_other:
 label monika_player_appearance_eye_color_heterochromia:
     m 1sub "¿En serio?{w=0.2} {nw}"
     extend 3hua "Eso es increíble, [player]~"
-    m 3wud "Si no recuerdo mal, ¡menos del 1% de las personas del mundo tienen heterocromía!"
+    m 3wud "Si no recuerdo mal, ¡menos del 1%% de las personas del mundo tienen heterocromía!"
 
     m 1eka "... Si no te importa que te pregunte..."
 
