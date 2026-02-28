@@ -3501,8 +3501,8 @@ init python:
         else:
             filepath = basedir + path
             
+        import os
         if update or not os.path.exists(filepath):
-            import os
             
             _dir = os.path.dirname(filepath)
             if not os.path.exists(_dir):
