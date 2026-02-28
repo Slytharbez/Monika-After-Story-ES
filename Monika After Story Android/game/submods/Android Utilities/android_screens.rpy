@@ -163,6 +163,10 @@ screen preferences():
                             action ToggleField(persistent,"_mas_enable_random_repeats", True, False)
                             hovered tooltip.Action(layout.MAS_TT_REPEAT)
 
+                        textbutton _("Cancelar diálogo"):
+                            action Function(renpy.jump_out_of_context, "ch30_loop")
+                            hovered tooltip.Action(_("Abandona el menú y fuerza el cierre del diálogo actual para volver a la pantalla principal con Monika."))
+
 
 
                     vbox:
