@@ -83,7 +83,7 @@ screen mas_android_talk_choice(items):
             yalign 0.0
             
             for i in items:
-                textbutton i.caption action i.action
+                textbutton renpy.substitute(i.caption) action i.action
 
 # =============================================================================
 # ANDROID MENU LOGIC

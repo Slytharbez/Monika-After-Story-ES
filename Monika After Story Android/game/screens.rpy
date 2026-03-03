@@ -616,7 +616,7 @@ screen choice(items):
 
     vbox:
         for i in items:
-            textbutton i.caption action i.action
+            textbutton renpy.substitute(i.caption) action i.action
 
 
 
@@ -2745,7 +2745,7 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
 
                     has vbox
                     for ev in flt_evs:
-                        textbutton ev.prompt:
+                        textbutton renpy.substitute(ev.prompt):
                             if renpy.has_label(ev.eventlabel) and not seen_event(ev.eventlabel):
                                 style "scrollable_menu_new_button"
                             else:
@@ -2793,7 +2793,7 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
 
                     has vbox
                     for i_caption, i_label in prev_items:
-                        textbutton i_caption:
+                        textbutton renpy.substitute(i_caption):
                             if renpy.has_label(i_label) and not seen_event(i_label):
                                 style "twopane_scrollable_menu_new_button"
 
@@ -2835,7 +2835,7 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
 
                         has vbox
                         for i_caption, i_label in main_items:
-                            textbutton i_caption:
+                            textbutton renpy.substitute(i_caption):
                                 if renpy.has_label(i_label) and not seen_event(i_label):
                                     style "twopane_scrollable_menu_new_button"
 
@@ -2936,7 +2936,7 @@ screen scrollable_menu(items, display_area, scroll_align, nvm_text, remove=None)
                         else:
                             $ button_text = i_label
                     
-                    textbutton "[button_text]":
+                    textbutton renpy.substitute(button_text):
                         text_style "scrollable_menu_button_text"
                         if renpy.has_label(i_label) and not seen_event(i_label):
                             style "scrollable_menu_new_button"
@@ -2950,7 +2950,7 @@ screen scrollable_menu(items, display_area, scroll_align, nvm_text, remove=None)
 
             if remove:
 
-                textbutton _(remove[0]) action Return(remove[1])
+                textbutton renpy.substitute(_(remove[0])) action Return(remove[1])
 
             textbutton _(nvm_text) action Return(False)
 
@@ -3009,7 +3009,7 @@ screen mas_gen_scrollable_menu(items, display_area, scroll_align, *args):
                         else:
                             $ button_text = item_value
 
-                    textbutton "[button_text]":
+                    textbutton renpy.substitute(button_text):
                         text_style "scrollable_menu_button_text"
                         if is_italic and is_bold:
                             style "scrollable_menu_crazy_button"
@@ -3027,7 +3027,7 @@ screen mas_gen_scrollable_menu(items, display_area, scroll_align, *args):
                 if final_items[4] > 0:
                     null height final_items[4]
 
-                textbutton _(final_items[0]):
+                textbutton renpy.substitute(_(final_items[0])):
                     if final_items[2] and final_items[3]:
                         style "scrollable_menu_crazy_button"
 
@@ -3098,7 +3098,7 @@ screen mas_check_scrollable_menu(items, display_area, scroll_align, selected_but
 
                 has vbox
                 for button_prompt, button_key, start_selected, true_value, false_value in items:
-                    textbutton button_prompt:
+                    textbutton renpy.substitute(button_prompt):
                         selected buttons_data[button_key]["return_value"] == buttons_data[button_key]["true_value"]
                         xsize display_area[2]
                         action ToggleDict(
