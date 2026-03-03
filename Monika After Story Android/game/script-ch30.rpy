@@ -956,8 +956,8 @@ init 999 python in mas_reset:
         """
         
         game_unlock_db = {
-            "chess": "mas_unlock_chess",
-            "hangman": "mas_unlock_hangman",
+            "ajedrez": "mas_unlock_chess",
+            "ahorcado": "mas_unlock_hangman",
             "piano": "mas_unlock_piano"
         }
         

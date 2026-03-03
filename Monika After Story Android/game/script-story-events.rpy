@@ -958,7 +958,7 @@ label mas_unlock_chess:
         m 2ekc "Lo siento, [player], pero el ajedrez tendrá que esperar."
         m 4eka "¡Pero prometo que jugaremos si consigo que funcione!"
 
-    $ mas_unlockGame("chess")
+    $ mas_unlockGame("ajedrez")
     return
 
 init python:
