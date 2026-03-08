@@ -3000,7 +3000,12 @@ screen mas_gen_scrollable_menu(items, display_area, scroll_align, *args):
                 mousewheel True
 
                 has vbox
-                for item_prompt, item_value, is_italic, is_bold in items:
+                for item in items:
+                    $ item_prompt = item[0]
+                    $ item_value = item[1]
+                    $ is_italic = item[2] if len(item) > 2 else False
+                    $ is_bold = item[3] if len(item) > 3 else False
+
                     $ button_text = item_prompt
                     if not button_text:
                         $ ev = store.mas_all_ev_db.get(item_value, None)

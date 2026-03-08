@@ -2371,7 +2371,7 @@ init python:
                 (Default: EVE) - event database
         """
         if eventdb is None:
-            eventdb = mas_all_ev_db_map.get(code, None)
+            eventdb = mas_all_ev_db_map.setdefault(code, dict())
         
         if type(eventdb) is not dict:
             raise EventException("Given db is not of type dict")

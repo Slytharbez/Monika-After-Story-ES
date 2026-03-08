@@ -424,6 +424,96 @@ init 50 python:
             except:
                 pass
 
+            """
+            UNIVERSAL SUBMOD DATABASE AUTO-REGISTRATION [The Encoders Club]
+
+            Problem: submods like NSFW register their custom event databases
+            into mas_all_ev_db_map inside an 'init 5 python:' block, but that
+            block runs BEFORE the 'init python in nsfw_fetish:' blocks that
+            create the module objects. On Android, when renpy.load_string()
+            processes the submod files in init priority order, the init 5
+            registrar runs first and fails silently because store.nsfw_fetish
+            doesn't exist yet. So NFH/NST never enter mas_all_ev_db_map.
+
+            Solution: After ALL load_string() calls have completed (so all
+            modules and their __init__ blocks are fully set up), scan every
+            store sub-module for dict attributes that look like event databases
+            (contain MAS Event objects) and register them into mas_all_ev_db_map
+            if they are not already registered. Uses an auto-generated code
+            derived from the attribute name.
+            """
+            try:
+                import types as _types
+
+                # IDs of dicts already registered so we skip them
+                _already_registered_ids = set(
+                    id(db) for db in store.mas_all_ev_db_map.values()
+                )
+
+                # Build a reverse map: id(db) -> code, for resync use later
+                _id_to_code = {
+                    id(db): code
+                    for code, db in store.mas_all_ev_db_map.iteritems()
+                }
+
+                _ev_class = store.Event
+
+                for _mod_name in dir(store):
+                    try:
+                        _mod = getattr(store, _mod_name)
+                    except:
+                        continue
+
+                    if not isinstance(_mod, _types.ModuleType):
+                        continue
+
+                    for _attr in dir(_mod):
+                        if not (_attr.endswith("_database") or _attr.endswith("_db")):
+                            continue
+                        try:
+                            _db = getattr(_mod, _attr)
+                        except:
+                            continue
+
+                        if not isinstance(_db, dict) or len(_db) == 0:
+                            continue
+
+                        if id(_db) in _already_registered_ids:
+                            continue
+
+                        # Confirm it's a MAS-style event database by checking
+                        # that at least one value is an Event instance
+                        _sample = next(_db.itervalues(), None)
+                        if _sample is None or not isinstance(_sample, _ev_class):
+                            continue
+
+                        # Auto-generate a 3-letter code from the attribute name
+                        # e.g. nsfw_fetish_database -> NFH (first letters of parts)
+                        _parts = _attr.replace("_database", "").replace("_db", "").split("_")
+                        _parts = [p for p in _parts if p]
+                        _auto_code = "".join(p[0].upper() for p in _parts[:3]).ljust(3, "X")
+
+                        # Avoid collisions with existing codes
+                        _suffix = 0
+                        _candidate = _auto_code
+                        while _candidate in store.mas_all_ev_db_map:
+                            _suffix += 1
+                            _candidate = _auto_code[:2] + str(_suffix)
+
+                        store.mas_all_ev_db_map[_candidate] = _db
+                        _already_registered_ids.add(id(_db))
+                        _id_to_code[id(_db)] = _candidate
+                        print(
+                            "[ANDROID_LOADER] Auto-registered submod db: "
+                            + _mod_name + "." + _attr
+                            + " as code [" + _candidate + "] with "
+                            + str(len(_db)) + " events"
+                        )
+            except Exception as _e:
+                import traceback as _tb
+                print("[ANDROID_LOADER] Error in db auto-registration: " + str(_e))
+                _tb.print_exc()
+
         """
         Rebuilds the aggregate event database to include events from
         externally loaded submods, which were added after the initial
@@ -453,6 +543,112 @@ init 50 python:
             store.mas_stories.story_database = store.mas_all_ev_db_map["STY"]
             store.mas_songs.song_db = store.mas_all_ev_db_map["SNG"]
             store.mas_games.game_db = store.mas_all_ev_db_map["GME"]
+        except:
+            pass
+
+
+
+init python:
+    """
+    UNIVERSAL SUBMOD DB SYNC - POST-LOAD HOOK
+
+    Root cause discovered: Ren'Py's save/load system restores store module
+    variables (including nsfw_fetish.nsfw_fetish_database) from the save file
+    AFTER all init blocks run. Any update() done in init 7 gets overwritten
+    by the save restoration.
+
+    Fix: register a callback that fires AFTER the save is loaded (after_load)
+    and also AFTER a new game starts (start). At those points, sync the module
+    db attributes in-place from mas_all_ev_db_map, which is NOT overwritten
+    because it is rebuilt from scratch by addEvent at init 6.
+
+    This runs at the correct moment: after save restoration, before gameplay.
+    """
+    if renpy.android:
+        import types as _cb_types
+
+        def _mas_android_resync_submod_dbs():
+            """
+            Syncs submod module db attributes in-place from mas_all_ev_db_map.
+            Called after every save load and new game start on Android.
+            """
+            _STANDARD_CODES = {"EVE", "BYE", "GRE", "CMP", "MOO", "STY", "SNG", "GME"}
+            try:
+                for _cb_code, _cb_db in store.mas_all_ev_db_map.iteritems():
+                    if _cb_code in _STANDARD_CODES:
+                        continue
+                    if not _cb_db:
+                        continue
+
+                    # Identify the owning module via common event label prefix
+                    _cb_labels = list(_cb_db.keys())
+                    if not _cb_labels:
+                        continue
+
+                    _cb_common = _cb_labels[0]
+                    for _cb_lbl in _cb_labels[1:]:
+                        while not _cb_lbl.startswith(_cb_common):
+                            _cb_common = _cb_common[:-1]
+                            if not _cb_common:
+                                break
+                        if not _cb_common:
+                            break
+
+                    _cb_common = _cb_common.rstrip("_")
+                    if not _cb_common:
+                        continue
+
+                    # Find the store module by progressively shorter prefix
+                    _cb_parts = _cb_common.split("_")
+                    _cb_mod = None
+                    _cb_mod_name = None
+                    for _cb_n in range(len(_cb_parts), 0, -1):
+                        _cb_try = "_".join(_cb_parts[:_cb_n])
+                        try:
+                            _cb_obj = getattr(store, _cb_try)
+                            if isinstance(_cb_obj, _cb_types.ModuleType):
+                                _cb_mod = _cb_obj
+                                _cb_mod_name = _cb_try
+                                break
+                        except AttributeError:
+                            continue
+
+                    if _cb_mod is None:
+                        continue
+
+                    # Update the module db attribute in-place
+                    for _cb_attr in [_cb_mod_name + "_database", _cb_mod_name + "_db"]:
+                        try:
+                            _cb_existing = getattr(_cb_mod, _cb_attr)
+                        except AttributeError:
+                            continue
+                        if not isinstance(_cb_existing, dict):
+                            continue
+                        if id(_cb_existing) == id(_cb_db):
+                            break  # Already the same object
+                        if len(_cb_existing) == 0 or len(_cb_existing) < len(_cb_db):
+                            _cb_existing.update(_cb_db)
+                            print(
+                                "[ANDROID_SETUP resync] "
+                                + _cb_mod_name + "." + _cb_attr
+                                + " <- [" + _cb_code + "] "
+                                + str(len(_cb_db)) + " events"
+                            )
+                        break
+            except Exception as _cb_e:
+                print("[ANDROID_SETUP resync] Error: " + str(_cb_e))
+
+        # Register for BOTH new game start and save loading
+        try:
+            if not hasattr(config, "start_callbacks"):
+                config.start_callbacks = []
+            config.start_callbacks.append(_mas_android_resync_submod_dbs)
+        except:
+            pass
+        try:
+            if not hasattr(config, "after_load_callbacks"):
+                config.after_load_callbacks = []
+            config.after_load_callbacks.append(_mas_android_resync_submod_dbs)
         except:
             pass
 
