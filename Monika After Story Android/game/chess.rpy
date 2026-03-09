@@ -1978,7 +1978,7 @@ init python:
         )
         
         
-        MONIKA_WAITTIME = 50
+        MONIKA_WAITTIME = 2000 if renpy.android else 50
         
         MONIKA_OPTIMISM = 33
         
@@ -3393,8 +3393,12 @@ init python:
             Starts Monika's analysis of the board
             """
             self.stockfish.stdin.write("position fen {0}\n".format(self.board.fen()))
-            self.stockfish.stdin.write("go depth {0}\n".format(persistent._mas_chess_difficulty[1]))
-            self.stockfish.stdin.write("go movetime {0}\n".format(self.MONIKA_WAITTIME))
+            self.stockfish.stdin.write(
+                "go depth {0} movetime {1}\n".format(
+                    persistent._mas_chess_difficulty[1],
+                    self.MONIKA_WAITTIME
+                )
+            )
         
         def additional_setup(self):
             """
@@ -3412,8 +3416,12 @@ init python:
                     startupinfo - startup flags
                 """
                 try:
+                    if os.path.isabs(path):
+                        full_path = path
+                    else:
+                        full_path = os.path.join(renpy.config.gamedir, path).replace('\\', '/')
                     return subprocess.Popen(
-                        os.path.join(renpy.config.gamedir, path).replace('\\', '/'),
+                        full_path,
                         stdin=subprocess.PIPE,
                         stdout=subprocess.PIPE,
                         startupinfo=startupinfo
@@ -3532,6 +3540,11 @@ init python:
             self.stockfish.stdin.write("setoption name Skill Level value {0}\n".format(persistent._mas_chess_difficulty[0]))
             self.stockfish.stdin.write("setoption name Contempt value {0}\n".format(self.MONIKA_OPTIMISM))
             self.stockfish.stdin.write("setoption name Ponder value False\n")
+
+            if renpy.android:
+                self.stockfish.stdin.write("setoption name UCI_LimitStrength value true\n")
+                uci_elo = 1350 + (persistent._mas_chess_difficulty[0] * 15)
+                self.stockfish.stdin.write("setoption name UCI_Elo value {0}\n".format(uci_elo))
             
             
             self.queue = collections.deque()
