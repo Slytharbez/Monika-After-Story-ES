@@ -2043,6 +2043,13 @@ init 5 python:
     )
 
 label mas_monika_islands:
+    if persistent._mas_islands_start_lvl is None and seen_event("greeting_ourreality"):
+        python:
+            store.mas_island_event.start_progression()
+            if persistent._mas_islands_start_lvl is None:
+                persistent._mas_islands_start_lvl = 0
+                store.mas_island_event.advance_progression()
+
     m 1eub "¡Por supuesto! Puedes admirar el paisaje por ahora."
 
     call mas_islands (force_exp="monika 1eua", scene_change=True)
