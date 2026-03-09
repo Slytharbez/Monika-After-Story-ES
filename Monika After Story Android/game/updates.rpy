@@ -198,13 +198,15 @@ init python:
                         pass
                     
                     try:
-                        import renpy.display
+                        from renpy import display
                         _sls = renpy.game.context().scene_lists
                         for _layer in _sls.layers:
                             if _sls.layers[_layer]:
                                 _sls.layers[_layer] = [
                                     _item for _item in _sls.layers[_layer]
-                                    if getattr(_item, 'displayable', None) is not None and _item is not None
+                                    if getattr(_item, 'displayable', None) is not None 
+                                    and getattr(getattr(_item, 'displayable', None), 'screen', True) is not None 
+                                    and _item is not None
                                 ]
                     except:
                         pass
