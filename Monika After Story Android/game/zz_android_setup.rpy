@@ -223,7 +223,15 @@ init -999 python:
             os.path.join(ANDROID_PUBLIC_PATH, "game/mod_assets/monika/f/"),
             os.path.join(ANDROID_PUBLIC_PATH, "game/mod_assets/monika/h/"),
             os.path.join(ANDROID_PUBLIC_PATH, "game/mod_assets/monika/j/"),
-            os.path.join(ANDROID_PUBLIC_PATH, "game/mod_assets/monika/t/")
+            os.path.join(ANDROID_PUBLIC_PATH, "game/mod_assets/monika/t/"),
+            os.path.join(ANDROID_PUBLIC_PATH, "textures/"),
+            os.path.join(ANDROID_PUBLIC_PATH, "textures/monika/"),
+            os.path.join(ANDROID_PUBLIC_PATH, "textures/monika/eyes/"),
+            os.path.join(ANDROID_PUBLIC_PATH, "textures/monika/mouth/"),
+            os.path.join(ANDROID_PUBLIC_PATH, "textures/games/"),
+            os.path.join(ANDROID_PUBLIC_PATH, "textures/games/pong/"),
+            os.path.join(ANDROID_PUBLIC_PATH, "textures/games/nou/"),
+            os.path.join(ANDROID_PUBLIC_PATH, "textures/games/chess/")            
         ]
 
         for d in dirs_to_create:

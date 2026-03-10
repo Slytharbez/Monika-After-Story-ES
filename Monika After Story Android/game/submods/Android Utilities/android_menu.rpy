@@ -60,9 +60,11 @@ init python:
 
 style mas_android_choice_vbox is talk_choice_vbox
 style mas_android_choice_button is talk_choice_button:
-    xsize 450
+    xsize 460
+    padding (20, 5, 20, 5)
 style mas_android_choice_button_dark is talk_choice_button_dark:
-    xsize 450
+    xsize 460
+    padding (20, 5, 20, 5)
 style mas_android_choice_button_text is talk_choice_button_text
 style mas_android_choice_button_text_dark is talk_choice_button_text_dark
 
@@ -71,7 +73,7 @@ screen mas_android_talk_choice(items):
 
     viewport:
         id "android_choice_vp"
-        area (680, 40, 560, 640) # Approximate area matching MAS scrollable menus
+        area (800, 40, 480, 640) # Ajustado más a la derecha
         scrollbars "vertical"
         mousewheel True
         draggable True
@@ -79,7 +81,7 @@ screen mas_android_talk_choice(items):
         vbox:
             # We explicitly override the style's potential positional properties 
             # to ensure it sits inside the viewport correctly
-            xcenter 0.5
+            xalign 0.5
             yalign 0.0
             
             for i in items:
@@ -96,13 +98,14 @@ label anmenu:
     python:
         menu_items = [
             (_("Crear un regalo"), "giftmenu"),
-            (_("Ver afecto"), "aff_android_log")
+            (_("Ver afecto"), "aff_android_log"),
+            (_("Cambiar texturas"), "dtm_android_main")
         ]
         
         if persistent._mas_hidesearch:
-            menu_items.append((_("Habilitar la barra de búsqueda"), "toggle_search"))
+            menu_items.append((_("Activar la barra de búsqueda"), "toggle_search"))
         else:
-            menu_items.append((_("Deshabilitar la barra de búsqueda"), "toggle_search"))
+            menu_items.append((_("Desactivar la barra de búsqueda"), "toggle_search"))
             
         menu_items.append((_("Regresar"), "return"))
 
@@ -116,19 +119,22 @@ label anmenu:
     elif result == "toggle_search":
         $ persistent._mas_hidesearch = not persistent._mas_hidesearch
         if persistent._mas_hidesearch:
-            $ renpy.notify("La barra de búsqueda está deshabilitada.")
+            $ renpy.notify("La barra de búsqueda está desactivada.")
         else:
-            $ renpy.notify("La barra de búsqueda está habilitada.")
+            $ renpy.notify("La barra de búsqueda está activada.")
         jump anmenu
     
     elif result == "return":
         jump prompt_menu
     
+    elif result == "dtm_android_main":
+        jump dtm_android_main
+
     else:
         jump prompt_menu
 
 label aff_android_log:
-    $ current_aff = _mas_getAffection()
+    $ current_aff = int(round(_mas_getAffection()))
     $ nickname = persistent._mas_player_nickname
     "El afecto de [m_name] es de [current_aff] puntos."
     jump anmenu
@@ -389,3 +395,161 @@ label others:
 
 
 # Helper screen for simple gift lists to reduce code duplication
+
+# =============================================================================
+# ANDROID TEXTURE MANAGER
+# =============================================================================
+
+init python:
+    def mas_android_get_texture_folders(sub_path):
+        import os
+        base_path = os.path.join(store.ANDROID_PUBLIC_PATH, "textures", sub_path)
+        folders = []
+        if os.path.exists(base_path):
+            for d in os.listdir(base_path):
+                if os.path.isdir(os.path.join(base_path, d)):
+                    folders.append(d)
+        return folders
+
+label dtm_android_main:
+    python:
+        dtm_main_items = [
+            ("Monika", "dtm_android_monika"),
+            ("Juegos", "dtm_android_games"),
+            ("Volver", "return")
+        ]
+    $ result = renpy.display_menu(dtm_main_items, screen="mas_android_talk_choice")
+    if result == "return":
+        jump anmenu
+    else:
+        jump expression result
+
+label dtm_android_monika:
+    python:
+        dtm_m_items = [
+            ("Ojos", "dtm_android_scan_eyes"),
+            ("Boca", "dtm_android_scan_mouth"),
+            ("Volver", "return")
+        ]
+    $ result = renpy.display_menu(dtm_m_items, screen="mas_android_talk_choice")
+    if result == "return":
+        jump dtm_android_main
+    else:
+        jump expression result
+
+label dtm_android_games:
+    python:
+        dtm_g_items = [
+            ("Ajedrez", "dtm_android_scan_chess"),
+            ("Pong", "dtm_android_scan_pong"),
+            ("NOU", "dtm_android_scan_nou"),
+            ("Volver", "return")
+        ]
+    $ result = renpy.display_menu(dtm_g_items, screen="mas_android_talk_choice")
+    if result == "return":
+        jump dtm_android_main
+    else:
+        jump expression result
+
+label dtm_android_scan_eyes:
+    python:
+        folders = mas_android_get_texture_folders("monika/eyes")
+        items = [(f, f) for f in folders]
+        items.append(("Restaurar Original", "restaurar"))
+        items.append(("Volver", "return"))
+    $ result = renpy.display_menu(items, screen="mas_android_talk_choice")
+    if result == "return":
+        jump dtm_android_monika
+    elif result == "restaurar":
+        python:
+            if hasattr(store, "dtm_core"):
+                store.dtm_core.reset_eye_textures()
+        $ renpy.notify("Texturas restauradas")
+        jump dtm_android_scan_eyes
+    else:
+        python:
+            if hasattr(store, "dtm_core"):
+                # Asumimos override general o pasamos el nombre de la carpeta para futuro mapeo
+                store.dtm_core.set_eye_texture("e", result)
+        $ renpy.notify("Textura cambiada exitosamente")
+        jump dtm_android_scan_eyes
+
+label dtm_android_scan_mouth:
+    python:
+        folders = mas_android_get_texture_folders("monika/mouth")
+        items = [(f, f) for f in folders]
+        items.append(("Restaurar Original", "restaurar"))
+        items.append(("Volver", "return"))
+    $ result = renpy.display_menu(items, screen="mas_android_talk_choice")
+    if result == "return":
+        jump dtm_android_monika
+    elif result == "restaurar":
+        # Placeholder till mouth reset is implemented
+        $ renpy.notify("Texturas restauradas")
+        jump dtm_android_scan_mouth
+    else:
+        $ renpy.notify("Textura cambiada exitosamente")
+        jump dtm_android_scan_mouth
+
+label dtm_android_scan_chess:
+    python:
+        folders = mas_android_get_texture_folders("games/chess")
+        items = [(f, f) for f in folders]
+        items.append(("Restaurar Original", "restaurar"))
+        items.append(("Volver", "return"))
+    $ result = renpy.display_menu(items, screen="mas_android_talk_choice")
+    if result == "return":
+        jump dtm_android_games
+    elif result == "restaurar":
+        python:
+            if hasattr(store, "dtm_core"):
+                store.dtm_core.reset_chess_pieces()
+        $ renpy.notify("Texturas restauradas")
+        jump dtm_android_scan_chess
+    else:
+        python:
+            # Pasa el nombre de la carpeta como identificador
+            pass
+        $ renpy.notify("Textura cambiada exitosamente")
+        jump dtm_android_scan_chess
+
+label dtm_android_scan_pong:
+    python:
+        folders = mas_android_get_texture_folders("games/pong")
+        items = [(f, f) for f in folders]
+        items.append(("Restaurar Original", "restaurar"))
+        items.append(("Volver", "return"))
+    $ result = renpy.display_menu(items, screen="mas_android_talk_choice")
+    if result == "return":
+        jump dtm_android_games
+    elif result == "restaurar":
+        python:
+            if hasattr(store, "dtm_core"):
+                store.dtm_core.reset_pong_field()
+        $ renpy.notify("Texturas restauradas")
+        jump dtm_android_scan_pong
+    else:
+        python:
+            if hasattr(store, "dtm_core"):
+                import os
+                # Asumimos que dentro de la carpeta hay un pong_field.png
+                field_path = os.path.join(store.ANDROID_PUBLIC_PATH, "textures", "games", "pong", result, "pong_field.png")
+                store.dtm_core.set_pong_field(field_path)
+        $ renpy.notify("Textura cambiada exitosamente")
+        jump dtm_android_scan_pong
+
+label dtm_android_scan_nou:
+    python:
+        folders = mas_android_get_texture_folders("games/nou")
+        items = [(f, f) for f in folders]
+        items.append(("Restaurar Original", "restaurar"))
+        items.append(("Volver", "return"))
+    $ result = renpy.display_menu(items, screen="mas_android_talk_choice")
+    if result == "return":
+        jump dtm_android_games
+    elif result == "restaurar":
+        $ renpy.notify("Texturas restauradas")
+        jump dtm_android_scan_nou
+    else:
+        $ renpy.notify("Textura cambiada exitosamente")
+        jump dtm_android_scan_nou
