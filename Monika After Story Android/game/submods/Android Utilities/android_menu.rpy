@@ -525,16 +525,16 @@ label dtm_android_scan_pong:
     elif result == "restaurar":
         python:
             if hasattr(store, "dtm_core"):
-                store.dtm_core.reset_pong_field()
+                store.dtm_core.reset_pong_textures()
         $ renpy.notify("Texturas restauradas")
         jump dtm_android_scan_pong
     else:
         python:
             if hasattr(store, "dtm_core"):
                 import os
-                # Asumimos que dentro de la carpeta hay un pong_field.png
-                field_path = os.path.join(store.ANDROID_PUBLIC_PATH, "textures", "games", "pong", result, "pong_field.png")
-                store.dtm_core.set_pong_field(field_path)
+                # Pasamos la ruta completa de la carpeta del pong seleccionado
+                pong_folder = os.path.join(store.ANDROID_PUBLIC_PATH, "textures", "games", "pong", result)
+                store.dtm_core.set_pong_textures(pong_folder)
         $ renpy.notify("Textura cambiada exitosamente")
         jump dtm_android_scan_pong
 
