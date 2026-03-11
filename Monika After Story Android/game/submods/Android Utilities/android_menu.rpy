@@ -548,8 +548,16 @@ label dtm_android_scan_nou:
     if result == "return":
         jump dtm_android_games
     elif result == "restaurar":
+        python:
+            if hasattr(store, "dtm_core"):
+                store.dtm_core.reset_nou_textures()
         $ renpy.notify("Texturas restauradas")
         jump dtm_android_scan_nou
     else:
+        python:
+            if hasattr(store, "dtm_core"):
+                import os
+                nou_folder = os.path.join(store.ANDROID_PUBLIC_PATH, "textures", "games", "nou", result)
+                store.dtm_core.set_nou_textures(nou_folder)
         $ renpy.notify("Textura cambiada exitosamente")
         jump dtm_android_scan_nou

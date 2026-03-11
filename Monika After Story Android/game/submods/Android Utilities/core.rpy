@@ -211,6 +211,130 @@ init 999 python in dtm_core:
             for p_sym, img_path in store.persistent._mas_dtm_overrides["chess_pieces"].items():
                 store.mas_chess.MASPiece.IMG_MAP[p_sym] = img_path
 
+    # ==========================================
+    # NOU (UNO) TEXTURE LOGIC
+    # ==========================================
+    def set_nou_textures(new_nou_folder_path):
+        """
+        Sets the NOU mod folder path. This folder should contain cards/, desks/, sfx/, note.png, and pen.png
+        """
+        if "nou_theme" not in store.persistent._mas_dtm_overrides:
+            store.persistent._mas_dtm_overrides["nou_theme"] = None
+        store.persistent._mas_dtm_overrides["nou_theme"] = new_nou_folder_path
+        apply_nou_overrides()
+
+    def reset_nou_textures():
+        store.persistent._mas_dtm_overrides["nou_theme"] = None
+        # Restore constants
+        if hasattr(store, "_mas_dtm_original_nou_assets"):
+            if hasattr(store, "mas_nou"):
+                store.mas_nou.ASSETS = store._mas_dtm_original_nou_assets
+            if hasattr(store, "mas_cardgames"):
+                store.mas_cardgames.DESK_SPRITES_PATH = store._mas_dtm_original_nou_desks
+        # Restore filter switch
+        if hasattr(store, "_mas_dtm_original_filter_switch"):
+            store.MASFilterSwitch = store._mas_dtm_original_filter_switch
+        # Reload native SFX and desks
+        if hasattr(store, "mas_nou") and hasattr(store.mas_nou.NOU, "_load_sfx"):
+            store.mas_nou.NOU._load_sfx()
+        if hasattr(store, "mas_cardgames") and hasattr(store.mas_cardgames, "_m1_zz_cardgames__scanDeskSprites"):
+            store.mas_cardgames.DESK_SPRITES_MAP.clear()
+            store.mas_cardgames._m1_zz_cardgames__scanDeskSprites()
+
+    def apply_nou_overrides():
+        """
+        Copies NOU textures to internal cache, overrides MAS_NOU assets constants, and reloads sfx/desks.
+        """
+        if "nou_theme" not in store.persistent._mas_dtm_overrides:
+            store.persistent._mas_dtm_overrides["nou_theme"] = None
+            
+        nou_folder = store.persistent._mas_dtm_overrides.get("nou_theme", None)
+        
+        if not nou_folder:
+            return
+            
+        import os
+        import shutil
+        
+        # Save originals first
+        if not hasattr(store, "_mas_dtm_original_nou_assets") and hasattr(store, "mas_nou"):
+            store._mas_dtm_original_nou_assets = store.mas_nou.ASSETS
+            if hasattr(store, "mas_cardgames"):
+                store._mas_dtm_original_nou_desks = store.mas_cardgames.DESK_SPRITES_PATH
+            else:
+                store._mas_dtm_original_nou_desks = "mod_assets/games/nou/desks/"
+        
+        # 1. Copy the entire custom NOU folder to internal cache
+        cache_dir = os.path.join(renpy.config.gamedir, "_dtm_cache", "nou")
+        try:
+            if os.path.exists(cache_dir):
+                shutil.rmtree(cache_dir)
+            shutil.copytree(nou_folder, cache_dir)
+        except Exception:
+            return
+            
+        # The internal path representation needed by Ren'Py config/searchpaths
+        internal_nou_path = "_dtm_cache/nou/"
+        
+        # 2. Override dynamic map variables
+        if hasattr(store, "mas_nou"):
+            store.mas_nou.ASSETS = internal_nou_path
+        if hasattr(store, "mas_cardgames"):
+            store.mas_cardgames.DESK_SPRITES_PATH = internal_nou_path + "desks/"
+            
+        # 3. Handle static UI overrides (note.png, pen.png) via MASFilterSwitch hook
+        if not hasattr(store, "_mas_dtm_original_filter_switch"):
+            store._mas_dtm_original_filter_switch = store.MASFilterSwitch
+
+        def custom_filter_switch(img):
+            if isinstance(img, basestring):
+                if img == "mod_assets/games/nou/note.png" and os.path.isfile(os.path.join(cache_dir, "note.png")):
+                    img = internal_nou_path + "note.png"
+                elif img == "mod_assets/games/nou/pen.png" and os.path.isfile(os.path.join(cache_dir, "pen.png")):
+                    img = internal_nou_path + "pen.png"
+            return store._mas_dtm_original_filter_switch(img)
+            
+        store.MASFilterSwitch = custom_filter_switch
+            
+        # 4. Reload Desks by manually scanning os.listdir (since renpy.list_files ignores our cache)
+        if hasattr(store, "mas_cardgames") and hasattr(store, "mas_background"):
+            store.mas_cardgames.DESK_SPRITES_MAP.clear()
+            desk_dir = os.path.join(cache_dir, "desks")
+            if os.path.exists(desk_dir):
+                sprites_map = {}
+                for f in os.listdir(desk_dir):
+                    if os.path.isfile(os.path.join(desk_dir, f)):
+                        key = f.rpartition(".")[0]
+                        if key:
+                            sprites_map[key] = f
+                
+                fb = sprites_map.get(store.mas_background.MBG_DEF)
+                for bg_id in store.mas_background.BACKGROUND_MAP.iterkeys():
+                    if bg_id not in store.mas_cardgames.DESK_SPRITES_MAP:
+                        filename = sprites_map.get(bg_id, fb)
+                        if filename:
+                            store.mas_cardgames.DESK_SPRITES_MAP[bg_id] = store.MASFilterSwitch(internal_nou_path + "desks/" + filename)
+
+        # 5. Reload SFX by manually scanning os.listdir
+        if hasattr(store, "mas_nou"):
+            store.mas_nou.NOU._reset_sfx()
+            sfx_dir = os.path.join(cache_dir, "sfx")
+            if os.path.exists(sfx_dir):
+                name_to_sfx_list_map = {
+                    "shuffle": store.mas_nou.NOU.SFX_SHUFFLE,
+                    "move": store.mas_nou.NOU.SFX_MOVE,
+                    "slide": store.mas_nou.NOU.SFX_DRAW,
+                    "place": store.mas_nou.NOU.SFX_PLAY,
+                    "shove": store.mas_nou.NOU.SFX_PLAY
+                }
+                for f in os.listdir(sfx_dir):
+                    if not f.endswith(store.mas_nou.NOU.SFX_EXT):
+                        continue
+                    name, undscr, rest = f.partition("_")
+                    sfx_list = name_to_sfx_list_map.get(name, None)
+                    if sfx_list is not None:
+                        sfx_list.append(internal_nou_path + "sfx/" + f)
+
 # Auto-apply on game start
 init 1000 python:
     store.dtm_core.apply_sprite_overrides()
@@ -218,3 +342,4 @@ init 1000 python:
     if hasattr(store, "mas_chess"):
         store.dtm_core.apply_chess_overrides()
     store.dtm_core.apply_pong_overrides()
+    store.dtm_core.apply_nou_overrides()
