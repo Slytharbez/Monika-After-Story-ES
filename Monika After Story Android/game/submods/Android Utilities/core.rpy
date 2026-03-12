@@ -123,6 +123,7 @@ init 999 python in dtm_core:
             store.PongDisplayable.__init__ = store._mas_dtm_original_pong_init
         if hasattr(store, "_mas_dtm_pong_surfaces"):
             del store._mas_dtm_pong_surfaces
+        renpy.display.im.cache.clear()
 
     def apply_pong_overrides():
         """
@@ -160,6 +161,9 @@ init 999 python in dtm_core:
                     pass
         
         store._mas_dtm_pong_surfaces = copied
+        
+        # Clear Ren'Py's image cache so it re-reads the modified internal files
+        renpy.display.im.cache.clear()
         
         # 1. Background image override with internal-path Image
         if "pong_field.png" in copied:
@@ -225,12 +229,6 @@ init 999 python in dtm_core:
 
     def reset_nou_textures():
         store.persistent._mas_dtm_overrides["nou_theme"] = None
-        # Restore constants
-        if hasattr(store, "_mas_dtm_original_nou_assets"):
-            if hasattr(store, "mas_nou"):
-                store.mas_nou.ASSETS = store._mas_dtm_original_nou_assets
-            if hasattr(store, "mas_cardgames"):
-                store.mas_cardgames.DESK_SPRITES_PATH = store._mas_dtm_original_nou_desks
         # Restore filter switch
         if hasattr(store, "_mas_dtm_original_filter_switch"):
             store.MASFilterSwitch = store._mas_dtm_original_filter_switch
@@ -240,6 +238,13 @@ init 999 python in dtm_core:
         if hasattr(store, "mas_cardgames") and hasattr(store.mas_cardgames, "_m1_zz_cardgames__scanDeskSprites"):
             store.mas_cardgames.DESK_SPRITES_MAP.clear()
             store.mas_cardgames._m1_zz_cardgames__scanDeskSprites()
+            
+        if hasattr(store, "_mas_dtm_original_nou_init") and hasattr(store, "mas_nou"):
+            store.mas_nou.NOU.__init__ = store._mas_dtm_original_nou_init
+        if hasattr(store, "_mas_dtm_original_load_card_asset") and hasattr(store, "mas_nou"):
+            store.mas_nou.NOU._m1_zz_cardgames__load_card_asset = store._mas_dtm_original_load_card_asset
+            
+        renpy.display.im.cache.clear()
 
     def apply_nou_overrides():
         """
@@ -256,31 +261,107 @@ init 999 python in dtm_core:
         import os
         import shutil
         
-        # Save originals first
-        if not hasattr(store, "_mas_dtm_original_nou_assets") and hasattr(store, "mas_nou"):
-            store._mas_dtm_original_nou_assets = store.mas_nou.ASSETS
-            if hasattr(store, "mas_cardgames"):
-                store._mas_dtm_original_nou_desks = store.mas_cardgames.DESK_SPRITES_PATH
-            else:
-                store._mas_dtm_original_nou_desks = "mod_assets/games/nou/desks/"
+        # Initialize trigger flag
+        store.mas_dtm_trigger_nou_apply = False
         
-        # 1. Copy the entire custom NOU folder to internal cache
+        # Always reset to pure vanilla state first so we only override what we have
+        reset_nou_textures()
+        # Restore the variable that reset clear
+        store.persistent._mas_dtm_overrides["nou_theme"] = nou_folder
+        # 1. Run the heavy file copy operation in a true background thread to prevent UI freezing.
+        #    Ren'Py API calls inside threads cause GIL/Render locks, so we only use pure Python here.
+        def background_copy_nou():
+            cache_dir = os.path.join(renpy.config.gamedir, "_dtm_cache", "nou")
+            try:
+                if os.path.exists(cache_dir):
+                    shutil.rmtree(cache_dir, ignore_errors=True)
+                    
+                if not os.path.exists(cache_dir):
+                    os.makedirs(cache_dir)
+                    
+                for root, dirs, files in os.walk(nou_folder):
+                    rel_path = os.path.relpath(root, nou_folder).lower()
+                    if rel_path == ".":
+                        rel_path = ""
+                        
+                    dest_dir = os.path.join(cache_dir, rel_path)
+                    if not os.path.exists(dest_dir):
+                        try:
+                            os.makedirs(dest_dir)
+                        except Exception:
+                            pass
+                            
+                    for f in files:
+                        src_f = os.path.join(root, f)
+                        dst_f = os.path.join(dest_dir, f.lower())
+                        try:
+                            shutil.copy2(src_f, dst_f)
+                        except Exception:
+                            pass
+            except Exception:
+                pass
+            finally:
+                # Signal the main thread to apply the overrides
+                store.mas_dtm_trigger_nou_apply = True
+                
+        # Only start the thread here, the rest of the application runs asynchronously
+        import threading
+        threading.Thread(target=background_copy_nou).start()
+        
+    def _finish_apply_nou_overrides():
+        """
+        Called by the main thread after the background copy completes.
+        Applies variables and reloads assets.
+        """
+        import os
         cache_dir = os.path.join(renpy.config.gamedir, "_dtm_cache", "nou")
-        try:
-            if os.path.exists(cache_dir):
-                shutil.rmtree(cache_dir)
-            shutil.copytree(nou_folder, cache_dir)
-        except Exception:
-            return
             
         # The internal path representation needed by Ren'Py config/searchpaths
         internal_nou_path = "_dtm_cache/nou/"
         
-        # 2. Override dynamic map variables
+        # 2. Hook NOU.__init__ to override card back
+        if not hasattr(store, "_mas_dtm_original_nou_init") and hasattr(store, "mas_nou"):
+            store._mas_dtm_original_nou_init = store.mas_nou.NOU.__init__
+            
+        def custom_nou_init(self, *args, **kwargs):
+            store._mas_dtm_original_nou_init(self, *args, **kwargs)
+            cache_back = os.path.join(renpy.config.gamedir, "_dtm_cache", "nou", "cards", "back.png")
+            if os.path.exists(cache_back):
+                self.table.back = store.Image("_dtm_cache/nou/cards/back.png")
+                
         if hasattr(store, "mas_nou"):
-            store.mas_nou.ASSETS = internal_nou_path
-        if hasattr(store, "mas_cardgames"):
-            store.mas_cardgames.DESK_SPRITES_PATH = internal_nou_path + "desks/"
+            store.mas_nou.NOU.__init__ = custom_nou_init
+        
+        # 3. Hook NOU._load_card_asset to override individual cards
+        if hasattr(store, "mas_nou") and not hasattr(store, "_mas_dtm_original_load_card_asset"):
+            store._mas_dtm_original_load_card_asset = store.mas_nou.NOU._m1_zz_cardgames__load_card_asset
+            
+        def custom_load_card_asset(self, card):
+            store._mas_dtm_original_load_card_asset(self, card)
+            card_png = self._m1_zz_cardgames__get_card_filename(card)
+            
+            # Universal NOU texture packs use English color prefixes: r, b, g, y
+            # Spanish MAS port uses: r, c, v, a (rojo, celeste, verde, amarillo)
+            eng_card_png = card_png
+            if card_png.startswith("c"):
+                eng_card_png = "b" + card_png[1:]
+            elif card_png.startswith("v"):
+                eng_card_png = "g" + card_png[1:]
+            elif card_png.startswith("a"):
+                eng_card_png = "y" + card_png[1:]
+                
+            cache_path_sp = os.path.join(renpy.config.gamedir, "_dtm_cache", "nou", "cards", card_png + ".png")
+            cache_path_en = os.path.join(renpy.config.gamedir, "_dtm_cache", "nou", "cards", eng_card_png + ".png")
+            
+            if os.path.exists(cache_path_sp):
+                self.table.card(card, "_dtm_cache/nou/cards/" + card_png + ".png")
+                self.table.set_faceup(card, False)
+            elif os.path.exists(cache_path_en):
+                self.table.card(card, "_dtm_cache/nou/cards/" + eng_card_png + ".png")
+                self.table.set_faceup(card, False)
+                
+        if hasattr(store, "mas_nou"):
+            store.mas_nou.NOU._m1_zz_cardgames__load_card_asset = custom_load_card_asset
             
         # 3. Handle static UI overrides (note.png, pen.png) via MASFilterSwitch hook
         if not hasattr(store, "_mas_dtm_original_filter_switch"):
@@ -315,9 +396,8 @@ init 999 python in dtm_core:
                         if filename:
                             store.mas_cardgames.DESK_SPRITES_MAP[bg_id] = store.MASFilterSwitch(internal_nou_path + "desks/" + filename)
 
-        # 5. Reload SFX by manually scanning os.listdir
+        # 6. Reload SFX safely
         if hasattr(store, "mas_nou"):
-            store.mas_nou.NOU._reset_sfx()
             sfx_dir = os.path.join(cache_dir, "sfx")
             if os.path.exists(sfx_dir):
                 name_to_sfx_list_map = {
@@ -327,13 +407,32 @@ init 999 python in dtm_core:
                     "place": store.mas_nou.NOU.SFX_PLAY,
                     "shove": store.mas_nou.NOU.SFX_PLAY
                 }
+                found_types = set()
                 for f in os.listdir(sfx_dir):
-                    if not f.endswith(store.mas_nou.NOU.SFX_EXT):
-                        continue
-                    name, undscr, rest = f.partition("_")
-                    sfx_list = name_to_sfx_list_map.get(name, None)
-                    if sfx_list is not None:
-                        sfx_list.append(internal_nou_path + "sfx/" + f)
+                    if f.endswith(store.mas_nou.NOU.SFX_EXT):
+                        found_types.add(f.partition("_")[0])
+                        
+                for t in found_types:
+                    lst = name_to_sfx_list_map.get(t)
+                    if lst is not None:
+                        del lst[:]
+                        
+                for f in os.listdir(sfx_dir):
+                    if f.endswith(store.mas_nou.NOU.SFX_EXT):
+                        lst = name_to_sfx_list_map.get(f.partition("_")[0])
+                        if lst is not None:
+                            lst.append(internal_nou_path + "sfx/" + f)
+                        
+        renpy.display.im.cache.clear()
+        renpy.notify("Texturas aplicadas exitosamente")
+
+# Polling screen for NOU background setup
+screen dtm_background_apply_nou_timer():
+    timer 0.5 repeat True action If(store.mas_dtm_trigger_nou_apply, true=[
+        Function(store.dtm_core._finish_apply_nou_overrides),
+        SetField(store, "mas_dtm_trigger_nou_apply", False),
+        Hide("dtm_background_apply_nou_timer")
+    ], false=None)
 
 # Auto-apply on game start
 init 1000 python:
