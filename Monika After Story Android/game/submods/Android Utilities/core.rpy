@@ -184,36 +184,179 @@ init 999 python in dtm_core:
 
             store.PongDisplayable.__init__ = custom_pong_init
 
-    def set_chess_piece(piece_symbol, new_image_path):
+    # ==========================================
+    # CHESS TEXTURE LOGIC
+    # ==========================================
+    def set_chess_textures(chess_folder_path):
         """
-        Piece symbols generally: wP, wN, wB, wR, wQ, wK, bP, bN, bB, bR, bQ, bK
+        Sets the chess texture folder. This folder should contain:
+         - chess_board.png (background board)
+         - pieces/ folder with wP, wN, wB, wR, wQ, wK, bP, bN, bB, bR, bQ, bK (or lower-case b*)
         """
-        store.persistent._mas_dtm_overrides["chess_pieces"][piece_symbol] = new_image_path
+        if "chess_theme" not in store.persistent._mas_dtm_overrides:
+            store.persistent._mas_dtm_overrides["chess_theme"] = None
+        store.persistent._mas_dtm_overrides["chess_theme"] = chess_folder_path
         apply_chess_overrides()
+
+    def reset_chess_textures():
+        store.persistent._mas_dtm_overrides["chess_theme"] = None
+        if hasattr(store, "MASPiece"):
+            if hasattr(store, "_mas_dtm_original_chess_map"):
+                store.MASPiece.IMG_MAP.clear()
+                store.MASPiece.IMG_MAP.update(store._mas_dtm_original_chess_map)
+        if hasattr(store, "_mas_dtm_original_chess_board"):
+            store.MASChessDisplayableBase.BOARD_IMAGE = store._mas_dtm_original_chess_board
+        if hasattr(store, "_mas_dtm_original_chess_indicator_player"):
+            store.MASChessDisplayableBase.MOVE_INDICATOR_PLAYER = store._mas_dtm_original_chess_indicator_player
+        if hasattr(store, "_mas_dtm_original_chess_indicator_monika"):
+            store.MASChessDisplayableBase.MOVE_INDICATOR_MONIKA = store._mas_dtm_original_chess_indicator_monika
+        if hasattr(store, "_mas_dtm_original_chess_hl_green"):
+            store.MASChessDisplayableBase.PIECE_HIGHLIGHT_GREEN_IMAGE = store._mas_dtm_original_chess_hl_green
+        if hasattr(store, "_mas_dtm_original_chess_hl_red"):
+            store.MASChessDisplayableBase.PIECE_HIGHLIGHT_RED_IMAGE = store._mas_dtm_original_chess_hl_red
+        if hasattr(store, "_mas_dtm_original_chess_hl_yellow"):
+            store.MASChessDisplayableBase.PIECE_HIGHLIGHT_YELLOW_IMAGE = store._mas_dtm_original_chess_hl_yellow
+        if hasattr(store, "_mas_dtm_original_chess_hl_magenta"):
+            store.MASChessDisplayableBase.PIECE_HIGHLIGHT_MAGENTA_IMAGE = store._mas_dtm_original_chess_hl_magenta
+        renpy.display.im.cache.clear()
         force_update_mas_visuals()
 
-    def reset_chess_pieces():
-        store.persistent._mas_dtm_overrides["chess_pieces"].clear()
-        # Restore chess piece dict (assumes original MASPiece.IMG_MAP defaults or re-importing)
-        # We need to rebuild or trigger MAS's native setup if needed, but for now we'll do simple restore.
-        # Actually chess IMG_MAP is built on import. We'll store a copy on init if possible.
-        if hasattr(store, "mas_chess") and hasattr(store.mas_chess, "MASPiece"):
-            if not hasattr(store, "_mas_dtm_original_chess_map"):
-                pass # Can't restore properly if we didn't save it. So we'll save it at initial hook.
-            else:
-                for k, v in store._mas_dtm_original_chess_map.items():
-                    store.mas_chess.MASPiece.IMG_MAP[k] = v
-        force_update_mas_visuals()
+    # Legacy alias for old reset button in android_menu.rpy
+    reset_chess_pieces = reset_chess_textures
 
-    def apply_chess_overrides():
-        if hasattr(store, "mas_chess") and hasattr(store.mas_chess, "MASPiece"):
-            # Prepare backup map first time
-            if not hasattr(store, "_mas_dtm_original_chess_map"):
-                store._mas_dtm_original_chess_map = store.mas_chess.MASPiece.IMG_MAP.copy()
+    def apply_chess_overrides(sync=False):
+        """
+        Copies chess textures to internal cache and applies them.
+        sync=True: runs synchronously (used at startup).
+        sync=False: runs file copy in background thread, uses timer screen (used from UI).
+        """
+        if "chess_theme" not in store.persistent._mas_dtm_overrides:
+            store.persistent._mas_dtm_overrides["chess_theme"] = None
             
-            # Apply 
-            for p_sym, img_path in store.persistent._mas_dtm_overrides["chess_pieces"].items():
-                store.mas_chess.MASPiece.IMG_MAP[p_sym] = img_path
+        chess_folder = store.persistent._mas_dtm_overrides.get("chess_theme", None)
+        if not chess_folder:
+            return
+            
+        import os
+        import shutil
+        
+        # Initialize trigger flag
+        store.mas_dtm_trigger_chess_apply = False
+        
+        # Reset to vanilla first
+        reset_chess_textures()
+        # Restore path after reset
+        store.persistent._mas_dtm_overrides["chess_theme"] = chess_folder
+        
+        def do_copy_chess():
+            cache_dir = os.path.join(renpy.config.gamedir, "_dtm_cache", "chess")
+            try:
+                if os.path.exists(cache_dir):
+                    shutil.rmtree(cache_dir, ignore_errors=True)
+                if not os.path.exists(cache_dir):
+                    os.makedirs(cache_dir)
+                    
+                for root, dirs, files in os.walk(chess_folder):
+                    rel_path = os.path.relpath(root, chess_folder).lower()
+                    if rel_path == ".":
+                        rel_path = ""
+                    dest_dir = os.path.join(cache_dir, rel_path)
+                    if not os.path.exists(dest_dir):
+                        try:
+                            os.makedirs(dest_dir)
+                        except Exception:
+                            pass
+                    for f in files:
+                        src_f = os.path.join(root, f)
+                        dst_f = os.path.join(dest_dir, f)  # preserve case for chess
+                        try:
+                            shutil.copy2(src_f, dst_f)
+                        except Exception:
+                            pass
+            except Exception:
+                pass
+            finally:
+                store.mas_dtm_trigger_chess_apply = True
+        
+        if sync:
+            # Startup path: run synchronously then finish immediately
+            do_copy_chess()
+            _finish_apply_chess_overrides(startup=True)
+        else:
+            # UI path: background thread + timer screen
+            import threading
+            threading.Thread(target=do_copy_chess).start()
+
+    def _finish_apply_chess_overrides(startup=False):
+        """
+        Called by the main thread after the background chess copy completes.
+        Patches IMG_MAP and BOARD_IMAGE.
+        """
+        import os
+        cache_dir = os.path.join(renpy.config.gamedir, "_dtm_cache", "chess")
+        pieces_dir = os.path.join(cache_dir, "pieces")
+        
+        if not hasattr(store, "MASPiece"):
+            return
+            
+        # Save originals if not done yet
+        if not hasattr(store, "_mas_dtm_original_chess_map"):
+            store._mas_dtm_original_chess_map = store.MASPiece.IMG_MAP.copy()
+        if not hasattr(store, "_mas_dtm_original_chess_board"):
+            store._mas_dtm_original_chess_board = store.MASChessDisplayableBase.BOARD_IMAGE
+        if not hasattr(store, "_mas_dtm_original_chess_indicator_player"):
+            store._mas_dtm_original_chess_indicator_player = store.MASChessDisplayableBase.MOVE_INDICATOR_PLAYER
+        if not hasattr(store, "_mas_dtm_original_chess_indicator_monika"):
+            store._mas_dtm_original_chess_indicator_monika = store.MASChessDisplayableBase.MOVE_INDICATOR_MONIKA
+        if not hasattr(store, "_mas_dtm_original_chess_hl_green"):
+            store._mas_dtm_original_chess_hl_green = store.MASChessDisplayableBase.PIECE_HIGHLIGHT_GREEN_IMAGE
+        if not hasattr(store, "_mas_dtm_original_chess_hl_red"):
+            store._mas_dtm_original_chess_hl_red = store.MASChessDisplayableBase.PIECE_HIGHLIGHT_RED_IMAGE
+        if not hasattr(store, "_mas_dtm_original_chess_hl_yellow"):
+            store._mas_dtm_original_chess_hl_yellow = store.MASChessDisplayableBase.PIECE_HIGHLIGHT_YELLOW_IMAGE
+        if not hasattr(store, "_mas_dtm_original_chess_hl_magenta"):
+            store._mas_dtm_original_chess_hl_magenta = store.MASChessDisplayableBase.PIECE_HIGHLIGHT_MAGENTA_IMAGE
+            
+        # Override board image if present
+        board_path = os.path.join(cache_dir, "chess_board.png")
+        if os.path.exists(board_path):
+            store.MASChessDisplayableBase.BOARD_IMAGE = store.Image("_dtm_cache/chess/chess_board.png")
+            
+        # Override move indicators if present
+        ind_player_path = os.path.join(cache_dir, "move_indicator_player.png")
+        if os.path.exists(ind_player_path):
+            store.MASChessDisplayableBase.MOVE_INDICATOR_PLAYER = store.Image("_dtm_cache/chess/move_indicator_player.png")
+            
+        ind_monika_path = os.path.join(cache_dir, "move_indicator_monika.png")
+        if os.path.exists(ind_monika_path):
+            store.MASChessDisplayableBase.MOVE_INDICATOR_MONIKA = store.Image("_dtm_cache/chess/move_indicator_monika.png")
+
+        # Override piece highlights if present
+        _chess_hl_map = {
+            "piece_highlight_green.png": "PIECE_HIGHLIGHT_GREEN_IMAGE",
+            "piece_highlight_red.png": "PIECE_HIGHLIGHT_RED_IMAGE",
+            "piece_highlight_yellow.png": "PIECE_HIGHLIGHT_YELLOW_IMAGE",
+            "piece_highlight_magenta.png": "PIECE_HIGHLIGHT_MAGENTA_IMAGE",
+        }
+        for fname, attr in _chess_hl_map.items():
+            fpath = os.path.join(cache_dir, fname)
+            if os.path.exists(fpath):
+                setattr(store.MASChessDisplayableBase, attr, store.Image("_dtm_cache/chess/" + fname))
+            
+        # Override pieces
+        if os.path.exists(pieces_dir):
+            for fname in os.listdir(pieces_dir):
+                if not fname.lower().endswith(".png"):
+                    continue
+                key = fname[:-4]  # strip .png
+                cached_rel = "_dtm_cache/chess/pieces/" + fname
+                if key in store.MASPiece.IMG_MAP:
+                    store.MASPiece.IMG_MAP[key] = store.Image(cached_rel)
+                    
+        renpy.display.im.cache.clear()
+        if not startup:
+            force_update_mas_visuals()
+            renpy.notify("Texturas de ajedrez aplicadas")
 
     # ==========================================
     # NOU (UNO) TEXTURE LOGIC
@@ -246,9 +389,11 @@ init 999 python in dtm_core:
             
         renpy.display.im.cache.clear()
 
-    def apply_nou_overrides():
+    def apply_nou_overrides(sync=False):
         """
         Copies NOU textures to internal cache, overrides MAS_NOU assets constants, and reloads sfx/desks.
+        sync=True: runs synchronously (used at startup).
+        sync=False: background thread + timer screen (used from UI).
         """
         if "nou_theme" not in store.persistent._mas_dtm_overrides:
             store.persistent._mas_dtm_overrides["nou_theme"] = None
@@ -268,9 +413,8 @@ init 999 python in dtm_core:
         reset_nou_textures()
         # Restore the variable that reset clear
         store.persistent._mas_dtm_overrides["nou_theme"] = nou_folder
-        # 1. Run the heavy file copy operation in a true background thread to prevent UI freezing.
-        #    Ren'Py API calls inside threads cause GIL/Render locks, so we only use pure Python here.
-        def background_copy_nou():
+
+        def do_copy_nou():
             cache_dir = os.path.join(renpy.config.gamedir, "_dtm_cache", "nou")
             try:
                 if os.path.exists(cache_dir):
@@ -301,14 +445,18 @@ init 999 python in dtm_core:
             except Exception:
                 pass
             finally:
-                # Signal the main thread to apply the overrides
                 store.mas_dtm_trigger_nou_apply = True
                 
-        # Only start the thread here, the rest of the application runs asynchronously
-        import threading
-        threading.Thread(target=background_copy_nou).start()
+        if sync:
+            # Startup path: run synchronously then finish immediately
+            do_copy_nou()
+            _finish_apply_nou_overrides(startup=True)
+        else:
+            # UI path: background thread + timer screen
+            import threading
+            threading.Thread(target=do_copy_nou).start()
         
-    def _finish_apply_nou_overrides():
+    def _finish_apply_nou_overrides(startup=False):
         """
         Called by the main thread after the background copy completes.
         Applies variables and reloads assets.
@@ -327,8 +475,12 @@ init 999 python in dtm_core:
             store._mas_dtm_original_nou_init(self, *args, **kwargs)
             cache_back = os.path.join(renpy.config.gamedir, "_dtm_cache", "nou", "cards", "back.png")
             if os.path.exists(cache_back):
-                self.table.back = store.Image("_dtm_cache/nou/cards/back.png")
-                
+                back_img = store.Image("_dtm_cache/nou/cards/back.png")
+                # table.back for future cards, plus each card's own .back for existing cards
+                self.table.back = back_img
+                for card_obj in self.table.cards.itervalues():
+                    card_obj.back = back_img
+                    
         if hasattr(store, "mas_nou"):
             store.mas_nou.NOU.__init__ = custom_nou_init
         
@@ -424,7 +576,8 @@ init 999 python in dtm_core:
                             lst.append(internal_nou_path + "sfx/" + f)
                         
         renpy.display.im.cache.clear()
-        renpy.notify("Texturas aplicadas exitosamente")
+        if not startup:
+            renpy.notify("Texturas aplicadas exitosamente")
 
 # Polling screen for NOU background setup
 screen dtm_background_apply_nou_timer():
@@ -434,11 +587,19 @@ screen dtm_background_apply_nou_timer():
         Hide("dtm_background_apply_nou_timer")
     ], false=None)
 
+# Polling screen for Chess background setup
+screen dtm_background_apply_chess_timer():
+    timer 0.5 repeat True action If(store.mas_dtm_trigger_chess_apply, true=[
+        Function(store.dtm_core._finish_apply_chess_overrides),
+        SetField(store, "mas_dtm_trigger_chess_apply", False),
+        Hide("dtm_background_apply_chess_timer")
+    ], false=None)
+
 # Auto-apply on game start
 init 1000 python:
     store.dtm_core.apply_sprite_overrides()
     store.dtm_core.apply_table_overrides()
-    if hasattr(store, "mas_chess"):
-        store.dtm_core.apply_chess_overrides()
+    if hasattr(store, "MASChessDisplayableBase"):
+        store.dtm_core.apply_chess_overrides(sync=True)
     store.dtm_core.apply_pong_overrides()
-    store.dtm_core.apply_nou_overrides()
+    store.dtm_core.apply_nou_overrides(sync=True)

@@ -503,7 +503,7 @@ label dtm_android_scan_chess:
     elif result == "restaurar":
         python:
             if hasattr(store, "dtm_core"):
-                store.dtm_core.reset_chess_pieces()
+                store.dtm_core.reset_chess_textures()
         $ renpy.notify("Texturas restauradas")
         jump dtm_android_scan_chess
     else:
@@ -511,10 +511,10 @@ label dtm_android_scan_chess:
         python:
             if hasattr(store, "dtm_core"):
                 import os
-                import threading
                 chess_folder = os.path.join(store.ANDROID_PUBLIC_PATH, "textures", "games", "chess", result)
-                # Ejecutar en segundo plano para no congelar la UI
-                threading.Thread(target=store.dtm_core.set_chess_textures, args=(chess_folder,)).start()
+                # Starts the background copy and sets up the flag
+                store.dtm_core.set_chess_textures(chess_folder)
+        show screen dtm_background_apply_chess_timer
         jump dtm_android_scan_chess
 
 label dtm_android_scan_pong:
