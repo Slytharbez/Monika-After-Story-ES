@@ -36,7 +36,7 @@ init 999 python in dtm_core:
         renpy.restart_interaction()
 
     """
-    JUEGOS
+    Pong textures
     """
 
     def set_pong_textures(new_pong_folder_path):
@@ -311,6 +311,12 @@ screen dtm_background_apply_chess_timer():
         Hide("dtm_background_apply_chess_timer")
     ], false=None)
 
+
+    """
+    NOU TEXTURE LOGIC
+    Section dedicated to managing custom textures for the NOU minigame.
+    """
+
 init 999 python in dtm_core:
     def set_nou_textures(new_nou_folder_path):
         """
@@ -551,7 +557,7 @@ screen dtm_background_apply_nou_timer():
     ], false=None)
 
     """
-    MONIKA
+    Monika textures
     """
 
 init 999 python in dtm_core:
@@ -655,11 +661,10 @@ init 1000 python:
     This block coordinates the automatic application of ALL custom textures 
     (Pong, Chess, Nou, Table, Eyes) when the game initializes.
     """
-    # Monika / Sprite overrides
+
     store.dtm_core.apply_sprite_overrides()
     store.dtm_core.apply_table_overrides()
     
-    # Game overrides
     if hasattr(store, "MASChessDisplayableBase"):
         store.dtm_core.apply_chess_overrides(sync=True)
         
