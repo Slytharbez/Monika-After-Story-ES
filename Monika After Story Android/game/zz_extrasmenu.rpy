@@ -134,7 +134,7 @@ label mas_extra_menu_firsttime:
     if not persistent._mas_opened_extra_menu:
         m 1hua "Welcome to the Extras menu, [player]!"
 
-    m 1eua "This is where I'll add things that aren't games, like special interactions you can do with your mouse."
+    m 1eua "This is where I'll add things that aren't games, like special interactions you can do just by tapping the screen."
     m "You can also open this menu by pressing the 'e' key."
 
     if not persistent._mas_opened_extra_menu:

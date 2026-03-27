@@ -417,6 +417,7 @@ init -21 python in mas_sprites_json:
     import traceback
     from collections import defaultdict
     import logging
+    import os
 
 
     SP_JSON_VER = 4
@@ -1715,6 +1716,9 @@ init 189 python in mas_sprites_json:
             return False
         
         
+        if "use_numeric_layer_ids" in jobj:
+            save_obj["use_numeric_layer_ids"] = jobj.pop("use_numeric_layer_ids")
+
         if "use_numeric_layer_ids" not in save_obj:
             save_obj["use_numeric_layer_ids"] = False
         
@@ -2255,7 +2259,7 @@ init 189 python in mas_sprites_json:
         return True
 
 
-    def addSpriteObject(filepath, post_proc_data):
+    def addSpriteObject(filepath, post_proc_data, is_internal=False):
         """
         Adds a sprite object, given its json filepath
 
@@ -2280,8 +2284,13 @@ init 189 python in mas_sprites_json:
         log.info(READING_FILE.format(filepath), pfx_newline=True)
         
         
-        with open(filepath, "r") as jsonfile:
-            jobj = json.load(jsonfile)
+        if is_internal:
+            f = renpy.file(filepath)
+            jobj = json.load(f)
+            f.close()
+        else:
+            with open(filepath, "r") as jsonfile:
+                jobj = json.load(jsonfile)
         
         
         if jobj is None:
@@ -2617,28 +2626,31 @@ init 189 python in mas_sprites_json:
 
     def addSpriteObjects(post_proc_data):
         """
-        Adds sprite objects if we find any
-
-        Also does delayed validation rules:
-            - hair
-
-        OUT:
-            post_proc_data - data to be used in post processing code
-                (should be a dict)
+        Adds sprite objects if we find any from both Internal (APK) and External sources.
         """
-        json_files = sprite_station.getPackageList(".json")
+
+        internal_files = [
+            f for f in renpy.list_files()
+            if "mod_assets/monika" in f and f.endswith(".json")
+        ]
         
-        if len(json_files) < 1:
-            return
-        
-        
-        for j_obj in json_files:
-            j_path = sprite_station.station + j_obj
+        for f in internal_files:
             try:
-                addSpriteObject(j_path, post_proc_data)
+                addSpriteObject(f, post_proc_data, is_internal=True)
             except Exception as e:
-                
                 log.exception(e)
+
+        ext_base = os.path.join(store.ANDROID_PUBLIC_PATH, "game/mod_assets/monika")
+        
+        if os.path.isdir(ext_base):
+            for root, dirs, files in os.walk(ext_base):
+                for file in files:
+                    if file.endswith(".json"):
+                        full_path = os.path.join(root, file)
+                        try:
+                            addSpriteObject(full_path, post_proc_data, is_internal=False)
+                        except Exception as e:
+                            log.exception(e)
 
 
     def initSpriteObjectProc():

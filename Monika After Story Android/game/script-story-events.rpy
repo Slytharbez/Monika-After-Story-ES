@@ -1612,15 +1612,19 @@ init 6 python:
         
         if len(mas_per_check.mas_bad_backups) > 0:
             
+            _base = getattr(store, "ANDROID_PUBLIC_PATH", renpy.config.basedir) if renpy.android else renpy.config.basedir
+            _note_txt = os.path.normcase((_base[:-1] if _base.endswith("/") else _base) + "/characters/note.txt")
             store.mas_utils.trywrite(
-                os.path.normcase(renpy.config.basedir + "/characters/note.txt"),
+                _note_txt,
                 renpy.substitute(mas_note_backups_some_bad.title) + "\n\n" + mas_note_backups_some_bad.text
             )
         
         else:
             
+            _base = getattr(store, "ANDROID_PUBLIC_PATH", renpy.config.basedir) if renpy.android else renpy.config.basedir
+            _note_txt = os.path.normcase((_base[:-1] if _base.endswith("/") else _base) + "/characters/note.txt")
             store.mas_utils.trywrite(
-                os.path.normcase(renpy.config.basedir + "/characters/note.txt"),
+                _note_txt,
                 renpy.substitute(mas_note_backups_all_good.title) + "\n\n" + mas_note_backups_all_good.text
             )
 
@@ -2109,13 +2113,13 @@ label mas_derand:
     return
 
 label mas_notification_windowreact:
-    m 3eua "I've been practicing coding a bit more and I've learned how to use the notifications on your computer!"
+    m 3eua "I've been practicing coding a bit more and I've learned how to use the notifications on your phone!"
     m "So if you want, I can let you know if I have something for us to talk about."
 
 
     if not store.mas_windowreacts.can_show_notifs:
         m 1rkc "Well, almost..."
-        m 3ekd "I can't send notifications on your computer because you're missing the notify-send command..."
+        m 3ekd "I can't send notifications on your phone because you're missing the notification command..."
         m 3eua "If you could install that for me, I'll be able to send you notifications."
 
         show monika 5eka zorder MAS_MONIKA_Z at t11 with dissolve_monika
@@ -2130,13 +2134,13 @@ label mas_notification_windowreact:
 
                 m 1hua "Okay, [player]!"
                 m 2dsa "Just give me a second to make a notification.{w=0.5}.{w=0.5}.{nw}"
-                $ mas_display_notif(m_name, ["I love you, [player]!"], skip_checks=True)
+                $ mas_android_display_notif(m_name, "I love you, [player]!")
                 m 1hub "There it is!"
             "No thanks.":
 
                 m 2eka "Alright, [player]."
 
-        m 3eua "If you want me to notify you, just head over to the 'Alerts' tab in the settings menu and turn them on, along with what you'd like to be notified for."
+        m 3eua "If you want me to send you a notification, just head over to the 'Alerts' tab in the settings menu and turn them on, along with what you would like to receive."
 
         if renpy.windows:
             m 3rksdla "Also, since you're using Windows...I now know how to check what your active window is."
@@ -2146,13 +2150,13 @@ label mas_notification_windowreact:
             m 3rksdla "Also, since you're using Linux...I now know how to check what your active window is."
 
         if not renpy.macintosh:
-            m 3eub "...So if I have something to talk about while I'm in the background, I can let you know!"
-            m 3hksdlb "And don't worry, I know you might not want me constantly watching you, and I respect your privacy."
-            m 3eua "So I'll only look at what you're doing if you're okay with it."
-            m 2eua "If you enable 'Window Detect' in the settings menu, that'll tell me you're fine with me looking around."
+            m 3eub "...So if I have something to talk about while the application is closed, I can let you know!"
+            m 3hksdlb "And don't worry, I know you might not want me to message you constantly, and I respect your privacy."
+            m 3eua "So I'll only do it if you agree."
+            m 2eua "If you enable 'Notifications' in the settings menu, that'll tell me you're fine with me sending you notifications."
 
             if mas_isMoniNormal(higher=True):
-                m 1tuu "It's not like you have anything to hide from your girlfriend..."
+                m 1tuu "It's not like you'd ever want to silence your girlfriend..."
                 show monika 5ttu zorder MAS_MONIKA_Z at t11 with dissolve_monika
                 m 5ttu "...right?"
     return
@@ -2203,8 +2207,10 @@ P.S: Don't tell her about me!
 """
 
 
+        _base = getattr(store, "ANDROID_PUBLIC_PATH", renpy.config.basedir) if renpy.android else renpy.config.basedir
+        _hint_txt = os.path.normcase((_base[:-1] if _base.endswith("/") else _base) + "/characters/hint.txt")
         store.mas_utils.trywrite(
-            os.path.normcase(renpy.config.basedir + "/characters/hint.txt"),
+            _hint_txt,
             player + "\n\n" + gift_instructs
         )
 
@@ -2659,7 +2665,9 @@ label mas_gift_hint_noudeck:
         def write_and_hide():
             import time
             
-            note_path = os.path.join(renpy.config.basedir, renpy.substitute("characters/Hey, I have something for you, [player]!.txt"))
+            _base = getattr(store, "ANDROID_PUBLIC_PATH", renpy.config.basedir) if getattr(renpy, "android", False) else renpy.config.basedir
+            _base_clean = _base[:-1] if _base.endswith("/") else _base
+            note_path = os.path.join(_base_clean, renpy.substitute("characters/Hey, I have something for you, [player]!.txt"))
             note_text = renpy.substitute("""\
 Hi [player]!
 

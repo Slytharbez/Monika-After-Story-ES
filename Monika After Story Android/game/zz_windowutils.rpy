@@ -116,6 +116,11 @@ init python in mas_windowutils:
             
             store.mas_utils.mas_log.warning("Cannot detect current session type, disabling notifications.")
 
+    elif renpy.android:
+
+        store.mas_windowreacts.can_show_notifs = True
+        store.mas_windowreacts.can_do_windowreacts = False
+
     else:
         store.mas_windowreacts.can_do_windowreacts = False
 
@@ -224,7 +229,7 @@ init python in mas_windowutils:
         
         except MASWindowFoundException as e:
             return e.hwnd
-        
+            
         mas_utils.mas_log.error("Failed to get MAS window hwnd")
         return None
 
@@ -436,8 +441,8 @@ init python in mas_windowutils:
         
         if hwnd is None:
             return None
-        
-        rv = win32gui.GetWindowRect(hwnd)
+            
+            rv = win32gui.GetWindowRect(hwnd)
         
         
         
@@ -689,6 +694,15 @@ init python:
                 renpy.substitute(title),
                 renpy.substitute(renpy.random.choice(body))
             )
+
+            if renpy.android:
+                try:
+                    _android_title = renpy.substitute(title)
+                    _android_body = renpy.substitute(renpy.random.choice(body))
+                    store.mas_android_schedule_notif(_android_title, _android_body, 2)
+                    notif_success = True
+                except Exception as e:
+                    renpy.log("[MAS_ANDROID] Display Notif Error: " + str(e))
             
             
             if persistent._mas_notification_sounds and notif_success:

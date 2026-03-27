@@ -8,6 +8,24 @@
 
 
 
+
+python early:
+    import os
+    """
+    Note: Android Fix
+    Prevent Ren'Py from creating auto-saves (_reload-...) when app pauses or quits.
+    This keeps the save folder clean.
+    """
+    config.save_on_mobile_background = False
+    
+    if renpy.android:
+        """
+        Note: Force External Storage
+        Logic moved to zz_android_setup.rpy (python early) for earlier execution.
+        """
+        pass
+
+
 define gui.show_name = False
 
 
@@ -21,14 +39,14 @@ define gui.about = _("")
 
 
 define build.name = "Monika_After_Story"
+define config.window_icon = None
 
+define build.icon_presplash = "android-icon.png"
 
-
-
-
+define build.android_icon_foreground = "android-icon_foreground.png"
+define build.android_icon_background = "#febce1"
 
 default preferences.text_cps = 50
-
 
 
 
@@ -119,22 +137,25 @@ init python:
 
 
 
-    build.include_update = True
+    build.include_update = False
 
 
 
 
 
-    build.classify("game/gui/**",build.name)
+    build.classify("game/gui/**", "archive")
 
 
-    build.classify("game/mod_assets/**",build.name)
+    build.classify("game/mod_assets/**", "archive")
 
-    build.classify("game/*.rpyc",build.name) 
+    build.classify("game/*.rpyc", "archive") 
     build.classify("game/dev/*.*",None) 
-    build.classify("README.html",build.name) 
-    build.classify("game/python-packages/**",build.name)
-    build.classify("CustomIcon**.**",build.name)
+    build.classify("README.html", "archive") 
+    build.classify("game/python-packages/**", "archive")
+    build.classify("game/characters/**", "archive")
+    build.classify("game/chess_games/**", "archive")
+    build.classify("game/piano_songs/**", "archive")
+    build.classify("CustomIcon**.**", "archive")
 
 
     build.package(build.directory_name + "Mod",'zip',build.name,description='DDLC Compatible Mod')
@@ -152,7 +173,8 @@ init python:
     build.classify('script-regex.txt', None)
     build.classify('/game/10', None)
     build.classify('/game/cache/*.*', None)
-    build.classify('**.rpa',None)
+    build.classify('/game/saves/*.*', None)
+    build.classify('**.rpa', "archive")
     build.classify("game/mod_assets/api_keys.json", None)
     build.classify("**.pem", None)
 
@@ -164,4 +186,17 @@ init python:
     build.documentation('*.md')
 
     build.include_old_themes = False
+
+init python:
+
+    if hasattr(config, "android_permissions"):
+        config.android_permissions = [
+            "android.permission.VIBRATE",
+            "android.permission.WRITE_EXTERNAL_STORAGE",
+            "android.permission.READ_EXTERNAL_STORAGE",
+            "android.permission.MANAGE_EXTERNAL_STORAGE", 
+            "android.permission.POST_NOTIFICATIONS",
+            "android.permission.SCHEDULE_EXACT_ALARM"
+        ]
+
 # Decompiled by unrpyc: https://github.com/CensoredUsername/unrpyc

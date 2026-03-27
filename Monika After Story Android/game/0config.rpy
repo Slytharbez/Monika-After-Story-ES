@@ -97,7 +97,7 @@ init -1200 python:
 
 
 
-    renpy.config.window_icon = "gui/window_icon.png"
+
 
 
 

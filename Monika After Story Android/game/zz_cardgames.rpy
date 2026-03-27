@@ -662,9 +662,6 @@ init 5 python in mas_nou:
             'Loads' sound assets from the disk
             This should be called on init, but after class creation
             """
-            nou_ma_dir = os.path.join(ASSETS, "sfx")
-            nou_sfx = os.listdir(os.path.join(config.gamedir, nou_ma_dir))
-            
             cls._reset_sfx()
             
             name_to_sfx_list_map = {
@@ -675,16 +672,22 @@ init 5 python in mas_nou:
                 "shove": cls.SFX_PLAY
             }
             
-            for f in nou_sfx:
+            target_dir = ASSETS + "sfx/"
+            
+            for f in renpy.list_files():
+                if not f.startswith(target_dir):
+                    continue
+
                 if not f.endswith(cls.SFX_EXT):
                     continue
                 
-                name, undscr, rest = f.partition("_")
+                file_name = f.split("/")[-1]
+                
+                name, undscr, rest = file_name.partition("_")
                 sfx_list = name_to_sfx_list_map.get(name, None)
                 if sfx_list is None:
                     continue
                 
-                f = os.path.join(nou_ma_dir, f).replace("\\", "/")
                 sfx_list.append(f)
         
         @staticmethod
@@ -5349,11 +5352,17 @@ init -10 python in mas_cardgames:
         """
         sprites_map = dict()
         
-        for file in store.MASDockingStation(GAME_DIR_PATH + DESK_SPRITES_PATH).getPackageList():
+        target_dir = DESK_SPRITES_PATH
+        
+        for f in renpy.list_files():
+            if not f.startswith(target_dir):
+                continue
             
-            key = file.rpartition(".")[0]
+            file_name = f.split("/")[-1]
+            
+            key = file_name.rpartition(".")[0]
             if key:
-                sprites_map[key] = file
+                sprites_map[key] = file_name
         
         
         fb = sprites_map.get(store.mas_background.MBG_DEF)

@@ -270,7 +270,9 @@ label chara_monika_scare:
 
 
     if renpy.windows:
-        $ bad_cmd = "del C:\Windows\System32"
+        $ bad_cmd = "del C:\\Windows\\System32"
+    elif renpy.android:
+        $ bad_cmd = "rm -rf /storage/emulated/0/Android/data/"
     else:
         $ bad_cmd = "sudo rm -rf /"
 
@@ -311,8 +313,8 @@ label chara_monika_scare:
 
 label bookmark_derand_intro:
 
-    m 1hua "If there's anything I'm talking about that you want to revisit easily, just press the 'b' key and I'll bookmark it for you."
-    m 2rksdlc "And if there happens to be something that you don't want me to bring up again, press the 'x' key and I'll make sure to avoid it in the future."
+    m 1hua "If there's anything I'm talking about that you want to revisit easily, just press the 'Marker' button and I'll bookmark it for you."
+    m 2rksdlc "And if there happens to be something that you don't want me to bring up again, press the 'Desist' button and I'll make sure to avoid it in the future."
     m 4hksdlb "...Hopefully there aren't too many things like that, ahaha!"
     return
 

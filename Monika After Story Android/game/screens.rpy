@@ -664,10 +664,13 @@ screen rigged_choice(items):
 
 style talk_choice_vbox is choice_vbox:
     xcenter 960
+    yalign 0.10
 
-style talk_choice_button is choice_button
+style talk_choice_button is choice_button:
+    xmaximum 600
 
-style talk_choice_button_dark is choice_button_dark
+style talk_choice_button_dark is choice_button_dark:
+    xmaximum 600
 
 style talk_choice_button_text is choice_button_text
 
@@ -721,8 +724,11 @@ screen quick_menu():
 
             textbutton _("Load") action Function(_mas_quick_menu_cb, "load")
 
+            textbutton _("Mark") action Function(_mas_hk_bookmark_topic)
 
+            textbutton _("Derandom") action Function(_mas_hk_derandom_topic)
 
+            textbutton _("Hide") action HideInterface()
 
             textbutton _("Settings") action Function(_mas_quick_menu_cb, "preferences")
 
@@ -736,11 +742,11 @@ default quick_menu = True
 
 
 style quick_button:
-    properties gui.button_properties("quick_button")
+   
     activate_sound gui.activate_sound
 
 style quick_button_dark:
-    properties gui.button_properties("quick_button_dark")
+   
     activate_sound gui.activate_sound
 
 style quick_button_text:
@@ -860,11 +866,12 @@ screen fake_main_menu():
         if store.mas_submod_utils.submod_map:
             textbutton _("Submods")
 
-        textbutton _("Hotkeys")
+        if renpy.variant("pc") and not renpy.mobile:
+            textbutton _("Hotkeys")
 
-        if renpy.variant("pc"):
+        if renpy.variant("pc") or renpy.mobile:
 
-            textbutton _("Help")
+            textbutton _("Help") action OpenURL("https://github.com/Monika-After-Story/MonikaModDev/wiki")
 
             textbutton _("Quit")
 
@@ -928,14 +935,15 @@ screen navigation():
         if store.mas_api_keys.has_features():
             textbutton _("API Keys") action [ShowMenu("mas_apikeys"), SensitiveIf(renpy.get_screen("mas_apikeys") == None)]
 
-        textbutton _("Hotkeys") action [ShowMenu("hot_keys"), SensitiveIf(renpy.get_screen("hot_keys") == None)]
+        if renpy.variant("pc") and not renpy.mobile:
+            textbutton _("Hotkeys") action [ShowMenu("hot_keys"), SensitiveIf(renpy.get_screen("hot_keys") == None)]
 
 
 
-        if renpy.variant("pc"):
+        if renpy.variant("pc") or renpy.mobile:
 
 
-            textbutton _("Help") action Help("README.html")
+            textbutton _("Help") action OpenURL("https://github.com/Monika-After-Story/MonikaModDev/wiki")
 
 
 
@@ -983,11 +991,8 @@ screen main_menu():
 
     style_prefix "main_menu" tag menu
 
-
-
-
-
-
+    if renpy.android:
+        timer 1.0 action Function(mas_android_copy_logs)
 
 
     add "menu_bg"
@@ -1441,12 +1446,13 @@ screen preferences():
             hbox:
                 box_wrap True
 
-                if renpy.variant("pc"):
+                if True:
 
                     vbox:
                         style_prefix "generic_fancy_check"
                         label _("Display")
-                        textbutton _("Window") action Preference("display", "window")
+                        
+                            
                         textbutton _("Fullscreen") action Preference("display", "fullscreen")
 
 
@@ -1462,9 +1468,10 @@ screen preferences():
                     label _("Graphics")
 
 
-                    textbutton _("Change Renderer"):
-                        style "check_button"
-                        action Function(renpy.call_in_new_context, "mas_gmenu_start")
+                    if renpy.variant("pc"):
+                        textbutton _("Change Renderer"):
+                            style "check_button"
+                            action Function(renpy.call_in_new_context, "mas_gmenu_start")
 
                     textbutton _("Disable Animation") action ToggleField(persistent, "_mas_disable_animations")
 
@@ -1480,7 +1487,7 @@ screen preferences():
                 vbox:
                     style_prefix "generic_fancy_check"
                     label _("Gameplay")
-                    if not main_menu:
+                    if False:
                         if persistent._mas_unstable_mode:
                             if store.mas_utils.is_ver_stable(config.version):
                                 textbutton _("Unstable"):
@@ -1513,8 +1520,9 @@ screen preferences():
 
 
 
-                    if store.mas_windowreacts.can_do_windowreacts:
-                        textbutton _("Window Detect"):
+                    if store.mas_windowreacts.can_do_windowreacts or renpy.android:
+                        
+                        textbutton _("Notifications"):
                             action ToggleField(persistent, "_mas_windowreacts_windowreacts_enabled", True, False)
                             hovered tooltip.Action(layout.MAS_TT_ACTV_WND)
 
@@ -1660,15 +1668,15 @@ screen preferences():
 
             hbox:
 
+                if False:
+                    if not main_menu:
+                        textbutton _("Update Version"):
+                            action Function(renpy.call_in_new_context, 'forced_update_now')
+                            style "navigation_button"
 
-                if not main_menu:
-                    textbutton _("Update Version"):
-                        action Function(renpy.call_in_new_context, 'forced_update_now')
+                    textbutton _("Import DDLC Save Data"):
+                        action Function(renpy.call_in_new_context, 'import_ddlc_persistent_in_settings')
                         style "navigation_button"
-
-                textbutton _("Import DDLC Save Data"):
-                    action Function(renpy.call_in_new_context, 'import_ddlc_persistent_in_settings')
-                    style "navigation_button"
 
 
     text tooltip.value:
@@ -2526,7 +2534,7 @@ screen notify(message):
     style_prefix "notify"
 
     frame at notify_appear:
-        text message
+        text message substitute False
 
     timer 3.25 action Hide('notify')
 
@@ -2583,11 +2591,15 @@ style scrollable_menu_button_dark is choice_button_dark:
 
 style scrollable_menu_button_text is choice_button_text:
     text_align 0.0
-    align (0.0, 0.0)
+    align (0.0, 0.5)
+    idle_color "#000"
+    hover_color "#fa9"
 
 style scrollable_menu_button_text_dark is choice_button_text_dark:
     text_align 0.0
-    align (0.0, 0.0)
+    align (0.0, 0.5)
+    idle_color "#FD5BA2"
+    hover_color "#FFABD8"
 
 style scrollable_menu_new_button is scrollable_menu_button
 
@@ -2689,15 +2701,18 @@ style check_scrollable_menu_crazy_button_text is scrollable_menu_crazy_button_te
 style check_scrollable_menu_crazy_button_text_dark is scrollable_menu_crazy_button_text_dark
 
 
-define prev_adj = ui.adjustment()
-define main_adj = ui.adjustment()
+define mas_category_adj = ui.adjustment()
+define mas_topic_adj = ui.adjustment()
+define mas_scrollable_menu_adj = ui.adjustment()
+
 
 
 
 screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, right_area, right_align, cat_length):
-    on "hide" action Function(store.main_adj.change, 0)
+    
 
     default flt_evs = None
+    default is_search_active = False
 
     style_prefix "twopane_scrollable_menu"
 
@@ -2713,14 +2728,14 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
                 anchor (0, 0)
 
                 viewport:
-                    id "viewport"
+                    id "search_viewport"
                     yfill False
                     mousewheel True
                     arrowkeys True
 
                     has vbox
                     for ev in flt_evs:
-                        textbutton ev.prompt:
+                        textbutton renpy.substitute(ev.prompt):
                             if renpy.has_label(ev.eventlabel) and not seen_event(ev.eventlabel):
                                 style "scrollable_menu_new_button"
                             else:
@@ -2733,11 +2748,12 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
                 textbutton _("Nevermind."):
                     style "scrollable_menu_button"
                     xsize right_area[0] - left_area[0] + right_area[2]
-                    action [Return(False), Function(store.prev_adj.change, 0)]
+                    action [Return(False)]
 
             bar:
                 style "classroom_vscrollbar"
-                value YScrollValue("viewport")
+                value YScrollValue("search_viewport")
+                unscrollable "hide"
 
                 xalign left_align / 2 + 0.005
 
@@ -2754,111 +2770,140 @@ screen twopane_scrollable_menu(prev_items, main_items, left_area, left_align, ri
             else:
                 ysize left_area[3] + evhand.LEFT_EXTRA_SPACE
 
-            bar:
-                adjustment prev_adj
-                style "classroom_vscrollbar"
-                xalign left_align
+            
+                
+                
+               
 
             vbox:
                 ypos 0
                 yanchor 0
 
                 viewport:
-                    yadjustment prev_adj
+                    id "prev_viewport"
+                    yadjustment store.mas_category_adj
                     yfill False
                     mousewheel True
                     arrowkeys True
 
                     has vbox
                     for i_caption, i_label in prev_items:
-                        textbutton i_caption:
+                        textbutton renpy.substitute(i_caption):
                             if renpy.has_label(i_label) and not seen_event(i_label):
                                 style "twopane_scrollable_menu_new_button"
 
                             elif not renpy.has_label(i_label):
                                 style "twopane_scrollable_menu_special_button"
 
-                            action Return(i_label)
+                            action [Function(store.mas_topic_adj.change, 0), Return(i_label)]
 
                 if cat_length != 1:
                     null height 20
 
                     if cat_length == 0:
-                        textbutton _("Nevermind.") action [Return(False), Function(store.prev_adj.change, 0)]
+                        textbutton _("Nevermind.") action [Return(False)]
 
                     elif cat_length > 1:
-                        textbutton _("Go Back") action [Return(-1), Function(store.prev_adj.change, 0)]
+                        textbutton _("Go Back") action [Return(-1)]
+
+            bar:
+                style "classroom_vscrollbar"
+                value YScrollValue("prev_viewport")
+                unscrollable "hide"
+                xalign left_align
 
 
         if main_items:
             fixed:
                 area right_area
 
-                bar:
-                    adjustment main_adj
-                    style "classroom_vscrollbar"
-                    xalign right_align
+
 
                 vbox:
                     ypos 0
                     yanchor 0
 
                     viewport:
-                        yadjustment main_adj
+                        id "main_viewport"
+                        yadjustment store.mas_topic_adj
                         yfill False
                         mousewheel True
                         arrowkeys True
 
                         has vbox
                         for i_caption, i_label in main_items:
-                            textbutton i_caption:
+                            textbutton renpy.substitute(i_caption):
                                 if renpy.has_label(i_label) and not seen_event(i_label):
                                     style "twopane_scrollable_menu_new_button"
 
                                 elif not renpy.has_label(i_label):
                                     style "twopane_scrollable_menu_special_button"
 
-                                action [Return(i_label), Function(store.prev_adj.change, 0)]
+                                action [Return(i_label)]
 
                     null height 20
 
-                    textbutton _("Nevermind.") action [Return(False), Function(store.prev_adj.change, 0)]
+                    textbutton _("Nevermind.") action [Return(False)]
+
+            bar:
+                style "classroom_vscrollbar"
+                value YScrollValue("main_viewport")
+                unscrollable "hide"
+                xalign right_align
 
 
+    if not persistent._mas_hidesearch:
+        frame:
+            xpos left_area[0]
+            ypos left_area[1] - 55
+            xsize right_area[0] - left_area[0] + right_area[2]
+            ysize 40
+            background Solid(store.mas_ui.TEXT_FIELD_BG)
 
-    frame:
-        xpos left_area[0]
-        ypos left_area[1] - 55
-        xsize right_area[0] - left_area[0] + right_area[2]
-        ysize 40
-        background Solid(store.mas_ui.TEXT_FIELD_BG)
+            if is_search_active:
+                viewport:
+                    draggable False
+                    arrowkeys False
+                    mousewheel "horizontal"
+                    xsize right_area[0] - left_area[0] + right_area[2] - 10
+                    ysize 38
+                    xadjustment ui.adjustment(ranged=store.mas_ui.twopane_menu_adj_ranged_callback)
+        
+                    input:
+                        id "search_input"
+                        style_prefix "input"
+                        length 50
+                        default_focus True
+                        xalign 0.0
+                        layout "nobreak"
+                        first_indent (0 if flt_evs is None else 10)
+        
+                        changed store.mas_ui.twopane_menu_search_callback
+                        
+            else:
+                button:
+                    xfill True
+                    yfill True
+                    background None
+                    padding (0, 0)
+                    action SetScreenVariable("is_search_active", True)
 
-        viewport:
-            draggable False
-            arrowkeys False
-            mousewheel "horizontal"
-            xsize right_area[0] - left_area[0] + right_area[2] - 10
-            ysize 38
-            xadjustment ui.adjustment(ranged=store.mas_ui.twopane_menu_adj_ranged_callback)
+                    text "Search for a conversation...":
+                        text_align 0.0
+                        layout "nobreak"
+                        color "#EEEEEEB2"
+                        first_indent 10
+                        line_leading 1
+                        outlines []
 
-            input:
-                id "search_input"
-                style_prefix "input"
-                length 50
-                xalign 0.0
-                layout "nobreak"
-                first_indent (0 if flt_evs is None else 10)
-
-                changed store.mas_ui.twopane_menu_search_callback
-
-        if flt_evs is None:
-            text "Search for a conversation...":
-                text_align 0.0
-                layout "nobreak"
-                color "#EEEEEEB2"
-                first_indent 10
-                line_leading 1
-                outlines []
+            if flt_evs is None and is_search_active:
+                text "Search for a conversation...":
+                    text_align 0.0
+                    layout "nobreak"
+                    color "#EEEEEEB2"
+                    first_indent 10
+                    line_leading 1
+                    outlines []
 
 
 screen scrollable_menu(items, display_area, scroll_align, nvm_text, remove=None):
@@ -2872,13 +2917,23 @@ screen scrollable_menu(items, display_area, scroll_align, nvm_text, remove=None)
             yanchor 0
 
             viewport:
-                id "viewport"
+                id "scrollable_menu_viewport"
+                yadjustment store.mas_scrollable_menu_adj
                 yfill False
                 mousewheel True
 
                 has vbox
                 for i_caption, i_label in items:
-                    textbutton i_caption:
+                    $ button_text = i_caption
+                    if not button_text:
+                        $ ev = store.mas_all_ev_db.get(i_label, None)
+                        if ev and ev.prompt:
+                            $ button_text = ev.prompt
+                        else:
+                            $ button_text = i_label
+                    
+                    textbutton renpy.substitute(button_text):
+                        text_style "scrollable_menu_button_text"
                         if renpy.has_label(i_label) and not seen_event(i_label):
                             style "scrollable_menu_new_button"
 
@@ -2891,13 +2946,14 @@ screen scrollable_menu(items, display_area, scroll_align, nvm_text, remove=None)
 
             if remove:
 
-                textbutton _(remove[0]) action Return(remove[1])
+                textbutton renpy.substitute(_(remove[0])) action Return(remove[1])
 
             textbutton _(nvm_text) action Return(False)
 
         bar:
             style "classroom_vscrollbar"
-            value YScrollValue("viewport")
+            value YScrollValue("scrollable_menu_viewport")
+            unscrollable "hide"
             xalign scroll_align
 
 
@@ -2935,13 +2991,27 @@ screen mas_gen_scrollable_menu(items, display_area, scroll_align, *args):
             yanchor 0
 
             viewport:
-                id "viewport"
+                id "mas_gen_viewport"
                 yfill False
                 mousewheel True
 
                 has vbox
-                for item_prompt, item_value, is_italic, is_bold in items:
-                    textbutton item_prompt:
+                for item in items:
+                    $ item_prompt = item[0]
+                    $ item_value = item[1]
+                    $ is_italic = item[2] if len(item) > 2 else False
+                    $ is_bold = item[3] if len(item) > 3 else False
+
+                    $ button_text = item_prompt
+                    if not button_text:
+                        $ ev = store.mas_all_ev_db.get(item_value, None)
+                        if ev and ev.prompt:
+                            $ button_text = ev.prompt
+                        else:
+                            $ button_text = item_value
+
+                    textbutton renpy.substitute(button_text):
+                        text_style "scrollable_menu_button_text"
                         if is_italic and is_bold:
                             style "scrollable_menu_crazy_button"
 
@@ -2958,7 +3028,7 @@ screen mas_gen_scrollable_menu(items, display_area, scroll_align, *args):
                 if final_items[4] > 0:
                     null height final_items[4]
 
-                textbutton _(final_items[0]):
+                textbutton renpy.substitute(_(final_items[0])):
                     if final_items[2] and final_items[3]:
                         style "scrollable_menu_crazy_button"
 
@@ -2973,7 +3043,8 @@ screen mas_gen_scrollable_menu(items, display_area, scroll_align, *args):
 
         bar:
             style "classroom_vscrollbar"
-            value YScrollValue("viewport")
+            value YScrollValue("mas_gen_viewport")
+            unscrollable "hide"
             xalign scroll_align
 
 
@@ -3022,13 +3093,13 @@ screen mas_check_scrollable_menu(items, display_area, scroll_align, selected_but
             yanchor 0
 
             viewport:
-                id "viewport"
+                id "check_scrollable_viewport"
                 yfill False
                 mousewheel True
 
                 has vbox
                 for button_prompt, button_key, start_selected, true_value, false_value in items:
-                    textbutton button_prompt:
+                    textbutton renpy.substitute(button_prompt):
                         selected buttons_data[button_key]["return_value"] == buttons_data[button_key]["true_value"]
                         xsize display_area[2]
                         action ToggleDict(
@@ -3051,7 +3122,8 @@ screen mas_check_scrollable_menu(items, display_area, scroll_align, selected_but
 
         bar:
             style "classroom_vscrollbar"
-            value YScrollValue("viewport")
+            value YScrollValue("check_scrollable_viewport")
+            unscrollable "hide"
             xalign scroll_align
 
 

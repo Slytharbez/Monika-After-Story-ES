@@ -1978,7 +1978,7 @@ init python:
         )
         
         
-        MONIKA_WAITTIME = 50
+        MONIKA_WAITTIME = 2000 if renpy.android else 50
         
         MONIKA_OPTIMISM = 33
         
@@ -2113,7 +2113,9 @@ init python:
             self.board = None
             
             self.undo_count = 0
+            self.undo_count = 0
             self.move_history = list()
+            self.last_mouse_pos = None
             
             
             if pgn_game:
@@ -2511,7 +2513,10 @@ init python:
             highlight_magenta = renpy.render(MASChessDisplayableBase.PIECE_HIGHLIGHT_MAGENTA_IMAGE, 1280, 720, st, at)
             
             
-            mx, my = mas_getMousePos()
+            if self.last_mouse_pos:
+                mx, my = self.last_mouse_pos
+            else:
+                mx, my = mas_getMousePos()
             
             
             visible_buttons = list()
@@ -2659,7 +2664,10 @@ init python:
                 
                 piece = self.get_piece_at(self.selected_piece[0], self.selected_piece[1])
                 
-                px, py = mas_getMousePos()
+                if self.last_mouse_pos:
+                    px, py = self.last_mouse_pos
+                else:
+                    px, py = mas_getMousePos()
                 px -= MASChessDisplayableBase.PIECE_WIDTH / 2
                 py -= MASChessDisplayableBase.PIECE_HEIGHT / 2
                 piece.render(width, height, st, at, px, py, renderer)
@@ -2673,7 +2681,9 @@ init python:
         
         def event(self, ev, x, y, st):
             
-            
+            if ev.type in self.MOUSE_EVENTS:
+                self.last_mouse_pos = (x, y)
+
             if ev.type in self.MOUSE_EVENTS:
                 ret_value = None
                 
@@ -2701,7 +2711,7 @@ init python:
                     and not self.is_game_over
                 ):
                     
-                    px, py = self.get_piece_pos()
+                    px, py = self.get_piece_pos(x, y)
                     test_piece = self.get_piece_at(px, py)
                     if (
                         self.is_player_turn()
@@ -2722,7 +2732,7 @@ init python:
                     ev.type == pygame.MOUSEBUTTONUP
                     and ev.button == 1
                 ):
-                    self.handle_player_move()
+                    self.handle_player_move(x, y)
                     
                     self.selected_piece = None
                     self.possible_moves = set([])
@@ -2730,14 +2740,15 @@ init python:
             
             return None
         
-        def get_piece_pos(self):
+        def get_piece_pos(self, mx=None, my=None):
             """
             Gets the piece position of the current piece held by the mouse
 
             OUT:
                 Tuple of coordinates (x, y) marking where the piece is
             """
-            mx, my = mas_getMousePos()
+            if mx is None or my is None:
+                mx, my = mas_getMousePos()
             mx -= MASChessDisplayableBase.BASE_PIECE_X
             my -= MASChessDisplayableBase.BASE_PIECE_Y
             px = mx / MASChessDisplayableBase.PIECE_WIDTH
@@ -3351,8 +3362,12 @@ init python:
                 ]
         
         def __del__(self):
-            self.stockfish.stdin.close()
-            self.stockfish.wait()
+            if self.stockfish:
+                try:
+                    self.stockfish.stdin.close()
+                    self.stockfish.wait()
+                except:
+                    pass
         
         def poll_monika_move(self):
             """
@@ -3376,14 +3391,19 @@ init python:
             Starts Monika's analysis of the board
             """
             self.stockfish.stdin.write("position fen {0}\n".format(self.board.fen()))
-            self.stockfish.stdin.write("go depth {0}\n".format(persistent._mas_chess_difficulty[1]))
-            self.stockfish.stdin.write("go movetime {0}\n".format(self.MONIKA_WAITTIME))
+            self.stockfish.stdin.write(
+                "go depth {0} movetime {1}\n".format(
+                    persistent._mas_chess_difficulty[1],
+                    self.MONIKA_WAITTIME
+                )
+            )
         
         def additional_setup(self):
             """
             Additional stockfish setup to get the game going using it as Monika's engine
             """
-            
+            self.stockfish = None 
+
             def open_stockfish(path, startupinfo=None):
                 """
                 Runs stockfish
@@ -3393,8 +3413,12 @@ init python:
                     startupinfo - startup flags
                 """
                 try:
+                    if os.path.isabs(path):
+                        full_path = path
+                    else:
+                        full_path = os.path.join(renpy.config.gamedir, path).replace('\\', '/')
                     return subprocess.Popen(
-                        os.path.join(renpy.config.gamedir, path).replace('\\', '/'),
+                        full_path,
                         stdin=subprocess.PIPE,
                         stdout=subprocess.PIPE,
                         startupinfo=startupinfo
@@ -3419,12 +3443,16 @@ init python:
                         renpy.pause(1.0)
                         store.mas_ptod.wx_cmd("import os", local_ctx)
                         renpy.pause(1.0)
-                        store.mas_ptod.wx_cmd(
-                            "subprocess.call(['chmod','+x', os.path.normcase(basedir + '/game/mod_assets/games/chess/stockfish_8_{0}_x64')])".format(
+                        renpy.pause(1.0)
+                        store.mas_ptod.wx_cmd("import os", local_ctx)
+
+                        if renpy.android:
+                            cmd_str = "subprocess.call(['chmod','755', '{0}'])".format(store.mas_chess.STOCKFISH_PATH)
+                        else:
+                            cmd_str = "subprocess.call(['chmod','+x', os.path.normcase(basedir + '/game/mod_assets/games/chess/stockfish_8_{0}_x64')])".format(
                                 "linux" if renpy.linux else "macosx"
-                            ),
-                            local_ctx
                         )
+                        store.mas_ptod.wx_cmd(cmd_str, local_ctx)
                         renpy.pause(2.0)
                         
                         renpy.hide_screen("mas_py_console_teaching")
@@ -3469,17 +3497,48 @@ init python:
                     'mod_assets/games/chess/stockfish_8_windows_x{0}.exe'.format("64" if is_64_bit else "32"),
                     startupinfo
                 )
+
+            elif renpy.android:
+                """
+                Native Library Logic for Android 10+
+                Utilizes the system's native library path to locate and execute libstockfish.so.
+                This bypasses W^X execution restrictions on modern Android versions.
+                """
+                native_lib_dir = store.mas_get_native_lib_dir()
+                stockfish_path = None
+                
+                if native_lib_dir:
+                    candidate = os.path.join(native_lib_dir, "libstockfish.so")
+                    if os.path.exists(candidate):
+                        stockfish_path = candidate
+                
+                if stockfish_path:
+                    
+                    self.stockfish = open_stockfish(stockfish_path)
+                else:
+                    """
+                    Fallback to legacy path
+                    Useful for older Android versions < 10 where execution in private storage is allowed,
+                    or if the native library extraction failed.
+                    """
+                    print("[MAS_CHESS] Native lib not found, fallback to legacy path.")
+                    self.stockfish = open_stockfish(store.mas_chess.STOCKFISH_PATH)
             
             elif is_64_bit:
                 fp = "mod_assets/games/chess/stockfish_8_{0}_x64".format("linux" if renpy.linux else "macosx")
                 
-                os.chmod(config.basedir + "/game/".format(fp), 0755)
+                
                 self.stockfish = open_stockfish(fp)
             
             
             self.stockfish.stdin.write("setoption name Skill Level value {0}\n".format(persistent._mas_chess_difficulty[0]))
             self.stockfish.stdin.write("setoption name Contempt value {0}\n".format(self.MONIKA_OPTIMISM))
             self.stockfish.stdin.write("setoption name Ponder value False\n")
+
+            if renpy.android:
+                self.stockfish.stdin.write("setoption name UCI_LimitStrength value true\n")
+                uci_elo = 1350 + (persistent._mas_chess_difficulty[0] * 15)
+                self.stockfish.stdin.write("setoption name UCI_Elo value {0}\n".format(uci_elo))
             
             
             self.queue = collections.deque()
@@ -3573,7 +3632,7 @@ init python:
             self.set_button_states()
             return None
         
-        def handle_player_move(self):
+        def handle_player_move(self, mx=None, my=None):
             """
             Manages player move
             """
@@ -3582,7 +3641,7 @@ init python:
                 self.set_button_states()
                 return
             
-            px, py = self.get_piece_pos()
+            px, py = self.get_piece_pos(mx, my)
             
             move_str = None
             

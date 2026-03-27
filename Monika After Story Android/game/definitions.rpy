@@ -4,8 +4,9 @@ define config.developer = False
 
 
 python early:
+ 
 
-
+    import string
     import io
     import os
     import datetime
@@ -71,7 +72,7 @@ python early:
 
     renpy.execution.check_infinite_loop = dummy
 
-    class MASFormatter(renpy.substitutions.Formatter):
+    class MASFormatter(string.Formatter):
         """
         Our string formatter that uses more
         advanced formatting rules compared to the RenPy one
@@ -4744,6 +4745,16 @@ init -995 python in mas_utils:
         filepath = renpy.config.basedir + filename
         
         try:
+            if renpy.android and hasattr(store, "ANDROID_PUBLIC_PATH"):
+                _base = store.ANDROID_PUBLIC_PATH
+                if _base.endswith("/") and filename.startswith("/"):
+                    android_filepath = _base[:-1] + filename
+                else:
+                    android_filepath = _base + filename
+                    
+                if os.access(os.path.normcase(android_filepath), os.F_OK):
+                    return True
+                    
             return os.access(os.path.normcase(filepath), os.F_OK)
         except:
             return False
@@ -6285,13 +6296,21 @@ init -1 python:
         for savegame in renpy.list_saved_games(fast=True):
             renpy.unlink_save(savegame)
 
-    def mas_delete_all_chrs():
+    def delete_character(name):
         """
-        Deletes all chr files under /characters/ folder. Any encountered errors
-        will be printed to log.
-        """
-        for pkg in store.mas_docking_station.getPackageList("chr"):
-            store.mas_docking_station.destroyPackage(pkg)
+            Deletes a .chr file for a character
+
+            IN:
+            name of the character who's chr file we want to delete
+            """
+        if persistent.do_not_delete:
+            return
+        
+        try:
+            os.remove(config.basedir + "/characters/" + name + ".chr")
+        
+        except:
+            pass
 
     def pause(time=None):
         """
@@ -6864,30 +6883,7 @@ init 21 python:
         OUT:
             tuple, (x, y) coordinates representing the mouse position
         """
-        virtual_width = config.screen_width * 10000
-        virtual_height = config.screen_height * 10000
-        physical_width, physical_height = renpy.get_physical_size()
-        dw, dh = pygame.display.get_surface().get_size()
-        mouse_x, mouse_y = pygame.mouse.get_pos()
-        
-        
-        
-        mouse_x = (mouse_x * physical_width) / dw
-        mouse_y = (mouse_y * physical_height) / dh
-        
-        r = None
-        
-        if virtual_width / (virtual_height / 10000) > physical_width * 10000 / physical_height:
-            r = virtual_width / physical_width
-            mouse_y -= (physical_height - virtual_height / r) / 2
-        else:
-            r = virtual_height / physical_height
-            mouse_x -= (physical_width - virtual_width / r) / 2
-        
-        newx = (mouse_x * r) / 10000
-        newy = (mouse_y * r) / 10000
-        
-        return (newx, newy)
+        return renpy.get_mouse_pos()
 
     def mas_quipExp(exp_code):
         """

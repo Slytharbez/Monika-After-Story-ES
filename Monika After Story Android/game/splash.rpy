@@ -4,10 +4,10 @@
 
 init -100 python:
 
-    for archive in ['audio','images','scripts','fonts']:
-        if not archive in config.archives:
-            
-            renpy.error("DDLC archive files not found in /game folder. Check installation and try again.")
+    if not renpy.android:
+        for archive in ['audio','images','scripts','fonts']:
+            if not archive in config.archives:
+                renpy.error("DDLC archive files not found in /game folder. Check installation and try again.")
 
 
 
@@ -162,6 +162,93 @@ image tos2 = "bg/warning2.png"
 
 
 label splashscreen:
+
+    if renpy.android:
+        python:
+            """
+            Permission Verification
+
+            We check if the utility functions imported from zz_android_setup.rpy exist.
+            """
+            if "mas_android_has_permission" in globals():
+                
+                """
+                STATE: NO PERMISSIONS
+                
+                We enter the request and wait flow.
+                """
+                if not mas_android_has_permission():
+                    
+                    """
+                    1. Request Permissions
+                    
+                    Launches the JNI request for notifications and storage.
+                    This generates the desired superimposed visual behavior.
+                    """
+                    if "mas_android_check_and_request_permissions" in globals():
+                        mas_android_check_and_request_permissions()
+                    
+                    """
+                    2. Wait Loop
+                    
+                    Pauses the game while the user interacts with
+                    system dialogs or the settings screen.
+                    """
+                    while not mas_android_has_permission():
+                        renpy.pause(0.1)
+                        
+                    """
+                    3. Create Folders
+                    
+                    Once permissions are obtained, we force the immediate creation
+                    of the directory structure in external storage.
+                    """
+                    if "mas_android_setup_public_storage" in globals():
+                        mas_android_setup_public_storage()
+                    
+                    """
+                    4. Conditional Reset
+                    
+                    Controlled closure of the application, depending on the Android version, to force a Ren'Py 
+                    reboot and detect the new external storage on the next run.
+                    """
+                    renpy.quit()
+                
+                else:
+                    """
+                    STATE: PERMISSIONS OBTAINED
+                    
+                    Routine secondary permission verification (Notifications)
+                    silently.
+                    """
+                    if "mas_android_check_and_request_permissions" in globals():
+                        mas_android_check_and_request_permissions()
+
+    python:
+        if renpy.android:
+            try:
+                if "mas_android_setup_public_storage" in globals():
+                    mas_android_setup_public_storage()
+                if "mas_android_rescue_saves" in globals():
+                    mas_android_rescue_saves()
+                if "mas_android_copy_logs" in globals():
+                    mas_android_copy_logs()
+                if "_compat_fixup_persistent" in globals():
+                    _compat_fixup_persistent()
+
+                pass
+                
+                """
+                Docking Station Override
+                
+                Ensures that the "station" path points correctly to
+                external storage before starting the game logic.
+                """
+                if hasattr(store, "mas_docking_station"):
+                    store.mas_docking_station.station = "/storage/emulated/0/Monika After Story/characters/"
+            except:
+                pass
+
     python:
         _mas_AffStartup()
 
@@ -213,9 +300,111 @@ label splashscreen:
     python:
         basedir = config.basedir.replace("\\", "/")
 
+        if renpy.android:
+            try:
+                """
+                AGRESSIVE FOLDER CREATION - RUNTIME
+                
+                Directory security fill. Ensures the structure exists even if the user
+                manually grants permissions.
+                """
+                mas_root = "/storage/emulated/0/Monika After Story/"
+                dirs_to_force = [
+                    mas_root,
+                    mas_root + "characters/",
+                    mas_root + "chess_games/",
+                    mas_root + "log/",
+                    mas_root + "game/saves/",
+                    mas_root + "custom_bgm/",
+                    mas_root + "game/mod_assets/monika/",
+                    mas_root + "game/mod_assets/monika/a/",
+                    mas_root + "game/mod_assets/monika/c/",
+                    mas_root + "game/mod_assets/monika/f/",
+                    mas_root + "game/mod_assets/monika/h/",
+                    mas_root + "game/mod_assets/monika/j/",
+                    mas_root + "game/mod_assets/monika/t/",
+                    mas_root + "game/mod_assets/location/",
+                    mas_root + "game/mod_assets/thumbs/",
+                    mas_root + "game/submods/"
+                ]
 
-        with open(basedir + "/game/masrun", "w") as versfile:
-            versfile.write(config.name + "|" + config.version + "\n")
+                import os
+                saves_created = False
+                
+                for d in dirs_to_force:
+                    if not os.path.exists(d):
+                        try:
+                            """
+                            Python 2.7 compatibility
+                            
+                            os.makedirs does not have the 'exist_ok' argument in this version,
+                            so we catch the exception if the directory already exists.
+                            """
+                            os.makedirs(d)
+                            """
+                            Detection of First Run with Permissions
+                            
+                            If we create 'game/saves', we mark the flag to
+                            restart and use this new location.
+                            """
+                            if d.endswith("game/saves/"):
+                                saves_created = True
+                        except:
+                            pass
+                
+                """
+                Version file generation (masrun)
+                """
+                with open(mas_root + "masrun", "w") as versfile:
+                    versfile.write(config.name + "|" + config.version + "\n")
+                
+                """
+                Persistent creation
+                
+                Manual low-level writing of the 'persistent' file.
+                
+                REASON:
+                    Ren'Py caches the save path at startup. If we change
+                    config.savedir at runtime, the automatic saving
+                    could fail or use the wrong path.
+                    
+                ACTION:
+                    Serializing (pickle) and compressing (zlib) manually the
+                    persistent data and writing it directly to disk.
+                """
+                try:
+                    import pickle
+                    import zlib
+                    ext_saves = mas_root + "game/saves/"
+                    ext_persistent_file = ext_saves + "persistent"
+                    
+                    """
+                    Verification to avoid deleting backups
+                    """
+                    if not os.path.exists(ext_persistent_file):
+                        with open(ext_persistent_file, "wb") as f:
+                            """
+                            CRITICAL: Ren'Py expects a compressed pickle with zlib.
+                            If we write raw pickle, it crashes on load (Error -3).
+                            Protocol 2 is the standard compatible.
+                            """
+                            raw_data = pickle.dumps(persistent, protocol=2)
+                            compressed_data = zlib.compress(raw_data)
+                            f.write(compressed_data)
+                            
+                        print("Compressed Persistent 'materialized' at: " + ext_persistent_file)
+                    else:
+                        print("The persistent file already exists in the external path. No changes need to be applied.")
+
+                except Exception as ep:
+                    print("Error in manual persistent writing: " + str(ep))
+                    
+            except Exception as e:
+                print("Error creating runtime folders: " + str(e))
+                pass
+        else:
+            with open(basedir + "/game/masrun", "w") as versfile:
+                versfile.write(config.name + "|" + config.version + "\n")
 
 
 
@@ -331,11 +520,21 @@ label quit:
     python:
         store.mas_calendar.saveCalendarDatabase(CustomEncoder)
         persistent.sessions['last_session_end']=datetime.datetime.now()
-        today_time = (
-            persistent.sessions["last_session_end"]
-            - persistent.sessions["current_session_start"]
-        )
-        new_time = today_time + persistent.sessions["total_playtime"]
+
+                
+        """
+        If we close the game too early (e.g., Sacrificial Restart), 
+        current_session_start may be None. We check before calculating.
+        """
+        new_time = persistent.sessions["total_playtime"]
+        
+        if persistent.sessions.get("current_session_start"):
+            today_time = (
+                persistent.sessions["last_session_end"]
+                - persistent.sessions["current_session_start"]
+            )
+            new_time = today_time + persistent.sessions["total_playtime"]
+            persistent.sessions["total_playtime"] = new_time
 
 
         if datetime.timedelta(0) < new_time <= mas_maxPlaytime():
@@ -377,5 +576,9 @@ label quit:
 
 
         store.mas_logging.logging.shutdown()
+
+                
+        if renpy.android and "mas_android_copy_logs" in globals():
+            mas_android_copy_logs()
     return
 # Decompiled by unrpyc: https://github.com/CensoredUsername/unrpyc

@@ -37,7 +37,23 @@ python early in mas_logging:
     import re
 
 
-    from logging import handlers as loghandlers
+    import logging
+    try:
+        import logging.handlers
+        loghandlers = logging.handlers
+    except ImportError:
+        
+        class SafeRotatingFileHandler(logging.FileHandler):
+            def __init__(self, filename, mode='a', encoding=None, delay=False, maxBytes=0, backupCount=0, **kwargs):
+                logging.FileHandler.__init__(self, filename, mode, encoding, delay)
+
+        class DummyKeep:
+            pass
+        
+        loghandlers = DummyKeep()
+        loghandlers.RotatingFileHandler = SafeRotatingFileHandler
+        
+        print "WARNING: logging.handlers not found. Using safe fallback."
 
 
     LT_INFO = "info"

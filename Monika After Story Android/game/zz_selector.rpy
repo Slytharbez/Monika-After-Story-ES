@@ -3393,6 +3393,7 @@ screen mas_selector_sidebar(items, mailbox, confirm, cancel, restore, remover=No
         $ menu_filtered_items = items
 
     default search_filtered_items = menu_filtered_items
+    default is_selector_search_active = False
 
 
     frame:
@@ -3411,15 +3412,35 @@ screen mas_selector_sidebar(items, mailbox, confirm, cancel, restore, remover=No
             ysize 38
             xadjustment ui.adjustment(ranged=store.mas_selspr.selector_adj_ranged_callback)
 
-            input:
-                id "search_input"
-                style_prefix "input"
-                length 50
-                xalign 0.0
-                layout "nobreak"
-                first_indent (0 if not mailbox.search_text else 10)
+        if not persistent._mas_hidesearch:
+            if is_selector_search_active:
+                input:
+                    id "search_input"
+                    style_prefix "input"
+                    length 50
+                    xalign 0.0
+                    default_focus True
+                    layout "nobreak"
+                    first_indent (0 if not mailbox.search_text else 10)
 
-                changed store.mas_selspr.selector_search_callback
+                    changed store.mas_selspr.selector_search_callback
+
+            else:
+                button:
+                    xfill True
+                    yfill True
+                    background None
+                    padding (0, 0)
+                    action SetScreenVariable("is_selector_search_active", True)
+                    
+                    if not mailbox.search_text:
+                        text "Buscar...":
+                            text_align 0.0
+                            layout "nobreak"
+                            color "#EEEEEEB2"
+                            first_indent 10
+                            line_leading 1
+                            outlines []
 
         if not mailbox.search_text:
             text "Search for...":

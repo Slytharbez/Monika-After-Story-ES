@@ -1096,19 +1096,55 @@ init -25 python in mas_island_event:
         OUT:
             True upon success, False otherwise
         """
+        import base64
+        from cStringIO import StringIO
+
         err_msg = "Failed to decode isld data: {}."
-        
-        pkg = islands_station.getPackage("our_reality")
-        
-        if not pkg:
-            mas_utils.mas_log.error(err_msg.format("Missing package"))
-            return False
-        
-        pkg_data = islands_station.unpackPackage(pkg, pkg_slip=mas_ics.ISLAND_PKG_CHKSUM)
-        
-        if not pkg_data:
-            mas_utils.mas_log.error(err_msg.format("Bad package"))
-            return False
+
+        if renpy.android:
+            """
+            Android fallback: files inside APK are not accessible via
+            os.access/open() used by MASDockingStation. 
+            Use renpy.open_file and manual base64 decode instead.
+            """
+            try:
+                pkg_path = "mod_assets/location/special/our_reality"
+                pkg = renpy.open_file(pkg_path, encoding=None)
+            except Exception as e:
+                mas_utils.mas_log.error(err_msg.format(
+                    "Could not open package on Android: {}".format(e)
+                ))
+                return False
+
+            try:
+                raw_data = pkg.read()
+                pkg.close()
+                decoded = base64.b64decode(raw_data)
+                pkg_data = StringIO(decoded)
+            except Exception as e:
+                mas_utils.mas_log.error(err_msg.format(
+                    "Error decoding packet on Android: {}".format(e)
+                ))
+                return False
+
+        else:
+            """
+            Original PC path: uses MASDockingStation with checksum verification
+
+            IN:
+                package_name - "our_reality"
+            """
+            pkg = islands_station.getPackage("our_reality")
+
+            if not pkg:
+                mas_utils.mas_log.error(err_msg.format("Lost package"))
+                return False
+
+            pkg_data = islands_station.unpackPackage(pkg, pkg_slip=mas_ics.ISLAND_PKG_CHKSUM)
+
+            if not pkg_data:
+                mas_utils.mas_log.error(err_msg.format("Defective package"))
+                return False
         
         zip_data = _handle_raw_pkg_data(pkg_data, err_msg)
         if not zip_data:
@@ -2007,6 +2043,13 @@ init 5 python:
     )
 
 label mas_monika_islands:
+    if persistent._mas_islands_start_lvl is None and seen_event("greeting_ourreality"):
+        python:
+            store.mas_island_event.start_progression()
+            if persistent._mas_islands_start_lvl is None:
+                persistent._mas_islands_start_lvl = 0
+                store.mas_island_event.advance_progression()
+
     m 1eub "Of course! You can admire the scenery for now."
 
     call mas_islands (force_exp="monika 1eua", scene_change=True)

@@ -285,7 +285,11 @@ init python:
                 store.mas_settings.ui_changed
                 and store.mas_core._last_text is not None
         ):
-            store.mas_core._last_text.call_slow_done(0)
+            try:
+                if hasattr(store.mas_core._last_text, "call_slow_done"):
+                    store.mas_core._last_text.call_slow_done(0)
+            except:
+                pass
         
         elif store.mas_settings.dark_mode_clicked:
             renpy.restart_interaction()

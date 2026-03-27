@@ -986,13 +986,13 @@ transform fade_in(time=1.0):
     ease time alpha 1.0
 
 
-transform mas_kissing(_zoom, _y, time=2.0):
+transform mas_kissing(_zoom, time=2.0):
     i11
     xcenter 640 yoffset 700 yanchor 1.0
-    linear time ypos _y zoom _zoom
+    linear time zoom _zoom ypos 360
 
-transform mas_back_from_kissing(time, y):
-    linear time xcenter 640 yoffset (y) zoom 0.80
+transform mas_back_from_kissing(time):
+    linear time xcenter 640 yanchor 0.49 ypos 360 zoom 0.80
 
 
 
@@ -1052,11 +1052,11 @@ label monika_kissing_motion(transition=4.0, duration=2.0, hide_ui=True, initial_
     show monika at i11
 
     $ _mas_kiss_zoom = 4.9 / mas_sprites.value_zoom
-    $ _mas_kiss_y = 2060 - ( 1700  * (mas_sprites.value_zoom - 1.1))
-    $ _mas_kiss_y2 = -1320 + (1700 * (mas_sprites.value_zoom - 1.1))
+    
+    
 
 
-    $ renpy.show("monika {}".format(initial_exp), [mas_kissing(_mas_kiss_zoom,int(_mas_kiss_y),transition)])
+    $ renpy.show("monika {}".format(initial_exp), [mas_kissing(_mas_kiss_zoom,time=transition)])
 
 
     $ renpy.pause(transition)
@@ -1072,7 +1072,7 @@ label monika_kissing_motion(transition=4.0, duration=2.0, hide_ui=True, initial_
 
     hide black
 
-    $ renpy.show("monika {}".format(mid_exp),[mas_back_from_kissing(transition,_mas_kiss_y2)])
+    $ renpy.show("monika {}".format(mid_exp),[mas_back_from_kissing(transition)])
     pause transition
     $ renpy.show("monika {}".format(final_exp),[i11()])
     show monika with dissolve_monika

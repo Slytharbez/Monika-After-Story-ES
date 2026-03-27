@@ -1897,7 +1897,7 @@ init python:
             category=[store.mas_songs.TYPE_SHORT],
             random=True,
             aff_range=(mas_aff.LOVE,None)
-         ),
+        ),
         code="SNG"
     )
 

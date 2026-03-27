@@ -246,14 +246,20 @@ init -1505 python in mas_can_import:
             new_ssl = None
             
             if platform.system() == "Windows":
-                sys.path.append(os.path.normcase(os.path.join(
-                    renpy.config.gamedir,
-                    ssl_pkg,
-                    "windows/32/",
-                )))
+                import sys
+                is_64bits = sys.maxsize > 2**32
                 
-                import win32_ssl
-                new_ssl = win32_ssl
+                if not is_64bits:
+                    sys.path.append(os.path.normcase(os.path.join(
+                        renpy.config.gamedir,
+                        ssl_pkg,
+                        "windows/32/",
+                    )))
+                    
+                    import win32_ssl
+                    new_ssl = win32_ssl
+                else:
+                    pass
             
             elif platform.system() == "Linux":
                 

@@ -271,6 +271,9 @@ init -1 python in songs:
         return (music_list[:PAGE_LIMIT], music_list[PAGE_LIMIT:])
 
 
+
+    import urllib
+
     def _m1_zz_music_selector__scanCustomBGM(music_list):
         """
         Scans the custom music directory for custom musics and adds them to
@@ -315,9 +318,14 @@ init -1 python in songs:
                 loop_prefix = _getLoopData(_audio_file, _ext)
                 
                 
+                if renpy.android:
+                    play_path = custom_music_dir + ogg_file
+                else:
+                    play_path = custom_music_reldir + ogg_file
+
                 music_list.append((
                     cleanGUIText(disp_name),
-                    loop_prefix + custom_music_reldir + ogg_file
+                    loop_prefix + play_path
                 ))
                 
                 
@@ -778,9 +786,14 @@ init 10 python in songs:
 init 10 python:
 
 
-    store.songs.custom_music_dir = (
-        config.basedir + "/" + store.songs.custom_music_dir + "/"
-    ).replace("\\", "/")
+
+    if renpy.android:
+        store.songs.custom_music_dir = "/storage/emulated/0/Monika After Story/custom_bgm/"
+        store.songs.custom_music_reldir = store.songs.custom_music_dir
+    else:
+        store.songs.custom_music_dir = (
+            config.basedir + "/" + store.songs.custom_music_dir + "/"
+        ).replace("\\", "/")
 
     if store.mas_egg_manager.sayori_enabled():
         
@@ -1047,6 +1060,8 @@ init python:
             songs.setUserVolume(songs.music_volume, "music")
 
 
+    import shutil
+
     def mas_play_song(song, fadein=0.0, loop=True, set_per=False, fadeout=0.0, if_changed=False):
         """
         literally just plays a song onto the music channel
@@ -1071,8 +1086,47 @@ init python:
             renpy.music.stop(channel="music", fadeout=fadeout)
         
         else:
+            
+            """
+            CACHING SYSTEM
+            Strategy: Cache to 'game/music_cache' so we can play via relative path "music_cache/current_bgm.mp3"
+            This tricks Ren'Py into treating it as a standard asset.
+            """
+            play_song = song
+            
+            if renpy.android and isinstance(song, basestring) and song.startswith("/"):
+                try:
+                    """
+                    Define Cache Dir relative to game root
+                    renpy.config.gamedir gives the absolute path to 'game/'
+                    """
+                    base_game_dir = renpy.config.gamedir
+                    rel_cache_dir = "music_cache"
+                    abs_cache_dir = os.path.join(base_game_dir, rel_cache_dir)
+                    
+                    if not os.path.exists(abs_cache_dir):
+                        os.makedirs(abs_cache_dir)
+                    
+                    _, ext = os.path.splitext(song)
+                    rel_cache_file = os.path.join(rel_cache_dir, "current_bgm" + ext).replace("\\", "/")
+                    abs_cache_file = os.path.join(abs_cache_dir, "current_bgm" + ext)
+                    
+                    if os.path.exists(abs_cache_file):
+                        os.remove(abs_cache_file)
+                        
+
+                    shutil.copy2(song, abs_cache_file)
+                    
+
+                    play_song = rel_cache_file
+                    
+                except Exception:
+
+                    pass
+
+
             renpy.music.play(
-                song,
+                play_song,
                 channel="music",
                 loop=loop,
                 synchro_start=True,

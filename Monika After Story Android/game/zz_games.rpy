@@ -10,12 +10,15 @@ init -15 python in mas_games:
         import platform
         import sys
         
+        if renpy.android:
+            return True
+
         if sys.maxsize > 2**32:
             return platform.system() == 'Windows' or platform.system() == 'Linux' or platform.system() == 'Darwin'
         
         else:
             return platform.system() == 'Windows'
-
+ 
 init -4 python in mas_games:
     def _total_games_played(exclude_list=[]):
         """

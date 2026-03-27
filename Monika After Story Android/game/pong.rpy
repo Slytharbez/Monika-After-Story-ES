@@ -74,7 +74,7 @@ init:
                 self.ball = Image("mod_assets/games/pong/pong_ball.png")
                 self.player = Text(_("[player]"), size=36)
                 self.monika = Text(_("Monika"), size=36)
-                self.ctb = Text(_("Click to Begin!"), size=36)
+                self.ctb = Text(_("Tap to Begin!"), size=36)
                 
                 
                 self.playsounds = True

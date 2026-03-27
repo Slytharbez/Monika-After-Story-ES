@@ -2371,7 +2371,7 @@ init python:
                 (Default: EVE) - event database
         """
         if eventdb is None:
-            eventdb = mas_all_ev_db_map.get(code, None)
+            eventdb = mas_all_ev_db_map.setdefault(code, dict())
         
         if type(eventdb) is not dict:
             raise EventException("Given db is not of type dict")
@@ -2404,7 +2404,12 @@ init python:
             persistent._seen_ever[event.eventlabel] = True
         
         
-        eventdb.setdefault(event.eventlabel, event)
+        stored_ev = eventdb.setdefault(event.eventlabel, event)
+        
+        if stored_ev is not event:
+
+            if event.prompt and (not stored_ev.prompt or stored_ev.prompt == event.eventlabel):
+                stored_ev.prompt = event.prompt
 
     @store.mas_utils.deprecated(use_instead="mas_hideEVL", should_raise=True)
     def hideEventLabel(
@@ -3315,6 +3320,7 @@ label prompt_menu:
     show monika at t21
 
     python:
+        madechoice = None
         talk_menu = []
         if len(unseen_event_labels)>0 and not persistent._mas_unsee_unseen:
             
@@ -3330,6 +3336,7 @@ label prompt_menu:
             else:
                 talk_menu.append((_("I love you!"), "love"))
         talk_menu.append((_("I feel..."), "moods"))
+        talk_menu.append((_("Android Menu"), "anmenu"))
         talk_menu.append((_("Goodbye"), "goodbye"))
         talk_menu.append((_("Nevermind"),"nevermind"))
 
@@ -3358,6 +3365,9 @@ label prompt_menu:
 
     elif madechoice == "moods":
         call mas_mood_start
+
+    elif madechoice == "anmenu":
+        jump anmenu
 
     elif madechoice == "goodbye":
         call mas_farewell_start

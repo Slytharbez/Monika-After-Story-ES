@@ -1,5 +1,5 @@
 
-
+ 
 
 
 
@@ -78,7 +78,10 @@ init -45 python:
         
         
         DEF_STATION = "/characters/"
-        DEF_STATION_PATH = os.path.normcase(renpy.config.basedir + DEF_STATION)
+        if renpy.android:
+            DEF_STATION_PATH = "/storage/emulated/0/Monika After Story/characters/"
+        else:
+            DEF_STATION_PATH = os.path.normcase(renpy.config.basedir + DEF_STATION)
         
         
         
@@ -1195,7 +1198,13 @@ init python in mas_dockstat:
             tdelta - timedelta to use
         """
         
-        hours = (tdelta.days * 24) + (tdelta.seconds / 3600.0)
+        try:
+            hours = (tdelta.days * 24) + (tdelta.seconds / 3600.0)
+        except (TypeError, AttributeError):
+            hours = 0.0
+
+        if hours < 0:
+            hours = 0.0
         
         mbs = math.sqrt(hours*MONI_SIZE_FACTOR)
         
@@ -1484,9 +1493,12 @@ init 200 python in mas_dockstat:
         
         moni_chr = None
         try:
-            moni_chr = open(os.path.normcase(
-                renpy.config.basedir + "/game/mod_assets/monika/mbase"
-            ), "rb")
+            if renpy.android:
+                moni_chr = renpy.file("mod_assets/monika/mbase")
+            else:
+                moni_chr = open(os.path.normcase(
+                    renpy.config.basedir + "/game/mod_assets/monika/mbase"
+                ), "rb")
             
             
             moni_buffer.write(moni_chr.read())

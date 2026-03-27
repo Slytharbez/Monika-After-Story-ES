@@ -183,7 +183,34 @@ init python:
             
             
             if renpy.has_label(updateTo) and not renpy.seen_label(updateTo):
-                renpy.call_in_new_context(updateTo, updateTo)
+                try:
+                    renpy.call_in_new_context(updateTo, updateTo)
+                except Exception as e:
+                    try:
+                        import store
+                        store.mas_utils.mas_log.error("Failed to run update in context {0}: {1}".format(updateTo, e))
+                    except:
+                        pass
+                    
+                    try:
+                        renpy.ui.reset()
+                    except:
+                        pass
+                    
+                    try:
+                        from renpy import display
+                        _sls = renpy.game.context().scene_lists
+                        for _layer in _sls.layers:
+                            if _sls.layers[_layer]:
+                                _sls.layers[_layer] = [
+                                    _item for _item in _sls.layers[_layer]
+                                    if getattr(_item, 'displayable', None) is not None 
+                                    and getattr(getattr(_item, 'displayable', None), 'screen', True) is not None 
+                                    and _item is not None
+                                ]
+                    except:
+                        pass
+                    
             startVers = updates.version_updates[startVers]
 
     def safeDel(varname):
