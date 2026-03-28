@@ -1,24 +1,15 @@
-
 init -10 python:
-    """
-    INITIALIZATION
-    Ensures that the necessary persistent dictionaries and variables exist for the Dynamic Texture Manager.
-    """
     if persistent._mas_dtm_overrides is None:
         persistent._mas_dtm_overrides = {
-            "eye_map": {},
-            "table": "def",
-            "chess_pieces": {},
-            "pong_field": None
+            "eye_map": {},         
+            "table": "def",        
+            "chess_pieces": {},    
+            "pong_field": None     
         }
 
 init 999 python in dtm_core:
     import store
 
-    """
-    ORIGINAL CONFIGURATION PRESERVATION
-    Stores the vanilla MAS configuration values to allow users to reset textures to their default state.
-    """
     if not hasattr(store, "_mas_dtm_originals"):
         store._mas_dtm_originals = {
             "eye_map": store.mas_sprite_decoder.EYE_MAP.copy(),
@@ -29,33 +20,23 @@ init 999 python in dtm_core:
         """
         Forces Ren'Py to redraw all screens and dynamic displayables immediately.
         This is the core of the 'hot-swap' feature.
-
-        OUT:
-            N/A - Restarts the Ren'Py interaction
         """
         renpy.restart_interaction()
 
-    """
-    Pong textures
-    """
-
+    # ==========================================
+    # PONG TEXTURE LOGIC
+    # ==========================================
     def set_pong_textures(new_pong_folder_path):
         """
-        Sets the folder path for custom Pong textures.
-
-        IN:
-            new_pong_folder_path - Absolute path to folder containing:
-                - pong.png
-                - pong_ball.png
-                - pong_field.png
+        Sets the pong mod folder path. This folder should contain:
+        - pong.png
+        - pong_ball.png
+        - pong_field.png
         """
         store.persistent._mas_dtm_overrides["pong_field"] = new_pong_folder_path
         apply_pong_overrides()
 
     def reset_pong_textures():
-        """
-        Resets Pong textures to default MAS assets and removes hooks.
-        """
         store.persistent._mas_dtm_overrides["pong_field"] = None
         renpy.display.image.images[("bg", "pong", "field")] = store.Image("mod_assets/games/pong/pong_field.png")
         if hasattr(store, "_mas_dtm_original_pong_init") and hasattr(store, "PongDisplayable"):
@@ -66,11 +47,9 @@ init 999 python in dtm_core:
 
     def apply_pong_overrides():
         """
-        Copies pong textures to internal cache and applies image/displayable hooks.
-
-        NOTE:
-            Internal cache is used (Android internal storage) to ensure fast loading
-            and standard Image() resolution.
+        Applies pong texture overrides.
+        - Copies the 3 pong images from external storage to an internal game cache folder.
+        - Loads them via standard store.Image() with relative paths (fast, cached by IM).
         """
         pong_folder = store.persistent._mas_dtm_overrides.get("pong_field", None)
         
@@ -99,6 +78,7 @@ init 999 python in dtm_core:
                     pass
         
         store._mas_dtm_pong_surfaces = copied
+        
         renpy.display.im.cache.clear()
         
         if "pong_field.png" in copied:
@@ -109,9 +89,6 @@ init 999 python in dtm_core:
                 store._mas_dtm_original_pong_init = store.PongDisplayable.__init__
                 
             def custom_pong_init(self, *args, **kwargs):
-                """
-                Hooked __init__ for PongDisplayable to inject custom paddle and ball textures.
-                """
                 store._mas_dtm_original_pong_init(self, *args, **kwargs)
                 cached = getattr(store, "_mas_dtm_pong_surfaces", {})
                 if "pong.png" in cached:
@@ -121,18 +98,14 @@ init 999 python in dtm_core:
 
             store.PongDisplayable.__init__ = custom_pong_init
 
-    """
-    CHESS TEXTURE LOGIC
-    Section dedicated to managing custom textures for the Chess minigame.
-    """
+    # ==========================================
+    # CHESS TEXTURE LOGIC
+    # ==========================================
     def set_chess_textures(chess_folder_path):
         """
-        Sets the folder path for custom Chess textures and applies them.
-
-        IN:
-            chess_folder_path - Absolute path to folder containing:
-                - chess_board.png (background board)
-                - pieces/ folder with piece PNGs (wP, bK, etc.)
+        Sets the chess texture folder. This folder should contain:
+        - chess_board.png (background board)
+        - pieces/ folder with wP, wN, wB, wR, wQ, wK, bP, bN, bB, bR, bQ, bK (or lower-case b*)
         """
         if "chess_theme" not in store.persistent._mas_dtm_overrides:
             store.persistent._mas_dtm_overrides["chess_theme"] = None
@@ -140,9 +113,6 @@ init 999 python in dtm_core:
         apply_chess_overrides()
 
     def reset_chess_textures():
-        """
-        Resets all Chess textures to default MAS assets and clears hooks.
-        """
         store.persistent._mas_dtm_overrides["chess_theme"] = None
         if hasattr(store, "MASPiece"):
             if hasattr(store, "_mas_dtm_original_chess_map"):
@@ -169,11 +139,8 @@ init 999 python in dtm_core:
 
     def apply_chess_overrides(sync=False):
         """
-        Coordinates the copying and application of Chess textures.
-
-        IN:
-            sync - If True, operations run synchronously (used at startup).
-                    If False, file copy runs in a background thread with a UI timer.
+        Copies chess textures to internal cache and applies them.
+        Runs synchronously to avoid async timing bugs on Android UI.
         """
         if "chess_theme" not in store.persistent._mas_dtm_overrides:
             store.persistent._mas_dtm_overrides["chess_theme"] = None
@@ -191,9 +158,6 @@ init 999 python in dtm_core:
         store.persistent._mas_dtm_overrides["chess_theme"] = chess_folder
         
         def do_copy_chess():
-            """
-            Internal background task for copying chess assets to internal cache.
-            """
             cache_dir = os.path.join(renpy.config.gamedir, "_dtm_cache", "chess")
             try:
                 if os.path.exists(cache_dir):
@@ -202,9 +166,7 @@ init 999 python in dtm_core:
                     os.makedirs(cache_dir)
                     
                 for root, dirs, files in os.walk(chess_folder):
-                    rel = os.path.relpath(root, chess_folder)
-                    is_pieces = rel.lower() == "pieces"
-                    rel_path = rel.lower()
+                    rel_path = os.path.relpath(root, chess_folder).lower()
                     if rel_path == ".":
                         rel_path = ""
                     dest_dir = os.path.join(cache_dir, rel_path)
@@ -213,6 +175,8 @@ init 999 python in dtm_core:
                             os.makedirs(dest_dir)
                         except Exception:
                             pass
+                    
+                    is_pieces = rel_path.startswith("pieces")
                     for f in files:
                         src_f = os.path.join(root, f)
                         fname = f if is_pieces else f.lower()
@@ -226,19 +190,16 @@ init 999 python in dtm_core:
             finally:
                 store.mas_dtm_trigger_chess_apply = True
         
+        do_copy_chess()
         if sync:
-            do_copy_chess()
             _finish_apply_chess_overrides(startup=True)
         else:
-            import threading
-            threading.Thread(target=do_copy_chess).start()
+            _finish_apply_chess_overrides(startup=False)
 
     def _finish_apply_chess_overrides(startup=False):
         """
-        Finalizes the application of Chess textures by patching MAS Chess classes.
-
-        IN:
-            startup - If True, skips UI notifications and forced redraws.
+        Called by the main thread after the background chess copy completes.
+        Patches IMG_MAP and BOARD_IMAGE.
         """
         import os
         cache_dir = os.path.join(renpy.config.gamedir, "_dtm_cache", "chess")
@@ -261,7 +222,7 @@ init 999 python in dtm_core:
             store._mas_dtm_original_chess_hl_red = store.MASChessDisplayableBase.PIECE_HIGHLIGHT_RED_IMAGE
         if not hasattr(store, "_mas_dtm_original_chess_hl_yellow"):
             store._mas_dtm_original_chess_hl_yellow = store.MASChessDisplayableBase.PIECE_HIGHLIGHT_YELLOW_IMAGE
-        if hasattr(store, "_mas_dtm_original_chess_hl_magenta"):
+        if not hasattr(store, "_mas_dtm_original_chess_hl_magenta"):
             store._mas_dtm_original_chess_hl_magenta = store.MASChessDisplayableBase.PIECE_HIGHLIGHT_MAGENTA_IMAGE
             
         board_path = os.path.join(cache_dir, "chess_board.png")
@@ -291,7 +252,7 @@ init 999 python in dtm_core:
             for fname in os.listdir(pieces_dir):
                 if not fname.lower().endswith(".png"):
                     continue
-                key = fname[:-4]
+                key = fname[:-4]  # strip .png
                 cached_rel = "_dtm_cache/chess/pieces/" + fname
                 if key in store.MASPiece.IMG_MAP:
                     store.MASPiece.IMG_MAP[key] = store.Image(cached_rel)
@@ -301,34 +262,12 @@ init 999 python in dtm_core:
             force_update_mas_visuals()
             renpy.notify("Texturas de ajedrez aplicadas")
 
-screen dtm_background_apply_chess_timer():
-    """
-    Polling screen for Chess background asset setup.
-    """
-    timer 0.5 repeat True action If(store.mas_dtm_trigger_chess_apply, true=[
-        Function(store.dtm_core._finish_apply_chess_overrides),
-        SetField(store, "mas_dtm_trigger_chess_apply", False),
-        Hide("dtm_background_apply_chess_timer")
-    ], false=None)
-
-
-    """
-    NOU TEXTURE LOGIC
-    Section dedicated to managing custom textures for the NOU minigame.
-    """
-
-init 999 python in dtm_core:
+    # ==========================================
+    # NOU TEXTURE LOGIC
+    # ==========================================
     def set_nou_textures(new_nou_folder_path):
         """
-        Sets the folder path for custom NOU (UNO) textures.
-
-        IN:
-            new_nou_folder_path - Absolute path to folder containing:
-                - cards/
-                - desks/
-                - sfx/
-                - note.png
-                - pen.png
+        Sets the NOU mod folder path. This folder should contain cards/, desks/, sfx/, note.png, and pen.png
         """
         if "nou_theme" not in store.persistent._mas_dtm_overrides:
             store.persistent._mas_dtm_overrides["nou_theme"] = None
@@ -336,10 +275,8 @@ init 999 python in dtm_core:
         apply_nou_overrides()
 
     def reset_nou_textures():
-        """
-        Resets all NOU textures to default MAS assets and clears hooks.
-        """
         store.persistent._mas_dtm_overrides["nou_theme"] = None
+
         if hasattr(store, "_mas_dtm_original_filter_switch"):
             store.MASFilterSwitch = store._mas_dtm_original_filter_switch
         if hasattr(store, "mas_nou") and hasattr(store.mas_nou.NOU, "_load_sfx"):
@@ -357,10 +294,8 @@ init 999 python in dtm_core:
 
     def apply_nou_overrides(sync=False):
         """
-        Coordinates the copying and application of NOU textures.
-
-        IN:
-            sync - If True, operations run synchronously.
+        Copies NOU textures to internal cache, overrides MAS_NOU assets constants, and reloads sfx/desks.
+        Runs synchronously to avoid async timing bugs on Android UI.
         """
         if "nou_theme" not in store.persistent._mas_dtm_overrides:
             store.persistent._mas_dtm_overrides["nou_theme"] = None
@@ -379,9 +314,6 @@ init 999 python in dtm_core:
         store.persistent._mas_dtm_overrides["nou_theme"] = nou_folder
 
         def do_copy_nou():
-            """
-            Internal background task for copying NOU assets to internal cache.
-            """
             cache_dir = os.path.join(renpy.config.gamedir, "_dtm_cache", "nou")
             try:
                 if os.path.exists(cache_dir):
@@ -414,19 +346,16 @@ init 999 python in dtm_core:
             finally:
                 store.mas_dtm_trigger_nou_apply = True
                 
+        do_copy_nou()
         if sync:
-            do_copy_nou()
             _finish_apply_nou_overrides(startup=True)
         else:
-            import threading
-            threading.Thread(target=do_copy_nou).start()
+            _finish_apply_nou_overrides(startup=False)
         
     def _finish_apply_nou_overrides(startup=False):
         """
-        Finalizes the application of NOU textures by patching MAS NOU classes.
-
-        IN:
-            startup - If True, skips notifications.
+        Called by the main thread after the background copy completes.
+        Applies variables and reloads assets.
         """
         import os
         cache_dir = os.path.join(renpy.config.gamedir, "_dtm_cache", "nou")
@@ -437,13 +366,10 @@ init 999 python in dtm_core:
             store._mas_dtm_original_nou_init = store.mas_nou.NOU.__init__
             
         def custom_nou_init(self, *args, **kwargs):
-            """
-            Hook for NOU.__init__ to override card back image.
-            """
             store._mas_dtm_original_nou_init(self, *args, **kwargs)
             cache_back = os.path.join(renpy.config.gamedir, "_dtm_cache", "nou", "cards", "back.png")
             if os.path.exists(cache_back):
-                back_img = store._mas_dtm_original_filter_switch("_dtm_cache/nou/cards/back.png")
+                back_img = store.Image("_dtm_cache/nou/cards/back.png")
                 self.table.back = back_img
                 for card_obj in self.table.cards.itervalues():
                     card_obj.back = back_img
@@ -455,9 +381,6 @@ init 999 python in dtm_core:
             store._mas_dtm_original_load_card_asset = store.mas_nou.NOU._m1_zz_cardgames__load_card_asset
             
         def custom_load_card_asset(self, card):
-            """
-            Hook for _load_card_asset to override individual card faces.
-            """
             store._mas_dtm_original_load_card_asset(self, card)
             card_png = self._m1_zz_cardgames__get_card_filename(card)
             
@@ -486,9 +409,6 @@ init 999 python in dtm_core:
             store._mas_dtm_original_filter_switch = store.MASFilterSwitch
 
         def custom_filter_switch(img):
-            """
-            Hook for MASFilterSwitch to override UI elements like notes and pens.
-            """
             if isinstance(img, basestring):
                 if img == "mod_assets/games/nou/note.png" and os.path.isfile(os.path.join(cache_dir, "note.png")):
                     img = internal_nou_path + "note.png"
@@ -544,60 +464,39 @@ init 999 python in dtm_core:
                         
         renpy.display.im.cache.clear()
         if not startup:
-            renpy.notify("Texturas aplicadas exitosamente")
+            force_update_mas_visuals()
+            renpy.notify("Texturas de NOU aplicadas exitosamente")
 
-screen dtm_background_apply_nou_timer():
-    """
-    Polling screen for NOU background asset setup.
-    """
-    timer 0.5 repeat True action If(store.mas_dtm_trigger_nou_apply, true=[
-        Function(store.dtm_core._finish_apply_nou_overrides),
-        SetField(store, "mas_dtm_trigger_nou_apply", False),
-        Hide("dtm_background_apply_nou_timer")
-    ], false=None)
-
-    """
-    Monika textures
-    """
-
-init 999 python in dtm_core:
+    # ==========================================
+    # TABLE TEXTURE LOGIC
+    # ==========================================
     def set_table_texture(new_table_id):
         """
-        Overrides the table texture ID.
-
-        IN:
-            new_table_id - The ID of the table to use (e.g., 'def', 'pink')
-
-        NOTE:
-            The user should ensure 'mod_assets/table/table-[new_table_id].png' exists
-            or follows the MAS table asset format.
+        Overrides the table texture. 
+        Note: The user should ensure 'mod_assets/table/table-[new_table_id].png' exists or similar MAS table asset format.
         """
         store.persistent._mas_dtm_overrides["table"] = new_table_id
         apply_table_overrides()
         force_update_mas_visuals()
 
     def reset_table_texture():
-        """
-        Resets the table texture to the default 'def' state.
-        """
         store.persistent._mas_dtm_overrides["table"] = "def"
         apply_table_overrides()
         force_update_mas_visuals()
 
     def apply_table_overrides():
         """
-        Applies the current table override to the active Monika sitting instance.
+        Overrides the actual table property in the sitting Monika instance.
         """
         if hasattr(store, "monika_chr") and hasattr(store.monika_chr, "tablechair"):
             store.monika_chr.tablechair.table = store.persistent._mas_dtm_overrides["table"]
 
+    # ==========================================
+    # EYE TEXTURE LOGIC
+    # ==========================================
     def set_eye_texture(eye_id, new_texture_value):
         """
-        Overrides an eye texture mapping with a custom absolute path.
-
-        IN:
-            eye_id - The ID of the eye to override (e.g., 'e')
-            new_texture_value - The absolute path to the replacement PNG
+        Overrides an eye texture mapping.
         """
         store.persistent._mas_dtm_overrides["eye_map"][eye_id] = new_texture_value
         apply_sprite_overrides()
@@ -605,7 +504,7 @@ init 999 python in dtm_core:
 
     def reset_eye_textures():
         """
-        Resets eye textures to MAS defaults by clearing the override map.
+        Resets eye textures to MAS defaults.
         """
         store.persistent._mas_dtm_overrides["eye_map"].clear()
         apply_sprite_overrides()
@@ -613,19 +512,13 @@ init 999 python in dtm_core:
 
     def apply_sprite_overrides():
         """
-        Applies eye overrides by hooking into mas_sprites._rk_face to inject absolute paths.
-
-        NOTE:
-            We avoid modifying EYE_MAP directly for custom paths to prevent MAS from
-            attaching internal prefixes or extensions to absolute paths.
+        Applies overrides by hooking into mas_sprites._rk_face to inject absolute paths for custom eyes.
+        We avoid modifying EYE_MAP directly for custom paths to prevent MAS from attaching 'mod_assets/monika/f/' and '.png' to them.
         """
         if not hasattr(store, "_mas_dtm_original_rk_face"):
             store._mas_dtm_original_rk_face = store.mas_sprites._rk_face
 
         def custom_rk_face(rk_list, eyes, eyebrows, nose, mouth, flt, fpfx, lean, sweat, tears, emote):
-            """
-            Internal hook for _rk_face to inject custom eye textures.
-            """
             original_len = len(rk_list)
             store._mas_dtm_original_rk_face(rk_list, eyes, eyebrows, nose, mouth, flt, fpfx, lean, sweat, tears, emote)
             
@@ -654,19 +547,17 @@ init 999 python in dtm_core:
 
         store.mas_sprites._rk_face = custom_rk_face
 
+screen dtm_background_apply_nou_timer():
+    timer 0.1 action Hide("dtm_background_apply_nou_timer")
+
+screen dtm_background_apply_chess_timer():
+    timer 0.1 action Hide("dtm_background_apply_chess_timer")
+
 
 init 1000 python:
-    """
-    GLOBAL AUTO-APPLY STARTUP LOGIC
-    This block coordinates the automatic application of ALL custom textures 
-    (Pong, Chess, Nou, Table, Eyes) when the game initializes.
-    """
-
     store.dtm_core.apply_sprite_overrides()
     store.dtm_core.apply_table_overrides()
-    
     if hasattr(store, "MASChessDisplayableBase"):
         store.dtm_core.apply_chess_overrides(sync=True)
-        
     store.dtm_core.apply_pong_overrides()
     store.dtm_core.apply_nou_overrides(sync=True)
