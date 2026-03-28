@@ -369,7 +369,7 @@ init 999 python in dtm_core:
             store._mas_dtm_original_nou_init(self, *args, **kwargs)
             cache_back = os.path.join(renpy.config.gamedir, "_dtm_cache", "nou", "cards", "back.png")
             if os.path.exists(cache_back):
-                back_img = store.Image("_dtm_cache/nou/cards/back.png")
+                back_img = store.MASFilterSwitch("_dtm_cache/nou/cards/back.png")
                 self.table.back = back_img
                 for card_obj in self.table.cards.itervalues():
                     card_obj.back = back_img
