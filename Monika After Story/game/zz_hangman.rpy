@@ -675,7 +675,7 @@ label mas_hangman_game_loop:
         m 1hua "¡Vaya, has adivinado [the_word] correctamente!"
         m "¡Buen trabajo, [player]!"
 
-        if not persistent._mas_ever_won['hangman']:
+        if not persistent._mas_ever_won.get('hangman', False):
             $ persistent._mas_ever_won['hangman']=True
 
 

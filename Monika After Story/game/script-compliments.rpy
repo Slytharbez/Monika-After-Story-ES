@@ -739,7 +739,7 @@ init python:
 label mas_compliment_pong:
     m 1hub "Jajaja~"
     m 2eub "Gracias [player], pero el pong no es exactamente un juego complejo."
-    if persistent._mas_ever_won['pong']:
+    if persistent._mas_ever_won.get('pong', False):
         m 1lksdla "Ya me ganaste."
         m "Entonces sabes que es muy simple."
         show monika 5hub zorder MAS_MONIKA_Z at t11 with dissolve_monika

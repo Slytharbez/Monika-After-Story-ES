@@ -192,7 +192,7 @@ label mas_piano_setupstart:
 
 
 
-    if full_combo and not persistent._mas_ever_won['piano']:
+    if full_combo and not persistent._mas_ever_won.get('piano', False):
         $ persistent._mas_ever_won['piano'] = True
 
 

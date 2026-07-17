@@ -545,7 +545,7 @@ label demo_minigame_pong:
         $ inst_dialogue = store.mas_pong.DLG_LOSER
 
 
-        if not persistent._mas_ever_won['pong']:
+        if not persistent._mas_ever_won.get('pong', False):
             $ persistent._mas_ever_won['pong'] = True
 
     if new_difficulty < 0:
